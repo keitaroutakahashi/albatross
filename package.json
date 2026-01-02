@@ -6,9 +6,13 @@
   "packageManager": "pnpm@10.23.0",
   "scripts": {
     "dev": "pnpm db:up && pnpm db:migrate && pnpm generate:client && next dev",
-    "build": "pnpm generate:client && next build",
     "start": "next start",
-    "lint": "eslint",
+    "build": "pnpm generate:client && next build",
+    "lint": "biome lint --write . && knip",
+    "test": "NODE_ENV=test vitest run",
+    "test:watch": "NODE_ENV=test vitest watch",
+    "test:e2e": "NODE_ENV=test playwright test",
+    "test:e2e:ui": "pnpm test:e2e --ui",
     "db:up": "docker compose up -d --wait",
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
@@ -39,6 +43,7 @@
     "@types/react-dom": "19.2.3",
     "dotenv": "17.2.3",
     "dotenv-cli": "11.0.0",
+    "knip": "5.79.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   }

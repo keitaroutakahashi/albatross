@@ -31,6 +31,14 @@
       }
     }
   },
+  "css": {
+    "parser": {
+      "cssModules": true
+    },
+    "linter": {
+      "enabled": false
+    }
+  },
   "files": {
     "ignoreUnknown": true,
     "includes": [
