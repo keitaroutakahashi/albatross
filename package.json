@@ -15,6 +15,8 @@
     "db:reset": "prisma migrate reset -f",
     "db:rebuild": "pnpm db:reset && pnpm db:seed",
     "db:studio": "prisma studio",
+    "db:migrate:preview": "dotenv -e .env.preview -- prisma migrate deploy",
+    "db:migrate:production": "dotenv -e .env.production -- prisma migrate deploy",
     "generate:client": "prisma generate"
   },
   "dependencies": {
@@ -36,6 +38,7 @@
     "@types/react": "19.2.7",
     "@types/react-dom": "19.2.3",
     "dotenv": "17.2.3",
+    "dotenv-cli": "11.0.0",
     "tsx": "4.21.0",
     "typescript": "5.9.3"
   }
