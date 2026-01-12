@@ -1,4 +1,4 @@
-# 機能設計書（Functional Design）
+# 機能設計書（Functional Design Document）
 
 ## 概要
 
@@ -55,6 +55,7 @@ graph TB
 │   └── ユーザー削除
 │
 ├── マスタ管理
+│   ├── シーズン管理
 │   ├── リーグ管理
 │   ├── グラウンド管理
 │   └── 対戦相手チーム管理
@@ -545,6 +546,7 @@ graph TD
         subgraph Admin["管理者"]
             UserList[ユーザー一覧]
             UserEdit[ユーザー編集]
+            MasterSeason[シーズン管理]
             MasterLeague[リーグ管理]
             MasterGround[グラウンド管理]
             MasterTeam[対戦相手管理]
@@ -578,6 +580,7 @@ graph TD
 
     Home --> UserList
     UserList --> UserEdit
+    Home --> MasterSeason
     Home --> MasterLeague
     Home --> MasterGround
     Home --> MasterTeam
@@ -623,6 +626,7 @@ graph TD
 | -------------- | ----------------- | ---------------------- |
 | ユーザー一覧   | /admin/users      | ユーザーの一覧と管理   |
 | ユーザー編集   | /admin/users/[id] | ユーザー情報編集       |
+| シーズン管理   | /admin/seasons    | シーズンのマスタ管理   |
 | リーグ管理     | /admin/leagues    | リーグのマスタ管理     |
 | グラウンド管理 | /admin/grounds    | グラウンドのマスタ管理 |
 | 対戦相手管理   | /admin/teams      | 対戦相手のマスタ管理   |
@@ -867,10 +871,54 @@ graph TD
 
 ---
 
-## API 設計
+## アルゴリズム設計
+
+### 成績集計アルゴリズム
+
+#### 打撃成績集計
+
+**目的**: 選手の打撃成績をシーズン別・通算で集計する
+
+**計算ロジック**:
+
+```typescript
+// 打率計算
+const battingAverage = hits / atBats;
+// atBats が 0 の場合は 0.000
+
+// 出塁率計算
+const onBasePercentage = (hits + walks) / plateAppearances;
+
+// 長打率計算
+const totalBases = hits + doubles + triples * 2 + homeRuns * 3;
+const sluggingPercentage = totalBases / atBats;
+
+// OPS計算
+const ops = onBasePercentage + sluggingPercentage;
+```
+
+#### 投手成績集計
+
+**目的**: 選手の投手成績をシーズン別・通算で集計する
+
+**計算ロジック**:
+
+```typescript
+// 防御率計算（9イニングあたりの自責点）
+const era = (earnedRuns / inningsPitched) * 9;
+
+// WHIP計算（1イニングあたりの被安打+与四球）
+const whip = (hitsAllowed + walks) / inningsPitched;
+
+// 勝率計算
+const winningPercentage = wins / (wins + losses);
+```
+
+---
+
+## Server Actions 設計
 
 本アプリケーションは Next.js の Server Actions を使用するため、従来の REST API は使用しません。
-以下は Server Actions の設計です。
 
 ### 認証
 
@@ -897,6 +945,8 @@ graph TD
 | ------------------ | ------------------ |
 | getSeasons         | シーズン一覧取得   |
 | createSeason       | シーズン作成       |
+| updateSeason       | シーズン更新       |
+| deleteSeason       | シーズン削除       |
 | getLeagues         | リーグ一覧取得     |
 | createLeague       | リーグ作成         |
 | updateLeague       | リーグ更新         |
@@ -959,8 +1009,43 @@ graph TD
 
 ---
 
+## エラーハンドリング
+
+### エラーの分類
+
+| エラー種別         | 処理                             | ユーザーへの表示                           |
+| ------------------ | -------------------------------- | ------------------------------------------ |
+| 認証エラー         | ログイン画面へリダイレクト       | 「ログインしてください」                   |
+| 権限エラー         | 処理を中断、エラーメッセージ表示 | 「この操作を行う権限がありません」         |
+| バリデーションエラー | 処理を中断、エラーメッセージ表示 | 「入力内容を確認してください」+ 詳細       |
+| データ不存在       | 処理を中断、エラーメッセージ表示 | 「データが見つかりませんでした」           |
+| サーバーエラー     | エラーページ表示                 | 「エラーが発生しました。時間をおいて再度お試しください」 |
+
+---
+
+## テスト戦略
+
+### ユニットテスト
+
+- ユーティリティ関数（日付フォーマット、成績計算など）
+- コンポーネントの表示ロジック
+
+### 統合テスト
+
+- Server Actions の動作
+- データベース操作
+
+### E2E テスト
+
+- ユーザー登録・ログインフロー
+- 試合登録・成績入力フロー
+- イベント登録フロー
+- ドキュメントアップロードフロー
+
+---
+
 ## 更新履歴
 
 | 日付       | 更新内容 | 更新者 |
 | ---------- | -------- | ------ |
-| 2025-01-11 | 初版作成 | -      |
+| 2025-01-12 | 初版作成 | -      |

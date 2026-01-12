@@ -1,4 +1,4 @@
-# リポジトリ構造定義書（Repository Structure）
+# リポジトリ構造定義書（Repository Structure Document）
 
 ## 概要
 
@@ -6,15 +6,19 @@
 
 ---
 
-## フォルダ・ファイル構成
+## プロジェクト構造
 
 ```
 albatross/
 ├── .claude/                    # Claude Code 設定
+│   ├── commands/               # スラッシュコマンド
+│   ├── skills/                 # タスクモード別スキル
+│   └── agents/                 # サブエージェント定義
 ├── .github/                    # GitHub 設定
 │   └── workflows/              # GitHub Actions ワークフロー
 ├── .vscode/                    # VS Code 設定
-├── docs/                       # ドキュメント
+├── docs/                       # プロジェクトドキュメント
+│   └── ideas/                  # 下書き・アイデア
 ├── prisma/                     # Prisma（データベース）
 │   ├── migrations/             # マイグレーションファイル
 │   ├── schema.prisma           # スキーマ定義
@@ -51,10 +55,13 @@ albatross/
 │   └── lib/                    # ライブラリ設定
 │       └── prisma.ts           # Prisma クライアント初期化
 ├── tests/                      # テストファイル
+│   ├── integration/            # 統合テスト
+│   ├── e2e/                    # E2E テスト
 │   └── vitest.setup.ts         # Vitest セットアップ
 ├── .env.local                  # 環境変数（ローカル）
 ├── .env.preview                # 環境変数（プレビュー）
 ├── .env.production             # 環境変数（本番）
+├── .env.example                # 環境変数サンプル
 ├── .gitignore                  # Git 除外設定
 ├── .node-version               # Node.js バージョン
 ├── biome.json                  # Biome 設定
@@ -72,7 +79,7 @@ albatross/
 
 ---
 
-## ディレクトリの役割
+## ディレクトリ詳細
 
 ### ルートディレクトリ
 
@@ -132,11 +139,22 @@ src/app/(public)/games/
 | ------------ | -------------------------------------- |
 | `prisma/`    | Prisma Client の自動生成コード         |
 
+### docs/ ディレクトリ
+
+| ファイル                    | 役割                         |
+| --------------------------- | ---------------------------- |
+| `product-requirements.md`   | プロダクト要求定義書         |
+| `functional-design.md`      | 機能設計書                   |
+| `architecture.md`           | アーキテクチャ設計書         |
+| `repository-structure.md`   | リポジトリ構造定義書（本書） |
+| `development-guidelines.md` | 開発ガイドライン             |
+| `glossary.md`               | 用語集                       |
+
 ---
 
 ## ファイル配置ルール
 
-### 1. コンポーネントの配置
+### コンポーネントの配置
 
 | 種類                   | 配置場所                               |
 | ---------------------- | -------------------------------------- |
@@ -144,27 +162,49 @@ src/app/(public)/games/
 | 機能共通コンポーネント | `src/app/_features/[feature]/components/` |
 | ページ固有コンポーネント | `src/app/(public|private)/[feature]/_components/` |
 
-### 2. Server Actions の配置
+### Server Actions の配置
 
 | 種類               | 配置場所                               |
 | ------------------ | -------------------------------------- |
 | 共通アクション     | `src/app/_actions/`                    |
 | 機能固有アクション | `src/app/_features/[feature]/actions/` |
 
-### 3. ユーティリティの配置
+### ユーティリティの配置
 
 | 種類               | 配置場所                               |
 | ------------------ | -------------------------------------- |
 | 汎用ユーティリティ | `src/app/_utils/`                      |
 | 機能固有ユーティリティ | `src/app/_features/[feature]/utils/` |
 
-### 4. 型定義の配置
+### 型定義の配置
 
 | 種類               | 配置場所                               |
 | ------------------ | -------------------------------------- |
 | グローバル型定義   | `src/app/globals.d.ts`                 |
 | 機能固有型定義     | `src/app/_features/[feature]/types.ts` |
 | Prisma 生成型      | `src/generated/prisma/`                |
+
+### テストファイルの配置
+
+| 種類                 | 配置場所                           |
+| -------------------- | ---------------------------------- |
+| ユニットテスト       | 対象ファイルと同じディレクトリ     |
+| 統合テスト           | `tests/integration/`               |
+| E2E テスト           | `tests/e2e/`                       |
+| テストセットアップ   | `tests/vitest.setup.ts`            |
+
+**例**:
+
+```
+src/app/_utils/date/
+├── date.ts
+└── date.test.ts    # ユニットテスト
+
+tests/
+├── integration/    # 統合テスト
+├── e2e/            # E2E テスト
+└── vitest.setup.ts # セットアップ
+```
 
 ---
 
@@ -185,13 +225,13 @@ src/app/(public)/games/
 | ------------------ | ----------------- | -------------------------- |
 | ページ             | `page.tsx`        | `page.tsx`                 |
 | レイアウト         | `layout.tsx`      | `layout.tsx`               |
-| コンポーネント     | `PascalCase.tsx`  | `GameCard.tsx`             |
+| コンポーネント     | `camelCase.tsx`   | `gameCard.tsx`             |
 | フック             | `useCamelCase.ts` | `useGameData.ts`           |
 | ユーティリティ     | `camelCase.ts`    | `formatDate.ts`            |
 | Server Action      | `camelCase.ts`    | `createGame.ts`            |
 | 型定義             | `types.ts`        | `types.ts`                 |
 | 定数               | `constants.ts`    | `constants.ts`             |
-| テスト             | `*.test.ts(x)`    | `GameCard.test.tsx`        |
+| テスト             | `*.test.ts(x)`    | `gameCard.test.tsx`        |
 
 ### index.tsx の使用
 
@@ -200,8 +240,8 @@ src/app/(public)/games/
 ```
 src/app/_components/header/
 ├── index.tsx           # エクスポート & メインコンポーネント
-├── HeaderLogo.tsx      # サブコンポーネント
-└── HeaderMenu.tsx      # サブコンポーネント
+├── headerLogo.tsx      # サブコンポーネント
+└── headerMenu.tsx      # サブコンポーネント
 ```
 
 ---
@@ -243,10 +283,61 @@ import { Header } from "@/app/_components/header";
 import { prisma } from "@/lib/prisma";
 
 // 4. 相対パス（同一ディレクトリ内）
-import { GameCard } from "./GameCard";
+import { GameCard } from "./gameCard";
 
 // 5. 型インポート
 import type { Game } from "@/generated/prisma";
+```
+
+---
+
+## 依存関係のルール
+
+### レイヤー間の依存
+
+```
+ページ (Server Components)
+    ↓ (OK)
+Server Actions / _features
+    ↓ (OK)
+lib (Prisma)
+    ↓ (OK)
+generated (Prisma Client)
+```
+
+**禁止される依存**:
+
+- `_components/` → `_actions/` (❌)
+- `lib/` → `_features/` (❌)
+- 循環依存 (❌)
+
+### モジュール間の依存
+
+**循環依存の禁止**:
+
+```typescript
+// ❌ 悪い例: 循環依存
+// fileA.ts
+import { funcB } from "./fileB";
+
+// fileB.ts
+import { funcA } from "./fileA"; // 循環依存
+```
+
+**解決策**:
+
+```typescript
+// ✅ 良い例: 共通モジュールの抽出
+// shared.ts
+export interface SharedType {
+  /* ... */
+}
+
+// fileA.ts
+import { SharedType } from "./shared";
+
+// fileB.ts
+import { SharedType } from "./shared";
 ```
 
 ---
@@ -267,32 +358,8 @@ import type { Game } from "@/generated/prisma";
 | 変数名         | 説明                   |
 | -------------- | ---------------------- |
 | `DATABASE_URL` | PostgreSQL 接続文字列  |
-
----
-
-## テストファイルの配置
-
-### 配置ルール
-
-| 種類                 | 配置場所                           |
-| -------------------- | ---------------------------------- |
-| ユニットテスト       | 対象ファイルと同じディレクトリ     |
-| 統合テスト           | `tests/integration/`               |
-| E2E テスト           | `tests/e2e/`                       |
-| テストセットアップ   | `tests/vitest.setup.ts`            |
-
-### 例
-
-```
-src/app/_utils/date/
-├── date.ts
-└── date.test.ts    # ユニットテスト
-
-tests/
-├── integration/    # 統合テスト
-├── e2e/            # E2E テスト
-└── vitest.setup.ts # セットアップ
-```
+| `NEXTAUTH_URL` | NextAuth.js のベース URL |
+| `NEXTAUTH_SECRET` | NextAuth.js のシークレット |
 
 ---
 
@@ -300,12 +367,97 @@ tests/
 
 以下のファイル/ディレクトリは自動生成されるため、手動で編集しないでください。
 
-| パス                    | 生成コマンド         | 説明                 |
-| ----------------------- | -------------------- | -------------------- |
-| `src/generated/prisma/` | `pnpm generate:client` | Prisma Client      |
-| `.next/`                | `pnpm build`         | Next.js ビルド成果物 |
-| `node_modules/`         | `pnpm install`       | 依存パッケージ       |
-| `pnpm-lock.yaml`        | `pnpm install`       | ロックファイル       |
+| パス                    | 生成コマンド           | 説明                 |
+| ----------------------- | ---------------------- | -------------------- |
+| `src/generated/prisma/` | `pnpm generate:client` | Prisma Client        |
+| `.next/`                | `pnpm build`           | Next.js ビルド成果物 |
+| `node_modules/`         | `pnpm install`         | 依存パッケージ       |
+| `pnpm-lock.yaml`        | `pnpm install`         | ロックファイル       |
+
+---
+
+## 特殊ディレクトリ
+
+### .steering/ (ステアリングファイル)
+
+**役割**: 特定の開発作業における「今回何をするか」を定義
+
+**構造**:
+
+```
+.steering/
+└── [YYYYMMDD]-[task-name]/
+    ├── requirements.md      # 今回の作業の要求内容
+    ├── design.md            # 変更内容の設計
+    └── tasklist.md          # タスクリスト
+```
+
+**命名規則**: `20250115-add-user-profile` 形式
+
+### .claude/ (Claude Code 設定)
+
+**役割**: Claude Code 設定とカスタマイズ
+
+**構造**:
+
+```
+.claude/
+├── commands/                # スラッシュコマンド
+├── skills/                  # タスクモード別スキル
+└── agents/                  # サブエージェント定義
+```
+
+---
+
+## スケーリング戦略
+
+### 機能の追加
+
+新しい機能を追加する際の配置方針:
+
+1. **小規模機能**: 既存ディレクトリに配置
+2. **中規模機能**: `_features/` にサブディレクトリを作成
+3. **大規模機能**: 独立したモジュールとして分離
+
+**例**:
+
+```
+src/app/_features/
+├── game/                    # 試合関連機能
+│   ├── components/
+│   ├── actions/
+│   └── utils/
+└── stats/                   # 成績関連機能
+    ├── components/
+    ├── actions/
+    └── utils/
+```
+
+### ファイルサイズの管理
+
+**ファイル分割の目安**:
+
+- 1 ファイル: 300 行以下を推奨
+- 300-500 行: リファクタリングを検討
+- 500 行以上: 分割を強く推奨
+
+---
+
+## 除外設定
+
+### .gitignore
+
+プロジェクトで除外すべきファイル:
+
+- `node_modules/`
+- `.next/`
+- `src/generated/`
+- `.env.local`
+- `.env.preview`
+- `.env.production`
+- `.steering/`
+- `*.log`
+- `.DS_Store`
 
 ---
 
@@ -313,4 +465,4 @@ tests/
 
 | 日付       | 更新内容 | 更新者 |
 | ---------- | -------- | ------ |
-| 2025-01-11 | 初版作成 | -      |
+| 2025-01-12 | 初版作成 | -      |

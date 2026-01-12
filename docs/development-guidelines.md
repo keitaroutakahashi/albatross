@@ -1,442 +1,666 @@
-# 開発ガイドライン（Development Guidelines）
+# 開発ガイドライン (Development Guidelines)
 
 ## 概要
 
-草野球チーム Albatross（Alba）の管理 Web アプリケーションの開発ガイドラインを定義します。
+草野球チーム Albatross（Alba）の管理 Web アプリケーションの開発規約とプロセスを定義します。
 
 ---
 
 ## コーディング規約
 
-### 基本方針
+### 命名規則
 
-- TypeScript の strict モードを有効にし、型安全性を確保する
-- Biome によるリンティング・フォーマットを適用する
-- 未使用コードは Knip で検出し、速やかに削除する
+#### 変数・関数
 
-### TypeScript
-
-#### 型定義
+**TypeScript/JavaScript**:
 
 ```typescript
-// Good: 明示的な型定義
-type Game = {
-  id: number;
-  gameDate: string;
-  venue: string;
-  teamScore: number;
-  opposingTeamScore: number;
-};
+// ✅ 良い例
+const userProfileData = fetchUserProfile();
+function calculateBattingAverage(atBats: number, hits: number): number {}
+const isAuthenticated = true;
+const hasPermission = false;
 
-// Good: 引数には型を指定し、戻り値は型推論に任せる
-const formatGameDate = (dateString: string) => {
-  return format(new Date(dateString), "YYYY-MM-DD");
-};
-
-// Good: 型推論が効く場合は明示的な型注釈を省略
-const games = await prisma.game.findMany(); // Game[] と推論される
-
-// Bad: any 型の使用
-const processData = (data: any) => { ... };
+// ❌ 悪い例
+const data = fetch();
+const flag = true;
+function calc(a: number, b: number): number {}
 ```
 
-#### 型推論の活用
+**原則**:
 
-- 戻り値の型は基本的に型推論に任せる
-- 変数宣言時も型推論が効く場合は型注釈を省略する
-- 引数の型は必ず指定する（推論できないため）
-- 複雑な型や外部に公開する関数は明示的に型を書くことも可
+- 変数: camelCase、名詞または名詞句
+- 関数: camelCase、動詞で始める
+- 定数: UPPER_SNAKE_CASE
+- Boolean: `is`, `has`, `should`, `can` で始める
 
-#### 型の使い分け
-
-| 用途           | 推奨          | 説明                        |
-| -------------- | ------------- | --------------------------- |
-| オブジェクト型 | `type`        | 型エイリアスを使用          |
-| React Props    | `type`        | コンポーネントの Props 定義 |
-| 拡張が必要な型 | `interface`   | `extends` が必要な場合のみ  |
-| Prisma 生成型  | `import type` | 型のみインポートする        |
-
-### React / Next.js
-
-#### コンポーネント定義
+#### クラス・インターフェース・型
 
 ```typescript
-// Good: アロー関数 + export
-export const GameCard = ({ game }: { game: Game }) => {
-  return <div className="...">{game.venue}</div>;
-};
+// コンポーネント: PascalCase
+function GameScoreBoard() {}
+function BattingStatsForm() {}
 
-// Good: Props 型を分離
-type Props = {
-  game: Game;
-  isHighlighted?: boolean;
-};
+// インターフェース: PascalCase
+interface Game {}
+interface BattingStats {}
 
-export const GameCard = ({ game, isHighlighted = false }: Props) => {
-  return <div className={isHighlighted ? "..." : "..."}>{game.venue}</div>;
-};
+// 型エイリアス: PascalCase
+type GameResult = "WIN" | "LOSE" | "DRAW" | "TBD";
+type UserRole = "ADMIN" | "STAFF" | "PLAYER";
 ```
 
-#### Server Components / Client Components
+#### ファイル名
 
-| 種類             | 用途                                    |
-| ---------------- | --------------------------------------- |
-| Server Component | データフェッチ、SEO、初期レンダリング   |
-| Client Component | インタラクティブな UI、イベントハンドラ |
+```
+// コンポーネント: camelCase.tsx
+gameCard.tsx
+battingStatsForm.tsx
 
-```typescript
-// Server Component（デフォルト）
-export const GameList = async () => {
-  const games = await prisma.game.findMany();
-  return <ul>{games.map(...)}</ul>;
-};
+// ユーティリティ: camelCase.ts
+formatDate.ts
+calculateStats.ts
 
-// Client Component
-"use client";
+// 定数: camelCase.ts または constants.ts
+constants.ts
+gameConstants.ts
 
-export const GameFilter = () => {
-  const [filter, setFilter] = useState("");
-  return <input onChange={(e) => setFilter(e.target.value)} />;
-};
+// ページコンポーネント: page.tsx (Next.js App Router)
+page.tsx
+layout.tsx
+error.tsx
 ```
 
----
+### コードフォーマット
 
-## 命名規則
+**Biome を使用**:
 
-### ファイル・ディレクトリ
+- インデント: タブ（Biome デフォルト）
+- 行の長さ: 80 文字
+- セミコロン: 必須
+- クォート: ダブルクォート
 
-| 対象                 | 規則              | 例                      |
-| -------------------- | ----------------- | ----------------------- |
-| コンポーネント       | `camelCase.tsx`   | `gameCard.tsx`          |
-| ページ               | `page.tsx`        | `page.tsx`              |
-| レイアウト           | `layout.tsx`      | `layout.tsx`            |
-| フック               | `useCamelCase.ts` | `useGameData.ts`        |
-| ユーティリティ       | `camelCase.ts`    | `formatDate.ts`         |
-| Server Action        | `camelCase.ts`    | `createGame.ts`         |
-| 型定義ファイル       | `types.ts`        | `types.ts`              |
-| テストファイル       | `*.test.ts(x)`    | `gameCard.test.tsx`     |
-| ディレクトリ         | `kebab-case`      | `game-list`             |
-| プライベートフォルダ | `_kebab-case`     | `_components`, `_utils` |
+**設定例 (biome.json)**:
 
-### 変数・関数
-
-| 対象                 | 規則               | 例                       |
-| -------------------- | ------------------ | ------------------------ |
-| 変数                 | `camelCase`        | `gameList`, `userName`   |
-| 定数                 | `UPPER_SNAKE_CASE` | `MAX_GAMES`, `API_URL`   |
-| 関数                 | `camelCase`        | `formatDate`, `getGames` |
-| コンポーネント       | `PascalCase`       | `GameCard`, `Header`     |
-| カスタムフック       | `useCamelCase`     | `useGameData`, `useAuth` |
-| 型・インターフェース | `PascalCase`       | `Game`, `UserProfile`    |
-
-### Boolean 命名
-
-```typescript
-// Good: is, has, can, should などのプレフィックス
-const isLoading = true;
-const hasError = false;
-const canEdit = user.role === "admin";
-
-// Bad: 曖昧な命名
-const loading = true;
-const error = false;
-```
-
-### イベントハンドラ
-
-```typescript
-// Good: handle + 動詞
-const handleSubmit = () => { ... };
-const handleClick = () => { ... };
-const handleGameSelect = (game: Game) => { ... };
-
-// Props として渡す場合: on + 動詞
-type ButtonProps = {
-  onClick: () => void;
-  onSubmit: (data: FormData) => void;
-};
-```
-
----
-
-## スタイリング規約
-
-### Tailwind CSS
-
-本プロジェクトでは Tailwind CSS を使用してスタイリングを行います。
-
-#### 基本ルール
-
-- インラインスタイル（`style` 属性）は使用しない
-- CSS ファイルでのカスタムクラス定義は最小限に抑える
-- 共通のデザイントークンは `globals.css` の `@theme` で定義する
-
-#### クラス名の記述順序
-
-1. レイアウト（`flex`, `grid`, `block`）
-2. 配置（`justify-*`, `items-*`, `gap-*`）
-3. サイズ（`w-*`, `h-*`, `size-*`）
-4. 余白（`p-*`, `m-*`）
-5. 背景・ボーダー（`bg-*`, `border-*`, `rounded-*`）
-6. テキスト（`text-*`, `font-*`）
-7. その他（`cursor-*`, `transition-*`）
-
-```tsx
-// Good: 順序を意識した記述
-<div className="flex items-center gap-4 w-full p-4 bg-white rounded-lg text-sm font-bold">
-
-// Good: レスポンシブ対応
-<div className="flex flex-col md:flex-row p-3 md:p-4">
-```
-
-#### カスタムテーマ
-
-`globals.css` で定義されたカスタムテーマを使用します。
-
-```css
-@theme {
-  --size-header-height: 64px;
-  --size-footer-height: 80px;
-  --color-primary: #00053a;
-  --color-secondary: #9e8f42;
+```json
+{
+  "formatter": {
+    "indentStyle": "tab",
+    "lineWidth": 80
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "double",
+      "semicolons": "always"
+    }
+  }
 }
 ```
 
-使用例:
+### インポート規則
 
-```tsx
-<header className="h-(--size-header-height)">
-<button className="bg-primary text-white">
+**パスエイリアス**:
+
+`@/` エイリアスを使用し、相対パスでのインポートは同一ディレクトリ内のみ許可します。
+
+```typescript
+// ✅ 良い例
+import { Header } from "@/app/_components/header";
+import { prisma } from "@/lib/prisma";
+import type { Game } from "@/generated/prisma";
+
+// ❌ 悪い例
+import { Header } from "../../_components/header";
+import { prisma } from "../../../lib/prisma";
+```
+
+**インポート順序**:
+
+1. React / Next.js
+2. 外部ライブラリ
+3. 内部モジュール（`@/` エイリアス）
+4. 相対パス（同一ディレクトリ内のみ）
+5. 型インポート
+
+```typescript
+// 1. React / Next.js
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+
+// 2. 外部ライブラリ
+import { format } from "@formkit/tempo";
+
+// 3. 内部モジュール
+import { Header } from "@/app/_components/header";
+import { prisma } from "@/lib/prisma";
+
+// 4. 相対パス（同一ディレクトリ内）
+import { GameCard } from "./gameCard";
+
+// 5. 型インポート
+import type { Game } from "@/generated/prisma";
+```
+
+### コメント規約
+
+**TSDoc 形式**:
+
+````typescript
+/**
+ * 打率を計算する
+ *
+ * @param atBats - 打数
+ * @param hits - 安打数
+ * @returns 打率（小数点3桁）
+ * @throws {Error} 打数が0以下の場合
+ *
+ * @example
+ * ```typescript
+ * const avg = calculateBattingAverage(100, 30);
+ * // returns 0.300
+ * ```
+ */
+function calculateBattingAverage(atBats: number, hits: number): number {
+  if (atBats <= 0) {
+    throw new Error("打数は1以上である必要があります");
+  }
+  return hits / atBats;
+}
+````
+
+**インラインコメント**:
+
+```typescript
+// ✅ 良い例: なぜそうするかを説明
+// 規定打席に満たない場合はランキング対象外
+if (plateAppearances < minimumPlateAppearances) {
+  return null;
+}
+
+// ❌ 悪い例: 何をしているか（コードを見れば分かる）
+// 打席数をチェック
+if (plateAppearances < minimumPlateAppearances) {
+  return null;
+}
+```
+
+### エラーハンドリング
+
+**原則**:
+
+- 予期されるエラー: 適切に処理してユーザーにフィードバック
+- 予期しないエラー: 上位に伝播してログに記録
+- エラーを無視しない
+
+**Server Actions でのエラーハンドリング**:
+
+```typescript
+"use server";
+
+import { revalidatePath } from "next/cache";
+
+export async function createGame(formData: FormData) {
+  try {
+    // バリデーション
+    const gameDate = formData.get("gameDate");
+    if (!gameDate) {
+      return { error: "試合日は必須です" };
+    }
+
+    // データベース操作
+    await prisma.game.create({
+      data: {
+        // ...
+      },
+    });
+
+    revalidatePath("/games");
+    return { success: true };
+  } catch (error) {
+    console.error("試合作成エラー:", error);
+    return { error: "試合の作成に失敗しました" };
+  }
+}
 ```
 
 ---
 
-## テスト規約
+## React / Next.js 規約
 
-### テスト方針
+### Server Components と Client Components
 
-| テスト種別     | ツール                   | 対象                           |
-| -------------- | ------------------------ | ------------------------------ |
-| ユニットテスト | Vitest + Testing Library | コンポーネント・ユーティリティ |
-| 統合テスト     | Vitest                   | API・データ層                  |
-| E2E テスト     | Playwright               | ユーザーフロー全体             |
+**デフォルトは Server Components**:
 
-### カバレッジ目標
+```typescript
+// Server Component（デフォルト）
+// データフェッチ、SEO最適化に使用
+async function GameList() {
+  const games = await prisma.game.findMany();
+  return (
+    <ul>
+      {games.map((game) => (
+        <GameCard key={game.id} game={game} />
+      ))}
+    </ul>
+  );
+}
+```
 
-| 種別       | 目標 |
-| ---------- | ---- |
-| 全体       | 80%  |
-| 新規コード | 90%  |
+**Client Components が必要な場合のみ `"use client"` を追加**:
 
-### テストファイル配置
+```typescript
+"use client";
 
-- ユニットテスト: 対象ファイルと同じディレクトリに `.test.ts(x)` として配置
-- 統合テスト: `tests/integration/`
-- E2E テスト: `tests/e2e/`
+// Client Component
+// useState, useEffect, イベントハンドラ等が必要な場合
+import { useState } from "react";
+
+function ScoreInput() {
+  const [score, setScore] = useState(0);
+
+  return (
+    <input
+      type="number"
+      value={score}
+      onChange={(e) => setScore(Number(e.target.value))}
+    />
+  );
+}
+```
+
+### Server Actions
+
+**フォーム処理には Server Actions を使用**:
+
+```typescript
+// src/app/_actions/game.ts
+"use server";
+
+import { prisma } from "@/lib/prisma";
+import { revalidatePath } from "next/cache";
+
+export async function createGame(formData: FormData) {
+  const gameDate = formData.get("gameDate") as string;
+  const opponentTeamId = formData.get("opponentTeamId") as string;
+
+  await prisma.game.create({
+    data: {
+      gameDate: new Date(gameDate),
+      opponentTeamId: parseInt(opponentTeamId),
+      // ...
+    },
+  });
+
+  revalidatePath("/games");
+}
+```
+
+```typescript
+// ページコンポーネント
+import { createGame } from "@/app/_actions/game";
+
+function NewGameForm() {
+  return (
+    <form action={createGame}>
+      <input type="date" name="gameDate" required />
+      <button type="submit">作成</button>
+    </form>
+  );
+}
+```
+
+### コンポーネント設計
+
+**Props の型定義**:
+
+```typescript
+interface GameCardProps {
+  game: Game;
+  showDetails?: boolean;
+}
+
+function GameCard({ game, showDetails = false }: GameCardProps) {
+  return (
+    <div>
+      <h3>{game.opponentTeam.name}</h3>
+      {showDetails && <p>{game.notes}</p>}
+    </div>
+  );
+}
+```
+
+**コンポーネントの配置ルール**:
+
+| 種類                     | 配置場所                                          |
+| ------------------------ | ------------------------------------------------- |
+| 全体共通コンポーネント   | `src/app/_components/`                            |
+| 機能共通コンポーネント   | `src/app/_features/[feature]/components/`         |
+| ページ固有コンポーネント | `src/app/(public\|private)/[feature]/_components/` |
+
+---
+
+## Git 運用ルール
+
+### ブランチ戦略
+
+**ブランチ構成**:
+
+```
+main (本番環境)
+└── develop (開発・統合環境)
+    ├── feature/* (新機能開発)
+    ├── fix/* (バグ修正)
+    └── refactor/* (リファクタリング)
+```
+
+**運用ルール**:
+
+- **main**: 本番リリース済みの安定版コードのみを保持
+- **develop**: 次期リリースに向けた最新の開発コード
+- **feature/\*、fix/\***: develop から分岐し、作業完了後に PR で develop へマージ
+- **直接コミット禁止**: すべてのブランチで PR レビューを必須
+
+**ブランチ命名規則**:
+
+```
+feature/add-user-authentication
+feature/game-score-input
+fix/batting-average-calculation
+refactor/game-list-component
+```
+
+### コミットメッセージ規約
+
+**Conventional Commits 形式**:
+
+```
+<type>(<scope>): <subject>
+
+<body>
+
+<footer>
+```
+
+**Type 一覧**:
+
+| Type     | 説明                     |
+| -------- | ------------------------ |
+| feat     | 新機能                   |
+| fix      | バグ修正                 |
+| docs     | ドキュメント             |
+| style    | コードフォーマット       |
+| refactor | リファクタリング         |
+| test     | テスト追加・修正         |
+| chore    | ビルド、補助ツール等     |
+
+**例**:
+
+```
+feat(game): 試合スコア入力機能を追加
+
+イニングごとの得点を入力できる機能を実装しました。
+- スコアボードコンポーネントを追加
+- Server Action でのスコア保存処理を実装
+- 入力バリデーションを追加
+
+Closes #45
+```
+
+### プルリクエストプロセス
+
+**作成前のチェック**:
+
+- [ ] 全てのテストがパス
+- [ ] Lint エラーがない
+- [ ] 型チェックがパス
+- [ ] 競合が解決されている
+
+**PR テンプレート**:
+
+```markdown
+## 概要
+
+[変更内容の簡潔な説明]
+
+## 変更理由
+
+[なぜこの変更が必要か]
+
+## 変更内容
+
+- [変更点 1]
+- [変更点 2]
+
+## テスト
+
+- [ ] ユニットテスト追加
+- [ ] 手動テスト実施
+
+## スクリーンショット(該当する場合)
+
+[画像]
+
+## 関連 Issue
+
+Closes #[Issue 番号]
+```
+
+**レビュープロセス**:
+
+1. セルフレビュー
+2. 自動テスト実行（CI）
+3. レビュアーアサイン
+4. レビューフィードバック対応
+5. 承認後マージ
+
+---
+
+## テスト戦略
+
+### テストの種類
+
+| テスト種別   | ツール                   | 対象範囲                       | カバレッジ目標 |
+| ------------ | ------------------------ | ------------------------------ | -------------- |
+| ユニットテスト | Vitest + Testing Library | コンポーネント・ユーティリティ | 80%            |
+| 統合テスト   | Vitest                   | Server Actions・データ層       | 70%            |
+| E2E テスト   | Playwright               | 主要ユーザーフロー             | 主要フロー網羅 |
+
+### テストの書き方
+
+**Given-When-Then パターン**:
+
+```typescript
+describe("calculateBattingAverage", () => {
+  it("正常なデータで打率を計算できる", () => {
+    // Given: 準備
+    const atBats = 100;
+    const hits = 30;
+
+    // When: 実行
+    const result = calculateBattingAverage(atBats, hits);
+
+    // Then: 検証
+    expect(result).toBe(0.3);
+  });
+
+  it("打数が0の場合エラーをスローする", () => {
+    // Given: 準備
+    const atBats = 0;
+    const hits = 0;
+
+    // When/Then: 実行と検証
+    expect(() => calculateBattingAverage(atBats, hits)).toThrow();
+  });
+});
+```
+
+### テストファイルの配置
+
+| 種類               | 配置場所                       |
+| ------------------ | ------------------------------ |
+| ユニットテスト     | 対象ファイルと同じディレクトリ |
+| 統合テスト         | `tests/integration/`           |
+| E2E テスト         | `tests/e2e/`                   |
+
+**例**:
 
 ```
 src/app/_utils/date/
 ├── date.ts
 └── date.test.ts    # ユニットテスト
-```
 
-### テストの書き方
-
-#### ユニットテスト
-
-```typescript
-import { describe, it, expect } from "vitest";
-import { formatAsMDWithColon } from "./date";
-
-describe("formatAsMDWithColon", () => {
-  it("日付を M.D 形式にフォーマットする", () => {
-    expect(formatAsMDWithColon("2025-01-15")).toBe("1.15");
-  });
-
-  it("月初の日付を正しくフォーマットする", () => {
-    expect(formatAsMDWithColon("2025-03-01")).toBe("3.1");
-  });
-});
-```
-
-#### コンポーネントテスト
-
-```typescript
-import { render, screen } from "@testing-library/react";
-import { describe, it, expect } from "vitest";
-import { GameCard } from "./gameCard";
-
-describe("GameCard", () => {
-  const mockGame = {
-    id: 1,
-    gameDate: "2025-01-15",
-    venue: "東京ドーム",
-    teamScore: 5,
-    opposingTeamScore: 3,
-  };
-
-  it("試合情報を表示する", () => {
-    render(<GameCard game={mockGame} />);
-    expect(screen.getByText("東京ドーム")).toBeInTheDocument();
-  });
-});
-```
-
-### テスト命名規則
-
-- `describe`: テスト対象（関数名・コンポーネント名）
-- `it`: 期待する動作を日本語で記述
-
-```typescript
-describe("formatDate", () => {
-  it("日付を YYYY-MM-DD 形式に変換する", () => { ... });
-  it("無効な日付の場合は空文字を返す", () => { ... });
-});
+tests/
+├── integration/    # 統合テスト
+├── e2e/            # E2E テスト
+└── vitest.setup.ts # セットアップ
 ```
 
 ---
 
-## Git 規約
+## コードレビュー基準
 
-### ブランチ戦略
+### レビューポイント
 
-| ブランチ    | 用途                     |
-| ----------- | ------------------------ |
-| `main`      | 本番環境用（プロテクト） |
-| `develop`   | 開発用統合ブランチ       |
-| `feature/*` | 機能開発                 |
-| `fix/*`     | バグ修正                 |
-| `docs/*`    | ドキュメント更新         |
+**機能性**:
 
-### ブランチ命名規則
+- [ ] 要件を満たしているか
+- [ ] エッジケースが考慮されているか
+- [ ] エラーハンドリングが適切か
 
-```
-feature/add-game-list
-feature/implement-user-auth
-fix/game-date-format
-docs/update-readme
-```
+**可読性**:
 
-### コミットメッセージ
+- [ ] 命名が明確か
+- [ ] コメントが適切か
+- [ ] 複雑なロジックが説明されているか
 
-[Conventional Commits](https://www.conventionalcommits.org/) 形式を採用します。
+**保守性**:
 
-#### フォーマット
+- [ ] 重複コードがないか
+- [ ] 責務が明確に分離されているか
+- [ ] 変更の影響範囲が限定的か
 
-```
-<type>: <description>
+**パフォーマンス**:
 
-[optional body]
+- [ ] 不要な計算がないか
+- [ ] データベースクエリが最適化されているか
 
-[optional footer]
-```
+**セキュリティ**:
 
-#### タイプ一覧
+- [ ] 入力検証が適切か
+- [ ] 機密情報がハードコードされていないか
+- [ ] 権限チェックが実装されているか
 
-| タイプ     | 用途                                 | 例                                 |
-| ---------- | ------------------------------------ | ---------------------------------- |
-| `feat`     | 新機能追加                           | `feat: add game list component`    |
-| `fix`      | バグ修正                             | `fix: correct date format in game` |
-| `docs`     | ドキュメント変更                     | `docs: update README`              |
-| `style`    | コードスタイル変更（動作に影響なし） | `style: format code with biome`    |
-| `refactor` | リファクタリング                     | `refactor: extract date utils`     |
-| `test`     | テスト追加・修正                     | `test: add game card tests`        |
-| `chore`    | ビルド・ツール変更                   | `chore: update dependencies`       |
+### レビューコメントの書き方
 
-#### コミットメッセージ例
+**優先度の明示**:
 
-```bash
-# Good
-feat: add game listing components and error handling templates
-fix: update datasource URL syntax in prisma.config.ts
-docs: update development guidelines
+- `[必須]`: 修正必須
+- `[推奨]`: 修正推奨
+- `[提案]`: 検討してほしい
+- `[質問]`: 理解のための質問
 
-# Bad
-update files
-fix bug
-WIP
-```
-
-### プルリクエスト
-
-#### PR タイトル
-
-コミットメッセージと同様に Conventional Commits 形式を使用します。
-
-```
-feat: add user authentication
-fix: resolve game date display issue
-```
-
-#### PR テンプレート
+**例**:
 
 ```markdown
-## 概要
+[必須] セキュリティ: ユーザー入力がサニタイズされていません。
+XSS 対策として、入力値をエスケープしてください。
 
-変更の概要を記述
+[推奨] パフォーマンス: この処理はループ外に移動できます。
 
-## 変更内容
-
-- 変更点 1
-- 変更点 2
-
-## テスト
-
-- [ ] ユニットテスト追加
-- [ ] ローカル動作確認
-
-## スクリーンショット（UI 変更がある場合）
+[提案] 可読性: この変数名を `gameDate` から `scheduledGameDate` に
+変更すると、予定日であることが明確になります。
 ```
-
-### マージ戦略
-
-- `feature/*`, `fix/*` → `develop`: Squash and Merge
-- `develop` → `main`: Merge Commit（リリース履歴を保持）
 
 ---
 
-## 開発フロー
+## 開発環境セットアップ
 
-### 1. 機能開発の流れ
+### 必要なツール
 
-1. `develop` から `feature/*` ブランチを作成
-2. 実装・テスト作成
-3. Biome でリント・フォーマット
-4. PR 作成、レビュー依頼
-5. レビュー承認後、`develop` にマージ
+| ツール     | バージョン | インストール方法              |
+| ---------- | ---------- | ----------------------------- |
+| Node.js    | 24.x       | `volta install node@24`       |
+| pnpm       | 10.x       | `npm install -g pnpm`         |
+| Docker     | -          | Docker Desktop をインストール |
 
-### 2. 開発コマンド
+### セットアップ手順
 
 ```bash
-# 開発サーバー起動（DB 起動・マイグレーション含む）
-pnpm dev
+# 1. リポジトリのクローン
+git clone https://github.com/your-org/albatross.git
+cd albatross
 
-# リント・フォーマット
-pnpm lint
+# 2. 依存関係のインストール
+pnpm install
 
-# データベース操作
-pnpm db:up          # DB コンテナ起動
-pnpm db:migrate     # マイグレーション実行
-pnpm db:seed        # シードデータ投入
-pnpm db:studio      # Prisma Studio 起動
-pnpm db:rebuild     # DB リセット＋シード
+# 3. 環境変数の設定
+cp .env.example .env.local
+# .env.local ファイルを編集
 
-# Prisma Client 生成
+# 4. データベースの起動
+docker compose up -d
+
+# 5. Prisma クライアントの生成
 pnpm generate:client
 
-# ビルド
-pnpm build
+# 6. データベースのマイグレーション
+pnpm db:migrate
+
+# 7. 開発サーバーの起動
+pnpm dev
 ```
 
-### 3. コードレビュー観点
+### 主要なスクリプト
 
-- [ ] TypeScript の型が適切に定義されているか
-- [ ] コンポーネントの責務が明確か
-- [ ] テストが追加されているか
-- [ ] 命名規則に従っているか
-- [ ] パフォーマンスへの影響はないか
-- [ ] セキュリティ上の問題はないか
+| スクリプト           | 説明                       |
+| -------------------- | -------------------------- |
+| `pnpm dev`           | 開発サーバー起動           |
+| `pnpm build`         | プロダクションビルド       |
+| `pnpm lint`          | Lint チェック              |
+| `pnpm format`        | コードフォーマット         |
+| `pnpm test`          | テスト実行                 |
+| `pnpm generate:client` | Prisma クライアント生成    |
+| `pnpm db:migrate`    | データベースマイグレーション |
+
+---
+
+## 品質自動化
+
+### CI/CD (GitHub Actions)
+
+```yaml
+# .github/workflows/ci.yml
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: "pnpm"
+      - run: pnpm install
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+```
+
+### 自動チェック項目
+
+| 項目             | ツール     | タイミング           |
+| ---------------- | ---------- | -------------------- |
+| Lint チェック    | Biome      | コミット前、CI       |
+| フォーマット     | Biome      | コミット前、CI       |
+| 型チェック       | TypeScript | コミット前、CI       |
+| テスト実行       | Vitest     | CI                   |
+| ビルド確認       | Next.js    | CI                   |
+| 未使用コード検出 | Knip       | 定期実行（週次など） |
 
 ---
 
@@ -444,4 +668,4 @@ pnpm build
 
 | 日付       | 更新内容 | 更新者 |
 | ---------- | -------- | ------ |
-| 2025-01-11 | 初版作成 | -      |
+| 2025-01-12 | 初版作成 | -      |
