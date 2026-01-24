@@ -31,14 +31,28 @@
       }
     }
   },
+  "css": {
+    "parser": {
+      "cssModules": true,
+      "tailwindDirectives": true
+    },
+    "linter": {
+      "enabled": false
+    },
+    "formatter": {
+      "enabled": false
+    }
+  },
   "files": {
     "ignoreUnknown": true,
     "includes": [
       "**",
+      "!./src/**/generated",
+      "!./prisma/**/generated",
       "!**/.next",
       "!**/dist",
       "!**/cache",
-      "!**/__generated__"
+      "!**/generated"
     ]
   }
 }

@@ -1,8 +1,6 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(pnpm test)" // pnpm testを常に許可
-    ],
+    "allow": ["Bash(pnpm test)"],
     "deny": [
       "Bash(sudo:*)",
       "Bash(rm:*)",

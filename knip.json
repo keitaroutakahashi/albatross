@@ -1,0 +1,10 @@
+{
+  "$schema": "https://unpkg.com/knip@latest/schema.json",
+  "ignoreDependencies": [
+    "@prisma/client",
+    "pg",
+    "@types/pg",
+    "@testing-library/react",
+    "jsdom"
+  ]
+}
