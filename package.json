@@ -8,7 +8,7 @@
     "dev": "pnpm db:up && pnpm db:migrate && pnpm generate:client && next dev",
     "start": "next start",
     "build": "pnpm generate:client && next build",
-    "lint": "biome lint --write . && knip",
+    "lint": "biome check --write . && knip",
     "lint:ci": "biome check . && knip",
     "typecheck": "tsc --noEmit",
     "db:up": "docker compose up -d --wait",

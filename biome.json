@@ -33,9 +33,13 @@
   },
   "css": {
     "parser": {
-      "cssModules": true
+      "cssModules": true,
+      "tailwindDirectives": true
     },
     "linter": {
+      "enabled": false
+    },
+    "formatter": {
       "enabled": false
     }
   },
@@ -43,10 +47,12 @@
     "ignoreUnknown": true,
     "includes": [
       "**",
+      "!./src/**/generated",
+      "!./prisma/**/generated",
       "!**/.next",
       "!**/dist",
       "!**/cache",
-      "!**/__generated__"
+      "!**/generated"
     ]
   }
 }
