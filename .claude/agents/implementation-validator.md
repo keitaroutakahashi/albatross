@@ -240,12 +240,6 @@ pnpm test
 pnpm run test:coverage
 ```
 
-### ビルド確認
-
-```bash
-pnpm run build
-```
-
 ## コード品質の詳細チェック
 
 ### 命名規則
