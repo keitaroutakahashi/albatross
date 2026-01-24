@@ -19,7 +19,8 @@
     "db:studio": "prisma studio",
     "db:migrate:preview": "dotenv -e .env.preview -- prisma migrate deploy",
     "db:migrate:production": "dotenv -e .env.production -- prisma migrate deploy",
-    "generate:client": "prisma generate"
+    "generate:client": "prisma generate",
+    "generate:next-type": "next typegen"
   },
   "dependencies": {
     "@formkit/tempo": "1.0.0",
