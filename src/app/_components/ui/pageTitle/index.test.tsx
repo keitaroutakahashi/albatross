@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { PageTitle } from "@/app/_components/pageTitle";
+import { PageTitle } from "@/app/_components/ui/pageTitle";
 
 describe("PageTitle", () => {
   it("タイトルとサブタイトルが表示される", () => {
