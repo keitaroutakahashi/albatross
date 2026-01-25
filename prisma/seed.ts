@@ -1,6 +1,12 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { type Prisma, PrismaClient } from "../src/generated/prisma/client.js";
+import { PrismaClient } from "../src/generated/prisma/client.js";
+import { seedGames } from "./seeds/game.js";
+import { seedGrounds } from "./seeds/ground.js";
+import { seedLeagues } from "./seeds/league.js";
+import { seedOpponents } from "./seeds/opponent.js";
+import { seedSeasons } from "./seeds/season.js";
+import { seedUsers } from "./seeds/user.js";
 
 const adapter = new PrismaPg({
   connectionString: process.env.DATABASE_URL,
@@ -10,18 +16,27 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-const userData: Prisma.UserCreateInput[] = [
-  { email: "taro@example.com", name: "田中太郎" },
-  { email: "hanako@example.com", name: "山田花子" },
-  { email: "ichiro@example.com", name: "佐藤一郎" },
-  { email: "yuki@example.com", name: "鈴木雪" },
-  { email: "ken@example.com", name: "高橋健" },
-];
+async function main() {
+  console.log("Start seeding...\n");
 
-export async function main() {
-  for (const u of userData) {
-    await prisma.user.create({ data: u });
-  }
+  // マスタデータを先に投入
+  await seedUsers(prisma);
+  await seedSeasons(prisma);
+  await seedLeagues(prisma);
+  await seedGrounds(prisma);
+  await seedOpponents(prisma);
+
+  // 試合データを投入（マスタに依存）
+  await seedGames(prisma);
+
+  console.log("\nSeeding completed!");
 }
 
-main();
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

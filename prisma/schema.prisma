@@ -14,3 +14,111 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// シーズン（年度）
+model Season {
+  id        Int      @id @default(autoincrement())
+  year      Int      @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// リーグ
+model League {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// グラウンド（球場）
+model Ground {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String?
+  access    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// 対戦相手チーム
+model Opponent {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// 試合
+model Game {
+  id        Int      @id @default(autoincrement())
+
+  // 日時・試合番号
+  date       DateTime
+  gameNumber Int      @default(1) // 同日の試合番号（ダブルヘッダー対応）
+
+  // 試合設定
+  gameType       GameType   @default(official) // 公式戦 or 練習試合
+  isFirstBatting Boolean    @default(true) // true: 先攻, false: 後攻
+  status         GameStatus @default(scheduled)
+
+  // リレーション
+  seasonId   Int
+  season     Season   @relation(fields: [seasonId], references: [id])
+  leagueId   Int
+  league     League   @relation(fields: [leagueId], references: [id])
+  groundId   Int?
+  ground     Ground?  @relation(fields: [groundId], references: [id])
+  opponentId Int
+  opponent   Opponent @relation(fields: [opponentId], references: [id])
+
+  // イニング
+  innings Inning[]
+
+  // 試合結果（キャッシュ）
+  teamScore     Int         @default(0)
+  opponentScore Int         @default(0)
+  result        GameResult?
+
+  // 備考
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([date, gameNumber])
+}
+
+enum GameType {
+  official // 公式戦
+  practice // 練習試合
+}
+
+enum GameStatus {
+  scheduled // 予定
+  completed // 終了
+  canceled  // 中止
+}
+
+enum GameResult {
+  win
+  lose
+  draw
+}
+
+// イニングごとの得点
+model Inning {
+  id           Int  @id @default(autoincrement())
+  gameId       Int
+  game         Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  inningNumber Int // 1, 2, 3...（上限なし）
+  teamScore    Int  @default(0)
+  opponentScore Int @default(0)
+
+  @@unique([gameId, inningNumber])
+}

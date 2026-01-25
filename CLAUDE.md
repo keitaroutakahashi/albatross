@@ -42,22 +42,42 @@ pnpm generate:client  # Prisma Client 生成
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (public)/          # 公開ページ（games など）
+│   ├── (public)/          # 公開ページ
+│   │   └── games/
+│   │       ├── _components/  # games 専用コンポーネント
+│   │       ├── _data/        # データ取得関数
+│   │       └── [id]/         # 試合詳細ページ
+│   ├── (private)/         # 認証が必要なページ
+│   ├── _actions/          # Server Actions
 │   ├── _components/       # 共通コンポーネント（header, footer）
+│   ├── _features/         # 機能別コンポーネント
+│   ├── _hooks/            # カスタムフック
 │   └── _utils/            # ユーティリティ関数
 ├── generated/prisma/      # Prisma 生成ファイル（編集不可）
 └── lib/                   # ライブラリ設定
 prisma/
-└── schema.prisma          # DB スキーマ定義
+├── schema.prisma          # DB スキーマ定義
+├── seed.ts                # シードデータ実行エントリ
+├── seeds/                 # シードデータ（テーブル毎）
+└── migrations/            # マイグレーションファイル
 docs/                      # ドキュメント
 ```
 
 ## コーディング規約
 
-- **インポートパス**: 相対パス (`./`, `../`) ではなく絶対パス (`@/`) を使用
-- **フォーマット**: スペースインデント、行幅 80 文字（Biome）
-- **コンポーネント**: LowerCase、プライベートは `_` プレフィックス
-- **日本語**: コメントやドキュメントは日本語で記述
+### 共通
+
+- コメントやドキュメントは日本語で記述
+- 相対パス (`./`, `../`) ではなく絶対パス (`@/`) を使用
+- スペースインデント、行幅 80 文字（Biome）
+
+### FrontEnd
+
+- コンポーネント名は、LowerCase、プライベートは `_` プレフィックス
+
+### Database
+
+- enum を使う場合は小文字にする
 
 ## 注意事項
 

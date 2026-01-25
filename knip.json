@@ -4,7 +4,11 @@
     "@prisma/client",
     "pg",
     "@types/pg",
-    "@testing-library/react",
-    "jsdom"
-  ]
+    "class-variance-authority",
+    "clsx",
+    "lucide-react",
+    "tailwind-merge"
+  ],
+  "ignore": ["src/lib/utils.ts"],
+  "ignoreExportsUsedInFile": true
 }

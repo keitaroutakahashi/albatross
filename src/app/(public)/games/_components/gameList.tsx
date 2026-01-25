@@ -1,10 +1,12 @@
+import { getGames } from "@/app/_features/games/apis/getGames";
 import { GameItem } from "@/app/(public)/games/_components/gameItem";
-import { data } from "@/app/(public)/games/_dummy/data";
 
-export const GameList = () => {
+export const GameList = async () => {
+  const games = await getGames();
+
   return (
     <ul className="space-y-4">
-      {data.map((game) => (
+      {games.map((game) => (
         <GameItem key={game.id} game={game} />
       ))}
     </ul>
