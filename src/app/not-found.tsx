@@ -1,5 +1,5 @@
-import { ErrorPageTemplate } from "@/app/_components/ErrorPageTemplate";
+import { ErrorScreen } from "@/app/_components/ui/errorScreen";
 
 export default function NotFound() {
-  return <ErrorPageTemplate title="Not Found" />;
+  return <ErrorScreen title="Not Found" />;
 }

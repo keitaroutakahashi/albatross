@@ -2,8 +2,13 @@ import type { GameData } from "@/app/(public)/games/_dummy/data";
 import prisma from "@/lib/prisma";
 
 // Game 一覧を取得
-export const getGames = async (): Promise<GameData[]> => {
+export const getGames = async (
+  season: string | number,
+): Promise<GameData[]> => {
   const games = await prisma.game.findMany({
+    where: {
+      season: { season: Number(season) },
+    },
     include: {
       league: true,
       opponent: true,

@@ -4,9 +4,9 @@ import type {
 } from "../../src/generated/prisma/client.js";
 
 const seasonData: Prisma.SeasonCreateInput[] = [
-  { year: 2023, name: "2023年度シーズン" },
-  { year: 2024, name: "2024年度シーズン" },
-  { year: 2025, name: "2025年度シーズン" },
+  { season: 2023, name: "2023年度シーズン" },
+  { season: 2024, name: "2024年度シーズン" },
+  { season: 2025, name: "2025年度シーズン" },
 ];
 
 export async function seedSeasons(prisma: PrismaClient) {

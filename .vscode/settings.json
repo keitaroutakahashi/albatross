@@ -24,5 +24,7 @@
   "cSpell.enabled": true,
   "cSpell.words": ["dotenv", "biomejs", "clsx", "vitest", "knip", "cuid"],
   "cSpell.allowCompoundWords": true,
-  "cSpell.ignorePaths": ["**/node_modules/**"]
+  "cSpell.ignorePaths": ["**/node_modules/**"],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative"
 }

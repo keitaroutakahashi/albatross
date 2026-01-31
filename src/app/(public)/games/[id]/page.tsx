@@ -1,12 +1,12 @@
 import { notFound } from "next/navigation";
 import { getGameById } from "@/app/(public)/games/_dummy/data";
-import { GameHeader } from "./_components/gameHeader";
-import { GamePitchers } from "./_components/gamePitchers";
-import { GameResults } from "./_components/gameResults";
-import { GameStartingLineup } from "./_components/gameStartingLineup";
-import { GameStats } from "./_components/gameStats";
-import { GameSummary } from "./_components/gameSummary";
-import { ScoreBoard } from "./_components/scoreBoard";
+import { GameHeader } from "@/app/(public)/games/[id]/_components/gameHeader";
+import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
+import { GameResults } from "@/app/(public)/games/[id]/_components/gameResults";
+import { GameStartingLineup } from "@/app/(public)/games/[id]/_components/gameStartingLineup";
+import { GameStats } from "@/app/(public)/games/[id]/_components/gameStats";
+import { GameSummary } from "@/app/(public)/games/[id]/_components/gameSummary";
+import { ScoreBoard } from "@/app/(public)/games/[id]/_components/scoreBoard";
 
 type Props = {
   params: Promise<{ id: string }>;

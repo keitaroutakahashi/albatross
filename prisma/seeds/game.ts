@@ -4,8 +4,8 @@ export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
 
   // マスタデータを取得
-  const season2024 = await prisma.season.findUnique({ where: { year: 2024 } });
-  const season2025 = await prisma.season.findUnique({ where: { year: 2025 } });
+  const season2024 = await prisma.season.findUnique({ where: { season: 2024 } });
+  const season2025 = await prisma.season.findUnique({ where: { season: 2025 } });
   const leagues = await prisma.league.findMany();
   const grounds = await prisma.ground.findMany();
   const opponents = await prisma.opponent.findMany();

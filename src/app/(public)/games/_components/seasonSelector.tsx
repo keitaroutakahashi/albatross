@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-
 import {
   Select,
   SelectContent,
@@ -9,40 +8,40 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/_components/shadcn/select";
-import type { Season } from "../_data/getSeasons";
+import type { SeasonModel } from "@/generated/prisma/models/Season";
 
 type Props = {
-  seasons: Season[];
-  defaultYear: number;
+  seasons: SeasonModel[];
+  defaultSeason: string;
 };
 
-export function SeasonSelector({ seasons, defaultYear }: Props) {
+export function SeasonSelector({ seasons, defaultSeason }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const currentYear = searchParams.get("year") ?? String(defaultYear);
+  const currentSeason = searchParams.get("season") ?? String(defaultSeason);
 
-  const handleYearChange = (year: string) => {
+  const handleSeasonChange = (season: string) => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("year", year);
+    params.set("season", season);
     router.push(`/games?${params.toString()}`);
   };
 
   return (
     <div className="flex items-center gap-2">
-      <Select value={currentYear} onValueChange={handleYearChange}>
+      <Select value={currentSeason} onValueChange={handleSeasonChange}>
         <SelectTrigger className="w-30">
           <SelectValue placeholder="年度を選択" />
         </SelectTrigger>
         <SelectContent>
           {seasons.map((season) => (
-            <SelectItem key={season.id} value={String(season.year)}>
-              {season.year}年
+            <SelectItem key={season.id} value={String(season.season)}>
+              {season.season}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <span>年度</span>
+      <span className="font-bold">年度</span>
     </div>
   );
 }

@@ -17,3 +17,11 @@ export const formatAsYYYY = (dateString: string) => {
   const date = new Date(dateString);
   return format(date, "YYYY", localeJa);
 };
+
+export const getCurrentSeason = () => {
+  const now = new Date();
+  const month = Number(format(now, "M"));
+  const year = format(now, "YYYY");
+
+  return month <= 2 ? String(Number(year) - 1) : year;
+};

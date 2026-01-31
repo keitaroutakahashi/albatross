@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 
 export type Season = {
   id: number;
-  year: number;
+  season: number;
   name: string | null;
 };
 
@@ -13,11 +13,11 @@ export async function getSeasons(): Promise<Season[]> {
   const seasons = await prisma.season.findMany({
     select: {
       id: true,
-      year: true,
+      season: true,
       name: true,
     },
     orderBy: {
-      year: "desc",
+      season: "desc",
     },
   });
 

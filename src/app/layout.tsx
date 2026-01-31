@@ -15,8 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Albatross",
   description: "",
+  title: {
+    template: "%s | Albatross",
+    default: "Albatross",
+  },
 };
 
 export default function Layout({ children }: LayoutProps<"/">) {

@@ -18,7 +18,7 @@ model User {
 // シーズン（年度）
 model Season {
   id        Int      @id @default(autoincrement())
-  year      Int      @unique
+  season    Int      @unique
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
