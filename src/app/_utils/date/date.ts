@@ -3,17 +3,23 @@ import { format } from "@formkit/tempo";
 const localeJa = "ja";
 const localeEn = "en";
 
-export const formatAsMDWithColon = (dateString: string) => {
+export const formatAsMDWithColon = (dateString: string | Date) => {
   const date = new Date(dateString);
   return format(date, "M.D", localeJa);
 };
 
-export const formatToShortDayNameEn = (dateString: string) => {
+export const formatToShortDayNameEn = (dateString: string | Date) => {
   const date = new Date(dateString);
   return format(date, "ddd", localeEn);
 };
 
-export const formatAsYYYY = (dateString: string) => {
+/** 曜日のインデックスを返す（0: 日曜, 6: 土曜） */
+export const getDayOfWeek = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return date.getDay();
+};
+
+export const formatAsYYYY = (dateString: string | Date) => {
   const date = new Date(dateString);
   return format(date, "YYYY", localeJa);
 };

@@ -1,6 +1,6 @@
 import { getGames } from "@/app/_features/games/api/getGames";
+import { GameCard } from "@/app/_features/games/components/gameCard";
 import { getCurrentSeason } from "@/app/_utils/date/date";
-import { GameItem } from "@/app/(public)/games/_components/gameItem";
 
 type Props = {
   season?: string;
@@ -14,7 +14,7 @@ export const GameList = async ({ season }: Props) => {
   return (
     <ul className="space-y-4">
       {games.map((game) => (
-        <GameItem key={game.id} game={game} />
+        <GameCard key={game.id} game={game} />
       ))}
     </ul>
   );

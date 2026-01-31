@@ -12,15 +12,17 @@ export const Root = async ({ season }: Props) => {
     <div>
       <PageTitle title="GAME" subtitle="試合情報" />
 
-      <div className="flex justify-center mt-5">
-        <Suspense fallback={<div>Loading...</div>}>
-          <SeasonFilter />
-        </Suspense>
-      </div>
+      <main className="py-10">
+        <div className="flex justify-center mt-5">
+          <Suspense fallback={<div>Loading...</div>}>
+            <SeasonFilter />
+          </Suspense>
+        </div>
 
-      <div className="md:max-w-4xl md:mx-auto px-5 mt-10">
-        <GameList season={season} />
-      </div>
+        <div className="md:max-w-4xl md:mx-auto px-5 mt-10">
+          <GameList season={season} />
+        </div>
+      </main>
     </div>
   );
 };
