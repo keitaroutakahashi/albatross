@@ -1,0 +1,67 @@
+import Image from "next/image";
+import { InitialIcon } from "@/app/_components/ui/initialIcon";
+import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import { getGameStatusText } from "@/app/_features/games/utils/getGameStatusText";
+
+type Props = {
+  game: GameWithRelations;
+};
+
+export const GameOverview = ({ game }: Props) => {
+  return (
+    <div className="relative py-14 md:py-20">
+      <Image
+        src="/images/game/bg-overview.jpg"
+        alt=""
+        fill
+        className="object-cover object-center brightness-20"
+        priority
+      />
+      <div className="md:max-w-4xl md:mx-auto relative grid grid-cols-3 gap-4 place-items-center text-white">
+        {game.isFirstBatting ? (
+          <Image
+            src="/images/logo-initial.png"
+            alt="Albatross Logo"
+            width={128}
+            height={128}
+            className="w-16 md:w-24 h-auto"
+          />
+        ) : (
+          <InitialIcon name={game.opponent.name} size="xl" />
+        )}
+
+        <div className="flex flex-col items-center justify-center gap-y-4">
+          <p className="font-bold text-sm md:text-base text-center">
+            [ {getGameStatusText(game.status)} ]
+          </p>
+
+          <div className="grid grid-cols-3 place-items-center">
+            <span className="text-5xl md:text-7xl font-bold">
+              {game.isFirstBatting ? game.teamScore : game.opponentScore}
+            </span>
+            <span className="text-3xl md:text-5xl font-bold">-</span>
+            <span className="text-5xl md:text-7xl font-bold">
+              {game.isFirstBatting ? game.opponentScore : game.teamScore}
+            </span>
+          </div>
+
+          <p className="font-bold text-sm md:text-base text-center">
+            {game.ground?.name}
+          </p>
+        </div>
+
+        {!game.isFirstBatting ? (
+          <Image
+            src="/images/logo-initial.png"
+            alt="Albatross Logo"
+            width={128}
+            height={128}
+            className="w-16 md:w-24 h-auto"
+          />
+        ) : (
+          <InitialIcon name={game.opponent.name} />
+        )}
+      </div>
+    </div>
+  );
+};

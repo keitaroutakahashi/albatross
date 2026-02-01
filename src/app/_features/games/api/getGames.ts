@@ -22,3 +22,22 @@ export const getGames = async (season: string | number) => {
 
   return games;
 };
+
+export const getGame = async (id: number) => {
+  const games = await prisma.game.findFirst({
+    where: {
+      id: Number(id),
+    },
+    include: {
+      league: true,
+      opponent: true,
+      ground: true,
+      innings: {
+        orderBy: { inningNumber: "asc" },
+      },
+    },
+    orderBy: { date: "desc" },
+  });
+
+  return games;
+};

@@ -1,12 +1,6 @@
 import { notFound } from "next/navigation";
-import { getGameById } from "@/app/(public)/games/_dummy/data";
-import { GameHeader } from "@/app/(public)/games/[id]/_components/gameHeader";
-import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
-import { GameResults } from "@/app/(public)/games/[id]/_components/gameResults";
-import { GameStartingLineup } from "@/app/(public)/games/[id]/_components/gameStartingLineup";
-import { GameStats } from "@/app/(public)/games/[id]/_components/gameStats";
-import { GameSummary } from "@/app/(public)/games/[id]/_components/gameSummary";
-import { ScoreBoard } from "@/app/(public)/games/[id]/_components/scoreBoard";
+import { getGame } from "@/app/_features/games/api/getGames";
+import { Root } from "@/app/(public)/games/[id]/_components/root";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -20,21 +14,11 @@ export default async function Page({ params }: Props) {
     notFound();
   }
 
-  const game = getGameById(gameId);
+  const game = await getGame(gameId);
 
   if (!game) {
     notFound();
   }
 
-  return (
-    <div className="md:max-w-4xl md:mx-auto px-5 py-6">
-      <GameHeader game={game} />
-      <ScoreBoard game={game} />
-      <GameSummary game={game} />
-      <GamePitchers game={game} />
-      <GameStartingLineup game={game} />
-      <GameResults game={game} />
-      <GameStats game={game} />
-    </div>
-  );
+  return <Root game={game} />;
 }

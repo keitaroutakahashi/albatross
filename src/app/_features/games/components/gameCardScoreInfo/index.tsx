@@ -1,4 +1,3 @@
-import Image from "next/image";
 import type { GameWithRelations } from "@/app/_features/games/api/getGames";
 
 type Props = {
@@ -8,11 +7,11 @@ type Props = {
 const getResultBadge = (result: GameWithRelations["result"]) => {
   switch (result) {
     case "win":
-      return { text: "勝", className: "bg-green-600" };
+      return { text: "勝", className: "bg-secondary" };
     case "lose":
-      return { text: "負", className: "bg-red-600" };
+      return { text: "負", className: "bg-primary" };
     case "draw":
-      return { text: "分", className: "bg-gray-500" };
+      return { text: "分", className: "bg-gray-400" };
     default:
       return { text: "", className: "" };
   }

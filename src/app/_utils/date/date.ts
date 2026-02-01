@@ -24,6 +24,24 @@ export const formatAsYYYY = (dateString: string | Date) => {
   return format(date, "YYYY", localeJa);
 };
 
+/** "2025年4月6日" のように日付をフォーマットする */
+export const formatAsFullDate = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return format(date, "YYYY年M月D日", localeJa);
+};
+
+/** "日" のように曜日を返す */
+export const formatAsDayName = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return format(date, "d", localeJa);
+};
+
+/** "14:30" のように24時間表記で時刻を返す */
+export const formatAsTime24 = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return format(date, "HH:mm", localeJa);
+};
+
 export const getCurrentSeason = () => {
   const now = new Date();
   const month = Number(format(now, "M"));

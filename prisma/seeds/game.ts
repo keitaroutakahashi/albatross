@@ -4,8 +4,12 @@ export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
 
   // マスタデータを取得
-  const season2024 = await prisma.season.findUnique({ where: { season: 2024 } });
-  const season2025 = await prisma.season.findUnique({ where: { season: 2025 } });
+  const season2024 = await prisma.season.findUnique({
+    where: { season: 2024 },
+  });
+  const season2025 = await prisma.season.findUnique({
+    where: { season: 2025 },
+  });
   const leagues = await prisma.league.findMany();
   const grounds = await prisma.ground.findMany();
   const opponents = await prisma.opponent.findMany();
@@ -56,7 +60,7 @@ export async function seedGames(prisma: PrismaClient) {
   // 試合2: 2024年 公式戦 敗北
   const game2 = await prisma.game.create({
     data: {
-      date: new Date("2024-05-12T13:00:00"),
+      date: new Date("2024-05-11T13:00:00"),
       gameNumber: 1,
       gameType: "official",
       isFirstBatting: false,
@@ -86,7 +90,7 @@ export async function seedGames(prisma: PrismaClient) {
   // 試合3: 2024年 練習試合 引き分け
   const game3 = await prisma.game.create({
     data: {
-      date: new Date("2024-06-09T09:00:00"),
+      date: new Date("2024-06-05T09:00:00"),
       gameNumber: 1,
       gameType: "practice",
       isFirstBatting: true,
