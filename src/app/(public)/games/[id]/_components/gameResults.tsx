@@ -1,134 +1,53 @@
-import type { GameData } from "@/app/(public)/games/_dummy/data";
+import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/resultsTableHeader";
+import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/resultsTableRow";
+import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
+import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/sectionSubTitle";
 
 type Props = {
-  game: GameData;
+  game: GameWithRelations;
 };
 
 export const GameResults = ({ game }: Props) => {
-  const { battingResults, pitchingResults, innings } = game;
+  const starters = game.gameMembers.filter(
+    (gm) => gm.memberType === "starting",
+  );
 
-  if (
-    (!battingResults || battingResults.length === 0) &&
-    (!pitchingResults || pitchingResults.length === 0)
-  ) {
+  if (starters.length === 0) {
     return null;
   }
 
-  const inningCount = innings.length;
+  const inningCount = game.innings.length;
 
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-bold mb-3 border-b-2 border-gray-800 pb-2">
-        出場成績
-      </h2>
+    <section>
+      <SectionHeader text="出場成績" />
 
-      {battingResults && battingResults.length > 0 && (
-        <div className="mb-4">
-          <h3 className="text-sm font-bold mb-2 text-gray-600">
-            打撃成績（Albatross）
-          </h3>
+      <div className="mt-4" />
+
+      <div className="space-y-8">
+        <section>
+          <SectionSubtitle text="打者成績" />
           <div className="overflow-x-auto">
-            <table className="text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-800 text-white">
-                  <th className="p-2 text-left whitespace-nowrap sticky left-0 bg-gray-800 z-10">
-                    守備
-                  </th>
-                  <th className="p-2 text-left whitespace-nowrap sticky left-10 bg-gray-800 z-10">
-                    選手名
-                  </th>
-                  <th className="p-2 text-center whitespace-nowrap">打率</th>
-                  <th className="p-2 text-center whitespace-nowrap">打数</th>
-                  <th className="p-2 text-center whitespace-nowrap">安打</th>
-                  <th className="p-2 text-center whitespace-nowrap">打点</th>
-                  <th className="p-2 text-center whitespace-nowrap">本</th>
-                  <th className="p-2 text-center whitespace-nowrap">盗</th>
-                  {Array.from({ length: inningCount }, (_, i) => (
-                    <th
-                      key={`inning-header-${i + 1}`}
-                      className="p-2 text-center whitespace-nowrap bg-gray-700"
-                    >
-                      {i + 1}回
-                    </th>
-                  ))}
-                </tr>
-              </thead>
+            <table className="text-sm border-collapse md:w-full md:table-fixed">
+              <ResultsTableHeader inningCount={inningCount} />
               <tbody>
-                {battingResults.map((player) => (
-                  <tr
-                    key={`${player.position}-${player.name}`}
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
-                    <td className="p-2 text-gray-500 whitespace-nowrap sticky left-0 bg-white z-10">
-                      {player.position}
-                    </td>
-                    <td className="p-2 font-medium whitespace-nowrap sticky left-10 bg-white z-10">
-                      {player.name}
-                    </td>
-                    <td className="p-2 text-center whitespace-nowrap">
-                      {player.battingAverage}
-                    </td>
-                    <td className="p-2 text-center">{player.atBats}</td>
-                    <td className="p-2 text-center">{player.hits}</td>
-                    <td className="p-2 text-center">{player.rbi}</td>
-                    <td className="p-2 text-center">{player.homeRuns}</td>
-                    <td className="p-2 text-center">{player.stolenBases}</td>
-                    {Array.from({ length: inningCount }, (_, i) => (
-                      <td
-                        key={`${player.name}-inning-${i + 1}`}
-                        className="p-2 text-center whitespace-nowrap text-gray-600"
-                      >
-                        {player.inningResults[i] || "-"}
-                      </td>
-                    ))}
-                  </tr>
+                {starters.map((gm) => (
+                  <ResultsTableRow
+                    key={gm.id}
+                    gameMember={gm}
+                    inningCount={inningCount}
+                  />
                 ))}
               </tbody>
             </table>
           </div>
-        </div>
-      )}
+        </section>
 
-      {pitchingResults && pitchingResults.length > 0 && (
-        <div>
-          <h3 className="text-sm font-bold mb-2 text-gray-600">
-            投手成績（Albatross）
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="text-sm border-collapse">
-              <thead>
-                <tr className="bg-gray-800 text-white">
-                  <th className="p-2 text-left whitespace-nowrap">投手名</th>
-                  <th className="p-2 text-center whitespace-nowrap">投球回</th>
-                  <th className="p-2 text-center whitespace-nowrap">被安打</th>
-                  <th className="p-2 text-center whitespace-nowrap">奪三振</th>
-                  <th className="p-2 text-center whitespace-nowrap">失点</th>
-                  <th className="p-2 text-center whitespace-nowrap">自責点</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pitchingResults.map((pitcher) => (
-                  <tr
-                    key={pitcher.name}
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
-                    <td className="p-2 font-medium whitespace-nowrap">
-                      {pitcher.name}
-                    </td>
-                    <td className="p-2 text-center">
-                      {pitcher.inningsPitched}
-                    </td>
-                    <td className="p-2 text-center">{pitcher.hitsAllowed}</td>
-                    <td className="p-2 text-center">{pitcher.strikeouts}</td>
-                    <td className="p-2 text-center">{pitcher.runs}</td>
-                    <td className="p-2 text-center">{pitcher.earnedRuns}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-    </div>
+        <section>
+          <SectionSubtitle text="投手成績" />
+        </section>
+      </div>
+    </section>
   );
 };

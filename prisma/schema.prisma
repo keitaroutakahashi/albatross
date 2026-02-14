@@ -80,6 +80,9 @@ model Game {
   // イニング
   innings Inning[]
 
+  // 参加メンバー
+  gameMembers GameMember[]
+
   // 試合結果（キャッシュ）
   teamScore     Int         @default(0)
   opponentScore Int         @default(0)
@@ -109,6 +112,103 @@ enum GameResult {
   win
   lose
   draw
+}
+
+// ポジション
+enum Position {
+  pitcher   // 投手
+  catcher   // 捕手
+  first     // 一塁手
+  second    // 二塁手
+  third     // 三塁手
+  shortstop // 遊撃手
+  left      // 左翼手
+  center    // 中堅手
+  right     // 右翼手
+  dh        // 指名打者
+}
+
+// 投打
+enum Hand {
+  right // 右
+  left  // 左
+  both  // 両
+}
+
+// チームメンバー
+model Member {
+  id          Int       @id @default(autoincrement())
+  name        String
+  number      Int?
+  position    Position?
+  subPosition Position?
+  throwHand   Hand
+  batHand     Hand
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  gameMembers GameMember[]
+}
+
+// 出場タイプ
+enum MemberType {
+  starting // スターティングメンバー
+  bench    // ベンチメンバー
+}
+
+// 打席結果
+enum AtBatResult {
+  single         // 単打
+  double         // 二塁打
+  triple         // 三塁打
+  homeRun        // 本塁打
+  walk           // 四球
+  hitByPitch     // 死球
+  strikeout      // 三振
+  groundOut      // ゴロアウト
+  flyOut         // フライアウト
+  lineOut        // ライナーアウト
+  sacrificeHit   // 犠打
+  sacrificeFly   // 犠飛
+  fieldersChoice // フィルダースチョイス
+  doublePlay     // 併殺打
+  error          // エラー出塁
+}
+
+// 試合参加メンバー
+model GameMember {
+  id           Int        @id @default(autoincrement())
+  gameId       Int
+  game         Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId     Int
+  member       Member     @relation(fields: [memberId], references: [id])
+  memberType   MemberType
+  battingOrder Int?       // 打順（1〜9、ベンチは null）
+  position     Position?  // 守備位置（DH 含む、ベンチは null）
+  stolenBases  Int        @default(0) // 盗塁数（試合合計）
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  plateAppearances PlateAppearance[]
+
+  @@unique([gameId, memberId])
+}
+
+// 打席結果
+model PlateAppearance {
+  id           Int         @id @default(autoincrement())
+  gameMemberId Int
+  gameMember   GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+  inningNumber Int         // 何回の打席か
+  atBatInGame  Int         // 試合中の打席番号（1, 2, 3...）
+  result       AtBatResult // 打席結果
+  direction    Position?   // 打球方向（四球・三振・死球は null）
+  rbi          Int         @default(0) // 打点
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([gameMemberId, atBatInGame])
 }
 
 // イニングごとの得点

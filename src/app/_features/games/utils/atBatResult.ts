@@ -1,0 +1,46 @@
+import {
+  positionLabel,
+  resultLabel,
+} from "@/app/_features/games/constants/labels";
+import type { AtBatResult, Position } from "@/generated/prisma/client";
+
+/** 打数に含まれない結果 */
+export const nonAtBatResults: AtBatResult[] = [
+  "walk",
+  "hitByPitch",
+  "sacrificeHit",
+  "sacrificeFly",
+];
+
+/** ヒット性の結果 */
+export const hitResults: AtBatResult[] = [
+  "single",
+  "double",
+  "triple",
+  "homeRun",
+];
+
+/** 四死球・犠打 */
+export const nonAtBatPositiveResults: AtBatResult[] = [
+  "walk",
+  "hitByPitch",
+  "sacrificeHit",
+  "sacrificeFly",
+];
+
+/** 打席結果を日本語表記に変換（例: 左安、遊ゴ、三振） */
+export function formatAtBatResult(
+  result: AtBatResult,
+  direction: Position | null,
+): string {
+  const rLabel = resultLabel[result];
+  if (!direction) return rLabel;
+  return `${positionLabel[direction]}${rLabel}`;
+}
+
+/** 打席結果に応じた背景色クラスを返す */
+export function getResultColorClass(result: AtBatResult): string {
+  if (hitResults.includes(result)) return "bg-rose-400";
+  if (nonAtBatPositiveResults.includes(result)) return "bg-amber-400";
+  return "bg-blue-400";
+}

@@ -1,31 +1,24 @@
-import type { GameData } from "@/app/(public)/games/_dummy/data";
+import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
 
 type Props = {
-  game: GameData;
+  game: GameWithRelations;
 };
 
 export const GameStats = ({ game }: Props) => {
-  const { duration, participants } = game;
+  const participantCount = game.gameMembers.length;
 
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-bold mb-3 border-b-2 border-gray-800 pb-2">
-        試合情報
-      </h2>
+    <section>
+      <SectionHeader text="チームスタッツ" />
       <div className="bg-gray-50 p-4 rounded">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <span className="text-gray-500">試合時間</span>
-            <p className="font-medium">{duration || "-"}</p>
-          </div>
-          <div>
-            <span className="text-gray-500">参加人数</span>
-            <p className="font-medium">
-              {participants ? `${participants}人` : "-"}
-            </p>
-          </div>
+        <div className="text-sm">
+          <span className="text-gray-500">参加人数</span>
+          <p className="font-medium">
+            {participantCount > 0 ? `${participantCount}人` : "-"}
+          </p>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

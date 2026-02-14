@@ -4,6 +4,7 @@ import { PrismaClient } from "../src/generated/prisma/client.js";
 import { seedGames } from "./seeds/game.js";
 import { seedGrounds } from "./seeds/ground.js";
 import { seedLeagues } from "./seeds/league.js";
+import { seedMembers } from "./seeds/member.js";
 import { seedOpponents } from "./seeds/opponent.js";
 import { seedSeasons } from "./seeds/season.js";
 import { seedUsers } from "./seeds/user.js";
@@ -26,7 +27,10 @@ async function main() {
   await seedGrounds(prisma);
   await seedOpponents(prisma);
 
-  // 試合データを投入（マスタに依存）
+  // メンバーデータを投入
+  await seedMembers(prisma);
+
+  // 試合データを投入（マスタ・メンバーに依存）
   await seedGames(prisma);
 
   console.log("\nSeeding completed!");
