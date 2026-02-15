@@ -1,7 +1,7 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 /** 投球回を "5 1/3" 形式でフォーマット */
@@ -46,7 +46,6 @@ export const GamePitchers = ({ game }: Props) => {
         </thead>
         <tbody>
           {pitchers.map((gm) => {
-            console.log("pitchers", gm.pitchingResult);
             const pr = gm.pitchingResult;
             if (!pr) return null;
             return (

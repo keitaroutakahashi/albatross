@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { InitialIcon } from "@/app/_components/ui/initialIcon";
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { getGameStatusText } from "@/app/_features/games/utils/getGameStatusText";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const GameOverview = ({ game }: Props) => {
@@ -59,7 +59,7 @@ export const GameOverview = ({ game }: Props) => {
             className="w-16 md:w-24 h-auto"
           />
         ) : (
-          <InitialIcon name={game.opponent.name} />
+          <InitialIcon name={game.opponent.name} size="xl" />
         )}
       </div>
     </div>

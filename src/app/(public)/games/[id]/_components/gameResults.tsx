@@ -1,4 +1,4 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
 import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/resultsTableHeader";
 import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/resultsTableRow";
@@ -6,7 +6,7 @@ import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHead
 import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/sectionSubTitle";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const GameResults = ({ game }: Props) => {

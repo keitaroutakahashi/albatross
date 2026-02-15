@@ -8,6 +8,7 @@ import {
   getGame2PitchingResults,
   getGame3PitchingResults,
 } from "./pitchingResult.js";
+import { getGameWeathers } from "./gameWeather.js";
 
 export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
@@ -323,7 +324,7 @@ export async function seedGames(prisma: PrismaClient) {
   });
 
   // --- 試合4: 2025年 公式戦（予定）---
-  await prisma.game.create({
+  const game4 = await prisma.game.create({
     data: {
       date: new Date("2025-04-13T10:00:00"),
       gameNumber: 1,
@@ -341,7 +342,7 @@ export async function seedGames(prisma: PrismaClient) {
   });
 
   // --- 試合5: 2025年 公式戦（中止）---
-  await prisma.game.create({
+  const game5 = await prisma.game.create({
     data: {
       date: new Date("2025-03-16T10:00:00"),
       gameNumber: 1,
@@ -359,8 +360,14 @@ export async function seedGames(prisma: PrismaClient) {
     },
   });
 
+  // --- 天候データ ---
+  const gameIds = [game1.id, game2.id, game3.id, game4.id, game5.id];
+  await prisma.gameWeather.createMany({
+    data: getGameWeathers(gameIds),
+  });
+
   console.log(
-    "Created 5 games with innings, game members, and plate appearances",
+    "Created 5 games with innings, game members, plate appearances, and weather",
   );
 }
 

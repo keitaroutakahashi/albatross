@@ -1,4 +1,4 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { AIAnalysis } from "@/app/(public)/games/[id]/_components/aiAnalysis";
 import { GameHeader } from "@/app/(public)/games/[id]/_components/gameHeader";
 import { GameInfo } from "@/app/(public)/games/[id]/_components/gameInfo";
@@ -10,7 +10,7 @@ import { Lineup } from "@/app/(public)/games/[id]/_components/lineup";
 import { ScoreBoard } from "@/app/(public)/games/[id]/_components/scoreBoard";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const Root = async ({ game }: Props) => {

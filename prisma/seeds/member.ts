@@ -7,7 +7,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   // スタメン想定（9名）
   {
     name: "田中太郎",
-    number: 1,
+    jerseyNumber: "1",
     position: "pitcher",
     subPosition: "first",
     throwHand: "right",
@@ -15,14 +15,14 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "山田花子",
-    number: 2,
+    jerseyNumber: "2",
     position: "catcher",
     throwHand: "right",
     batHand: "right",
   },
   {
     name: "佐藤一郎",
-    number: 3,
+    jerseyNumber: "3",
     position: "first",
     subPosition: "left",
     throwHand: "left",
@@ -30,14 +30,14 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "鈴木雪",
-    number: 4,
+    jerseyNumber: "4",
     position: "second",
     throwHand: "right",
     batHand: "both",
   },
   {
     name: "高橋健",
-    number: 5,
+    jerseyNumber: "5",
     position: "third",
     subPosition: "shortstop",
     throwHand: "right",
@@ -45,7 +45,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "伊藤誠",
-    number: 6,
+    jerseyNumber: "6",
     position: "shortstop",
     subPosition: "second",
     throwHand: "right",
@@ -53,7 +53,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "渡辺大輔",
-    number: 7,
+    jerseyNumber: "7",
     position: "left",
     subPosition: "center",
     throwHand: "left",
@@ -61,7 +61,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "中村翔",
-    number: 8,
+    jerseyNumber: "8",
     position: "center",
     subPosition: "right",
     throwHand: "right",
@@ -69,7 +69,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "小林勇気",
-    number: 9,
+    jerseyNumber: "9",
     position: "right",
     subPosition: "left",
     throwHand: "right",
@@ -78,7 +78,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   // ベンチメンバー（3名）
   {
     name: "加藤隼人",
-    number: 10,
+    jerseyNumber: "10",
     position: "pitcher",
     subPosition: "first",
     throwHand: "left",
@@ -86,7 +86,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "吉田拓也",
-    number: 11,
+    jerseyNumber: "11",
     position: "catcher",
     subPosition: "third",
     throwHand: "right",
@@ -94,7 +94,7 @@ const memberData: Prisma.MemberCreateInput[] = [
   },
   {
     name: "松本涼介",
-    number: 12,
+    jerseyNumber: "12",
     position: "center",
     subPosition: "left",
     throwHand: "right",

@@ -1,7 +1,7 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 const SCORE_DETAILS = ["R", "H", "E"];

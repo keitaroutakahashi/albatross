@@ -1,14 +1,13 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { positionLabel } from "@/app/_features/games/constants/labels";
 import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
 
 type Props = {
-  members: GameWithRelations["gameMembers"];
+  members: GameDetail["gameMembers"];
   title: string;
 };
 
 export const Lineup = ({ members, title }: Props) => {
-  console.log("members", members);
   return (
     <section className="mb-6">
       <SectionHeader text={title} />

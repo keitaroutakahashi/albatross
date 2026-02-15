@@ -1,4 +1,4 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import {
   formatAsDayName,
   formatAsFullDate,
@@ -6,7 +6,7 @@ import {
 } from "@/app/_utils/date/date";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const GameHeader = ({ game }: Props) => {

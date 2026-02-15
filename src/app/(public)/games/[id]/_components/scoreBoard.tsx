@@ -1,9 +1,9 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { ScoreBoardBody } from "@/app/(public)/games/[id]/_components/scoreBoardBody";
 import { ScoreBoardHeader } from "@/app/(public)/games/[id]/_components/scoreBoardHeader";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const ScoreBoard = ({ game }: Props) => {

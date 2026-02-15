@@ -1,9 +1,9 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
 import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/sectionSubTitle";
 
 type Props = {
-  game: GameWithRelations;
+  game: GameDetail;
 };
 
 export const AIAnalysis = ({ game }: Props) => {

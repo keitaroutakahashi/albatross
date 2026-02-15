@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 
-// Game 一覧を取得（リレーション込み）
+// Game 一覧を取得
 export type GamesResult = Awaited<ReturnType<typeof getGames>>;
 export type GameWithRelations = GamesResult[number];
 
@@ -13,23 +13,17 @@ export const getGames = async (season: string | number) => {
       league: true,
       opponent: true,
       ground: true,
-      innings: {
-        orderBy: { inningNumber: "asc" },
-      },
-      gameMembers: {
-        include: {
-          member: true,
-          plateAppearances: { orderBy: { atBatInGame: "asc" } },
-          pitchingResult: true,
-        },
-        orderBy: { battingOrder: "asc" },
-      },
     },
     orderBy: { date: "desc" },
   });
 
   return games;
 };
+
+// Game 詳細を取得
+export type GameDetail = NonNullable<
+  Awaited<ReturnType<typeof getGame>>
+>;
 
 export const getGame = async (id: number) => {
   const games = await prisma.game.findFirst({
@@ -40,6 +34,7 @@ export const getGame = async (id: number) => {
       league: true,
       opponent: true,
       ground: true,
+      gameWeather: true,
       innings: {
         orderBy: { inningNumber: "asc" },
       },

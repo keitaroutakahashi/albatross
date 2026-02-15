@@ -1,4 +1,4 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { positionLabel } from "@/app/_features/games/constants/labels";
 import {
   formatAtBatResult,
@@ -9,7 +9,7 @@ import {
 import { AtBatResultBadge } from "@/app/(public)/games/[id]/_components/atBatResultBadge";
 
 type Props = {
-  gameMember: GameWithRelations["gameMembers"][number];
+  gameMember: GameDetail["gameMembers"][number];
   inningCount: number;
 };
 

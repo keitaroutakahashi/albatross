@@ -1,3 +1,4 @@
+import type { GameDetail } from "@/app/_features/games/api/getGames";
 import {
   positionLabel,
   resultLabel,
@@ -43,4 +44,22 @@ export function getResultColorClass(result: AtBatResult): string {
   if (hitResults.includes(result)) return "bg-rose-400";
   if (nonAtBatPositiveResults.includes(result)) return "bg-amber-400";
   return "bg-blue-400";
+}
+
+/** 長打（二塁打・三塁打・本塁打）を打った選手をそれぞれ抽出する */
+export function getExtraBaseHitMembers(
+  gameMembers: GameDetail["gameMembers"],
+) {
+  const doubles: GameDetail["gameMembers"] = [];
+  const triples: GameDetail["gameMembers"] = [];
+  const homeRuns: GameDetail["gameMembers"] = [];
+
+  for (const gm of gameMembers) {
+    const results = gm.plateAppearances.map((pa) => pa.result);
+    if (results.includes("double")) doubles.push(gm);
+    if (results.includes("triple")) triples.push(gm);
+    if (results.includes("homeRun")) homeRuns.push(gm);
+  }
+
+  return { doubles, triples, homeRuns };
 }
