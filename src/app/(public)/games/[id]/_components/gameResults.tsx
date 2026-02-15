@@ -1,4 +1,5 @@
 import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
 import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/resultsTableHeader";
 import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/resultsTableRow";
 import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
@@ -46,6 +47,7 @@ export const GameResults = ({ game }: Props) => {
 
         <section>
           <SectionSubtitle text="投手成績" />
+          <GamePitchers game={game} />
         </section>
       </div>
     </section>

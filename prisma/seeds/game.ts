@@ -3,6 +3,11 @@ import type {
   PrismaClient,
 } from "../../src/generated/prisma/client.js";
 import { getGame1PAs, getGame2PAs, getGame3PAs } from "./plateAppearance.js";
+import {
+  getGame1PitchingResults,
+  getGame2PitchingResults,
+  getGame3PitchingResults,
+} from "./pitchingResult.js";
 
 export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
@@ -192,6 +197,11 @@ export async function seedGames(prisma: PrismaClient) {
     data: getGame1PAs(game1Members),
   });
 
+  // 試合1: PitchingResult
+  await prisma.pitchingResult.createMany({
+    data: getGame1PitchingResults(game1Members),
+  });
+
   // 盗塁を設定（一部メンバー）
   await prisma.gameMember.update({
     where: { id: game1Members[0].id },
@@ -245,6 +255,11 @@ export async function seedGames(prisma: PrismaClient) {
     data: getGame2PAs(game2Members),
   });
 
+  // 試合2: PitchingResult
+  await prisma.pitchingResult.createMany({
+    data: getGame2PitchingResults(game2Members),
+  });
+
   // 盗塁を設定
   await prisma.gameMember.update({
     where: { id: game2Members[5].id },
@@ -290,6 +305,11 @@ export async function seedGames(prisma: PrismaClient) {
   // 試合3: PlateAppearance（5イニング、各スタメン2-3打席）
   await prisma.plateAppearance.createMany({
     data: getGame3PAs(game3Members),
+  });
+
+  // 試合3: PitchingResult
+  await prisma.pitchingResult.createMany({
+    data: getGame3PitchingResults(game3Members),
   });
 
   // 盗塁を設定

@@ -20,6 +20,7 @@ export const getGames = async (season: string | number) => {
         include: {
           member: true,
           plateAppearances: { orderBy: { atBatInGame: "asc" } },
+          pitchingResult: true,
         },
         orderBy: { battingOrder: "asc" },
       },
@@ -46,6 +47,7 @@ export const getGame = async (id: number) => {
         include: {
           member: true,
           plateAppearances: { orderBy: { atBatInGame: "asc" } },
+          pitchingResult: true,
         },
         orderBy: { battingOrder: "asc" },
       },

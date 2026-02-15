@@ -1,61 +1,77 @@
-import type { GameData } from "@/app/(public)/games/_dummy/data";
+import type { GameWithRelations } from "@/app/_features/games/api/getGames";
 
 type Props = {
-  game: GameData;
+  game: GameWithRelations;
+};
+
+/** 投球回を "5 1/3" 形式でフォーマット */
+const formatInningsPitched = (
+  inningsPitched: number,
+  partialOuts: number | null,
+): string => {
+  if (partialOuts == null) return `${inningsPitched}`;
+  return `${inningsPitched} ${partialOuts}/3`;
+};
+
+/** 勝敗を記号で表示 */
+const decisionLabel = (decision: string | null): string => {
+  if (decision === "win") return "○";
+  if (decision === "loss") return "●";
+  return "";
 };
 
 export const GamePitchers = ({ game }: Props) => {
-  const { pitchers, homeRuns } = game;
+  const pitchers = game.gameMembers.filter((gm) => gm.pitchingResult != null);
+
+  if (pitchers.length === 0) {
+    return null;
+  }
 
   return (
-    <div className="mb-6">
-      <h2 className="text-lg font-bold mb-3 border-b-2 border-gray-800 pb-2">
-        責任投手・本塁打
-      </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="bg-gray-50 p-4 rounded">
-          <h3 className="text-sm font-bold mb-2 text-gray-600">責任投手</h3>
-          <div className="space-y-1 text-sm">
-            <div className="flex">
-              <span className="w-20 text-gray-500">勝</span>
-              <span className="font-medium">
-                {pitchers?.winningPitcher || "-"}
-              </span>
-            </div>
-            <div className="flex">
-              <span className="w-20 text-gray-500">負</span>
-              <span className="font-medium">
-                {pitchers?.losingPitcher || "-"}
-              </span>
-            </div>
-            <div className="flex">
-              <span className="w-20 text-gray-500">S</span>
-              <span className="font-medium">
-                {pitchers?.savePitcher || "-"}
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="bg-gray-50 p-4 rounded">
-          <h3 className="text-sm font-bold mb-2 text-gray-600">本塁打</h3>
-          {homeRuns && homeRuns.length > 0 ? (
-            <div className="space-y-1 text-sm">
-              {homeRuns.map((hr) => (
-                <div key={`${hr.playerName}-${hr.count}`} className="flex">
-                  <span className="font-medium">{hr.playerName}</span>
-                  {hr.description && (
-                    <span className="ml-2 text-gray-500">
-                      ({hr.description})
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-gray-500">-</p>
-          )}
-        </div>
-      </div>
+    <div className="mt-4 overflow-x-auto">
+      <table className="text-sm border-collapse w-full">
+        <thead>
+          <tr className="bg-gray-800 text-white">
+            <th className="p-2 text-left whitespace-nowrap">投手名</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">勝敗</th>
+            <th className="p-2 text-center whitespace-nowrap w-14">回</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">被安</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">奪三</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">四球</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">死球</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">失点</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">自責</th>
+            <th className="p-2 text-center whitespace-nowrap w-10">被本</th>
+          </tr>
+        </thead>
+        <tbody>
+          {pitchers.map((gm) => {
+            console.log("pitchers", gm.pitchingResult);
+            const pr = gm.pitchingResult;
+            if (!pr) return null;
+            return (
+              <tr key={gm.id} className="border-b border-gray-200">
+                <td className="p-2 whitespace-nowrap font-medium">
+                  {gm.member.name}
+                </td>
+                <td className="p-2 text-center">
+                  {decisionLabel(pr.decision)}
+                </td>
+                <td className="p-2 text-center">
+                  {formatInningsPitched(pr.inningsPitched, pr.partialOuts)}
+                </td>
+                <td className="p-2 text-center">{pr.hitsAllowed}</td>
+                <td className="p-2 text-center">{pr.strikeouts}</td>
+                <td className="p-2 text-center">{pr.walks}</td>
+                <td className="p-2 text-center">{pr.hitByPitches}</td>
+                <td className="p-2 text-center">{pr.runs}</td>
+                <td className="p-2 text-center">{pr.earnedRuns}</td>
+                <td className="p-2 text-center">{pr.homeRunsAllowed}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
     </div>
   );
 };

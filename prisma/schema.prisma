@@ -191,8 +191,36 @@ model GameMember {
   updatedAt    DateTime   @updatedAt
 
   plateAppearances PlateAppearance[]
+  pitchingResult   PitchingResult? // 投手成績（投手のみ）
 
   @@unique([gameId, memberId])
+}
+
+// 投手の勝敗
+enum PitchingDecision {
+  win  // 勝ち投手
+  loss // 負け投手
+}
+
+// 投手成績（試合ごと）
+model PitchingResult {
+  id             Int        @id @default(autoincrement())
+  gameMemberId   Int        @unique
+  gameMember     GameMember @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+
+  inningsPitched  Int  @default(0) // 投球回数（完了イニング数）
+  partialOuts     Int?             // イニング間交代時のアウト数（0, 1, 2, null）
+  earnedRuns      Int  @default(0) // 自責点
+  runs            Int  @default(0) // 失点
+  strikeouts      Int  @default(0) // 奪三振
+  walks           Int  @default(0) // 四球
+  hitByPitches    Int  @default(0) // 死球
+  hitsAllowed     Int  @default(0) // 被安打
+  homeRunsAllowed Int  @default(0) // 被本塁打
+  decision        PitchingDecision? // 勝敗（null = 該当なし）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // 打席結果
