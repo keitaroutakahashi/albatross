@@ -11,11 +11,11 @@ export const AtBatResultBadge = ({ text, colorClass, rbi }: Props) => {
     <div
       className={clsx(
         colorClass,
-        "p-1 md:p-2 text-xs md:text-sm rounded text-white font-bold",
+        "p-1 @content:p-2 text-xs @content:text-sm rounded text-white font-bold",
       )}
     >
       {text}
-      {rbi > 0 && <span className="text-xs md:text-sm">({rbi})</span>}
+      {rbi > 0 && <span className="text-xs @content:text-sm">({rbi})</span>}
     </div>
   );
 };

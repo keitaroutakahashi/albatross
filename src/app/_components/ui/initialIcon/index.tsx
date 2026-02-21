@@ -6,8 +6,8 @@ type Props = {
 };
 
 const sizeStyles = {
-  xl: "size-14 md:size-24 text-xl md:text-4xl",
-  xs: "size-6 md:size-8 text-xs md:text-base",
+  xl: "size-14 @content:size-24 text-xl @content:text-4xl",
+  xs: "size-6 @content:size-8 text-xs @content:text-base",
 } as const;
 
 export const InitialIcon = ({ name, size = "xs" }: Props) => {

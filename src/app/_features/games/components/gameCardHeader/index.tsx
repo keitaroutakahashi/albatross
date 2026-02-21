@@ -15,7 +15,7 @@ export const GameCardHeader = ({ game }: Props) => {
   const dayOfWeek = getDayOfWeek(game.date);
 
   return (
-    <div className="bg-gray-100 p-3 md:p-4 flex md:flex-col md:w-64 justify-between items-center">
+    <div className="bg-gray-100 p-3 @content:p-4 flex @content:flex-col @content:w-64 justify-between items-center">
       <div className="flex items-center gap-x-1">
         <p className="text-3xl font-bold font-(family-name:--font-roboto)">
           {formatAsMDWithColon(game.date)}

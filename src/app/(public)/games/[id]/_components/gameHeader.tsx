@@ -16,11 +16,11 @@ export const GameHeader = ({ game }: Props) => {
 
   return (
     <div className="">
-      <p className="text-center font-bold text-sm md:text-base">
+      <p className="text-center font-bold text-sm @content:text-base">
         {game.league.name}
       </p>
       <div className="mt-3"></div>
-      <p className="text-center font-bold text-base md:text-2xl">
+      <p className="text-center font-bold text-base @content:text-2xl">
         {fullDate} ({dayName}) {time24} vs {game.opponent.name}
       </p>
     </div>

@@ -21,7 +21,7 @@ export const GameCardTeamInfo = ({ isHome, teamName, pitcher }: Props) => {
           {teamName?.charAt(0)}
         </div>
       )}
-      <span className="font-bold text-sm md:text-base">
+      <span className="font-bold text-sm @content:text-base">
         {isHome ? "Albatross" : teamName}
       </span>
 

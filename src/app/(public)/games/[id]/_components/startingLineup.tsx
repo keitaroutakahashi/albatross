@@ -15,11 +15,11 @@ export const StartingLineup = ({ game }: Props) => {
   return (
     <SectionGroup title="スターティングメンバー">
       <div className="bg-gray-50 p-4 rounded">
-        <ul className="space-y-2 md:space-y-3">
+        <ul className="space-y-2 @content:space-y-3">
           {startingMembers.map((member) => (
             <li
               key={member.id}
-              className="flex items-center text-sm md:text-base border-b border-gray-300 pb-2 md:pb-3 last:border-b-0 last:pb-0"
+              className="flex items-center text-sm @content:text-base border-b border-gray-300 pb-2 @content:pb-3 last:border-b-0 last:pb-0"
             >
               <span className="w-10 text-center font-bold text-primary">
                 {member.battingOrder}

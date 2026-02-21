@@ -91,7 +91,7 @@ export const GameInfo = ({ game }: Props) => {
 
       <SubSectionGroup title="試合動画">
         <iframe
-          className="w-full h-full md:w-140 md:h-78.75"
+          className="w-full h-full @content:w-140 @content:h-78.75"
           width="560"
           height="315"
           src="https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW"

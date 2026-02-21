@@ -36,11 +36,13 @@ export default function Layout({ children }: LayoutProps<"/">) {
           "break-normal",
         )}
       >
-        <Header />
-        <div className="min-h-[calc(100vh-var(--size-header-height)-var(--size-footer-height))]">
-          {children}
+        <div className="@container max-w-3xl mx-auto">
+          <Header />
+          <div className="min-h-[calc(100vh-var(--size-header-height)-var(--size-footer-height))]">
+            {children}
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </body>
     </html>
   );

@@ -11,7 +11,7 @@ export const ScoreBoard = ({ game }: Props) => {
     <div className="overflow-x-auto">
       <table className="w-full table-fixed border">
         <colgroup>
-          <col className="w-10 md:w-20" />
+          <col className="w-10 @content:w-20" />
         </colgroup>
         <ScoreBoardHeader game={game} />
         <ScoreBoardBody game={game} />

@@ -20,7 +20,7 @@ export const Root = async ({ game }: Props) => {
       <GameHeader game={game} />
       <div className="mt-4" />
       <GameOverview game={game} />
-      <div className="md:max-w-5xl md:mx-auto px-3 md:px-5 py-6 flex flex-col md:gap-y-14 gap-y-10">
+      <div className="@content:max-w-5xl @content:mx-auto px-3 @content:px-5 py-6 flex flex-col @content:gap-y-14 gap-y-10">
         <ScoreBoard game={game} />
         <GameInfo game={game} />
         <GameSummary game={game} />

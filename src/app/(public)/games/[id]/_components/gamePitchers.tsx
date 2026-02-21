@@ -29,7 +29,7 @@ export const GamePitchers = ({ game }: Props) => {
 
   return (
     <div className="mt-4 overflow-x-auto">
-      <table className="text-sm md:text-base border-collapse w-full">
+      <table className="text-sm @content:text-base border-collapse w-full">
         <thead>
           <tr className="bg-gray-800 text-white">
             <th className="p-2 text-left whitespace-nowrap sticky left-0 bg-gray-800">

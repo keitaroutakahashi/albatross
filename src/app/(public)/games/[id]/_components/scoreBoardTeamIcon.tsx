@@ -8,7 +8,7 @@ type Props = {
 
 export const ScoreBoardTeamIcon = ({ isFirstBatting, opponentName }: Props) => {
   return (
-    <td className="py-1 md:py-2 border-b border-r border-gray-200 font-bold">
+    <td className="py-1 @content:py-2 border-b border-r border-gray-200 font-bold">
       <div className="flex items-center justify-center">
         {isFirstBatting ? (
           <Image
@@ -16,7 +16,7 @@ export const ScoreBoardTeamIcon = ({ isFirstBatting, opponentName }: Props) => {
             alt="Albatross Logo"
             width={128}
             height={128}
-            className="w-5 md:w-6 h-auto"
+            className="w-5 @content:w-6 h-auto"
           />
         ) : (
           <InitialIcon name={opponentName} size="xs" />

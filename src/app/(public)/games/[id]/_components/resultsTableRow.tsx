@@ -62,7 +62,7 @@ export const ResultsTableRow = ({ gameMember, inningCount }: Props) => {
         return (
           <td
             key={`${gameMember.id}-inning-${i + 1}`}
-            className="p-2 w-14 md:w-auto text-center whitespace-nowrap space-y-1"
+            className="p-2 w-14 @content:w-auto text-center whitespace-nowrap space-y-1"
           >
             {results
               ? results.map((r, j) => (

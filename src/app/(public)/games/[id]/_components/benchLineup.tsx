@@ -18,7 +18,7 @@ export const BenchLineup = ({ game }: Props) => {
           {benchMembers.map((member) => (
             <li
               key={member.id}
-              className="flex items-center text-sm md:text-base border-b border-gray-300 pb-2 md:pb-3 last:border-b-0 last:pb-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0 [&:nth-last-child(2):nth-child(odd)]:pb-0"
+              className="flex items-center text-sm @content:text-base border-b border-gray-300 pb-2 @content:pb-3 last:border-b-0 last:pb-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0 [&:nth-last-child(2):nth-child(odd)]:pb-0"
             >
               <span className="font-bold text-primary">
                 {member.member.jerseyNumber}

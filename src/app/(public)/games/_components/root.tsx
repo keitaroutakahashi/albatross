@@ -19,7 +19,7 @@ export const Root = async ({ season }: Props) => {
           </Suspense>
         </div>
 
-        <div className="md:max-w-4xl md:mx-auto px-5 mt-10">
+        <div className="px-5 mt-10">
           <GameList season={season} />
         </div>
       </main>

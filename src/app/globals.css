@@ -6,6 +6,8 @@
   --size-footer-height: 80px;
 
   --color-black: #333;
+
+  --container-content: 49rem;
 }
 
 @theme inline {

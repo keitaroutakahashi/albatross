@@ -9,7 +9,7 @@ type Props = {
 
 export const GameOverview = ({ game }: Props) => {
   return (
-    <div className="relative py-14 md:py-20">
+    <div className="relative py-14 @content:py-20">
       <Image
         src="/images/game/bg-overview.jpg"
         alt=""
@@ -17,35 +17,35 @@ export const GameOverview = ({ game }: Props) => {
         className="object-cover object-center brightness-20"
         priority
       />
-      <div className="md:max-w-4xl md:mx-auto relative grid grid-cols-3 gap-4 place-items-center text-white">
+      <div className="@content:max-w-4xl @content:mx-auto relative grid grid-cols-3 gap-4 place-items-center text-white">
         {game.isFirstBatting ? (
           <Image
             src="/images/logo-initial.png"
             alt="Albatross Logo"
             width={128}
             height={128}
-            className="w-16 md:w-24 h-auto"
+            className="w-16 @content:w-24 h-auto"
           />
         ) : (
           <InitialIcon name={game.opponent.name} size="xl" />
         )}
 
         <div className="flex flex-col items-center justify-center gap-y-4">
-          <p className="font-bold text-sm md:text-base text-center">
+          <p className="font-bold text-sm @content:text-base text-center">
             [ {getGameStatusText(game.status)} ]
           </p>
 
           <div className="grid grid-cols-3 place-items-center">
-            <span className="text-5xl md:text-7xl font-bold">
+            <span className="text-5xl @content:text-7xl font-bold">
               {game.isFirstBatting ? game.teamScore : game.opponentScore}
             </span>
-            <span className="text-3xl md:text-5xl font-bold">-</span>
-            <span className="text-5xl md:text-7xl font-bold">
+            <span className="text-3xl @content:text-5xl font-bold">-</span>
+            <span className="text-5xl @content:text-7xl font-bold">
               {game.isFirstBatting ? game.opponentScore : game.teamScore}
             </span>
           </div>
 
-          <p className="font-bold text-sm md:text-base text-center">
+          <p className="font-bold text-sm @content:text-base text-center">
             {game.ground?.name}
           </p>
         </div>
@@ -56,7 +56,7 @@ export const GameOverview = ({ game }: Props) => {
             alt="Albatross Logo"
             width={128}
             height={128}
-            className="w-16 md:w-24 h-auto"
+            className="w-16 @content:w-24 h-auto"
           />
         ) : (
           <InitialIcon name={game.opponent.name} size="xl" />

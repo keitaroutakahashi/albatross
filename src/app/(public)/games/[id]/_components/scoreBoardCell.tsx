@@ -9,7 +9,7 @@ export const ScoreBoardCell = ({ score, bgColor = "bg-white" }: Props) => {
   return (
     <td
       className={clsx(
-        "py-2 text-center border-b border-gray-300 font-bold text-base md:text-lg",
+        "py-2 text-center border-b border-gray-300 font-bold text-base @content:text-lg",
         bgColor,
       )}
     >

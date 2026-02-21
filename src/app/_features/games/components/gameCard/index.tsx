@@ -12,7 +12,7 @@ export const GameCard = ({ game }: Props) => {
     <li>
       <Link
         href={`/games/${game.id}`}
-        className="flex flex-col md:flex-row border border-gray-300 rounded overflow-hidden hover:border-black transition cursor-pointer"
+        className="flex flex-col @content:flex-row border border-gray-300 rounded overflow-hidden hover:border-black transition cursor-pointer"
       >
         <GameCardHeader game={game} />
         <GameCardBody game={game} />

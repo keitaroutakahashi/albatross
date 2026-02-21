@@ -21,8 +21,8 @@ export const GameCardScoreInfo = ({ game }: Props) => {
   const resultBadge = getResultBadge(game.result);
 
   return (
-    <div className="flex flex-col items-center justify-center gap-y-2 md:gap-y-3">
-      <p className="text-xs md:text-sm font-bold text-center">
+    <div className="flex flex-col items-center justify-center gap-y-2 @content:gap-y-3">
+      <p className="text-xs @content:text-sm font-bold text-center">
         {game.ground?.name}
       </p>
 

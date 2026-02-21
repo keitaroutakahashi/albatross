@@ -25,7 +25,7 @@ export const GameResults = ({ game }: Props) => {
       <div className="space-y-8">
         <SubSectionGroup title="打者成績">
           <div className="overflow-x-auto">
-            <table className="text-sm md:text-base border-collapse md:w-full md:table-fixed">
+            <table className="text-sm @content:text-base border-collapse @content:w-full @content:table-fixed">
               <ResultsTableHeader inningCount={inningCount} />
               <tbody>
                 {starters.map((gm) => (
