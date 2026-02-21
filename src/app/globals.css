@@ -4,6 +4,11 @@
 @theme {
   --size-header-height: 64px;
   --size-footer-height: 80px;
+  --size-xxs: 0.25rem;
+
+  --spacing-xxs: 0.25rem;
+
+  --text-xxs: 0.625rem;
 
   --color-black: #333;
 

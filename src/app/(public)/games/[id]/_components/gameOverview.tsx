@@ -17,14 +17,14 @@ export const GameOverview = ({ game }: Props) => {
         className="object-cover object-center brightness-20"
         priority
       />
-      <div className="@content:max-w-4xl @content:mx-auto relative grid grid-cols-3 gap-4 place-items-center text-white">
+      <div className="@content:max-w-4xl @content:mx-auto relative grid grid-cols-[1fr_2fr_1fr] gap-4 place-items-center text-white">
         {game.isFirstBatting ? (
           <Image
             src="/images/logo-initial.png"
             alt="Albatross Logo"
             width={128}
             height={128}
-            className="w-16 @content:w-24 h-auto"
+            className="w-12 @content:w-24 h-auto"
           />
         ) : (
           <InitialIcon name={game.opponent.name} size="xl" />
@@ -36,11 +36,11 @@ export const GameOverview = ({ game }: Props) => {
           </p>
 
           <div className="grid grid-cols-3 place-items-center">
-            <span className="text-5xl @content:text-7xl font-bold">
+            <span className="text-4xl @content:text-7xl font-bold tracking-wider">
               {game.isFirstBatting ? game.teamScore : game.opponentScore}
             </span>
-            <span className="text-3xl @content:text-5xl font-bold">-</span>
-            <span className="text-5xl @content:text-7xl font-bold">
+            <span className="text-2xl @content:text-5xl font-bold">-</span>
+            <span className="text-4xl @content:text-7xl font-bold tracking-wider">
               {game.isFirstBatting ? game.opponentScore : game.teamScore}
             </span>
           </div>
@@ -56,7 +56,7 @@ export const GameOverview = ({ game }: Props) => {
             alt="Albatross Logo"
             width={128}
             height={128}
-            className="w-16 @content:w-24 h-auto"
+            className="w-12 @content:w-24 h-auto"
           />
         ) : (
           <InitialIcon name={game.opponent.name} size="xl" />

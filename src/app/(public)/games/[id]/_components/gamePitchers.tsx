@@ -36,7 +36,7 @@ export const GamePitchers = ({ game }: Props) => {
               投手名
             </th>
             <th className="p-2 text-center whitespace-nowrap w-10">勝敗</th>
-            <th className="p-2 text-center whitespace-nowrap w-14">回</th>
+            <th className="p-2 text-center whitespace-nowrap w-16">回</th>
             <th className="p-2 text-center whitespace-nowrap w-10">被安</th>
             <th className="p-2 text-center whitespace-nowrap w-10">被本</th>
             <th className="p-2 text-center whitespace-nowrap w-10">奪三</th>
@@ -55,19 +55,31 @@ export const GamePitchers = ({ game }: Props) => {
                 <td className="p-2 whitespace-nowrap font-medium sticky left-0 bg-white">
                   {gm.member.name}
                 </td>
-                <td className="p-2 text-center">
+                <td className="p-2 text-center whitespace-nowrap">
                   {decisionLabel(pr.decision)}
                 </td>
-                <td className="p-2 text-center">
+                <td className="p-2 text-center whitespace-nowrap">
                   {formatInningsPitched(pr.inningsPitched, pr.partialOuts)}
                 </td>
-                <td className="p-2 text-center">{pr.hitsAllowed}</td>
-                <td className="p-2 text-center">{pr.homeRunsAllowed}</td>
-                <td className="p-2 text-center">{pr.strikeouts}</td>
-                <td className="p-2 text-center">{pr.walks}</td>
-                <td className="p-2 text-center">{pr.hitByPitches}</td>
-                <td className="p-2 text-center">{pr.runs}</td>
-                <td className="p-2 text-center">{pr.earnedRuns}</td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.hitsAllowed}
+                </td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.homeRunsAllowed}
+                </td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.strikeouts}
+                </td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.walks}
+                </td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.hitByPitches}
+                </td>
+                <td className="p-2 text-center whitespace-nowrap">{pr.runs}</td>
+                <td className="p-2 text-center whitespace-nowrap">
+                  {pr.earnedRuns}
+                </td>
               </tr>
             );
           })}
