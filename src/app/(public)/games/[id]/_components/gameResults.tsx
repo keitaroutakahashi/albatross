@@ -2,8 +2,8 @@ import type { GameDetail } from "@/app/_features/games/api/getGames";
 import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
 import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/resultsTableHeader";
 import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/resultsTableRow";
-import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
-import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/sectionSubTitle";
+import { SectionGroup } from "@/app/(public)/games/[id]/_components/sectionGroup";
+import { SubSectionGroup } from "@/app/(public)/games/[id]/_components/subSectionGroup";
 
 type Props = {
   game: GameDetail;
@@ -21,16 +21,11 @@ export const GameResults = ({ game }: Props) => {
   const inningCount = game.innings.length;
 
   return (
-    <section>
-      <SectionHeader text="出場成績" />
-
-      <div className="mt-4" />
-
+    <SectionGroup title="出場成績">
       <div className="space-y-8">
-        <section>
-          <SectionSubtitle text="打者成績" />
+        <SubSectionGroup title="打者成績">
           <div className="overflow-x-auto">
-            <table className="text-sm border-collapse md:w-full md:table-fixed">
+            <table className="text-sm md:text-base border-collapse md:w-full md:table-fixed">
               <ResultsTableHeader inningCount={inningCount} />
               <tbody>
                 {starters.map((gm) => (
@@ -43,13 +38,12 @@ export const GameResults = ({ game }: Props) => {
               </tbody>
             </table>
           </div>
-        </section>
+        </SubSectionGroup>
 
-        <section>
-          <SectionSubtitle text="投手成績" />
+        <SubSectionGroup title="投手成績">
           <GamePitchers game={game} />
-        </section>
+        </SubSectionGroup>
       </div>
-    </section>
+    </SectionGroup>
   );
 };

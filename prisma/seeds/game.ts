@@ -2,13 +2,13 @@ import type {
   Position,
   PrismaClient,
 } from "../../src/generated/prisma/client.js";
-import { getGame1PAs, getGame2PAs, getGame3PAs } from "./plateAppearance.js";
+import { getGameWeathers } from "./gameWeather.js";
 import {
   getGame1PitchingResults,
   getGame2PitchingResults,
   getGame3PitchingResults,
 } from "./pitchingResult.js";
-import { getGameWeathers } from "./gameWeather.js";
+import { getGame1PAs, getGame2PAs, getGame3PAs } from "./plateAppearance.js";
 
 export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
@@ -75,6 +75,8 @@ export async function seedGames(prisma: PrismaClient) {
       teamScore: 15,
       opponentScore: 3,
       result: "win",
+      summary:
+        "ジャイアンツ様ご対戦ありがとうございました\n投手陣が粘りの投球をしてくれた点と 前回全然打てなかった西埜投手から\n7得点とチーム全体でいい打撃をすることができました\nMVP 岡本\n4回3失点、3打数2安打2打点と投打共に大活躍\n坂本\n3打数2安打とチームの打撃を大きく牽引してくれました\n丸\n2回2失点で2回にランナーを貯めるも\n何とか粘りの投球で試合を作ってくれました\nさらには3打数2安打2打点と打線も牽引\nこれで今季の公式戦は終了となります\n皆様1年間お疲れ様でした 来季もいいシーズンにできるよう\n全員野球で引き続き頑張っていきましょう",
     },
   });
 

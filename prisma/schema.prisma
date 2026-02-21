@@ -156,17 +156,17 @@ model Opponent {
 
 // チームメンバー
 model Member {
-  id          Int       @id @default(autoincrement())
-  name        String
+  id           Int            @id @default(autoincrement())
+  name         String
   jerseyNumber String? // 背番号
-  position    Position?
-  subPosition Position?
-  throwHand   Hand
-  batHand     Hand
-  category    MemberCategory @default(regular) // メンバー区分
-  isActive    Boolean        @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  position     Position?
+  subPosition  Position?
+  throwHand    Hand
+  batHand      Hand
+  category     MemberCategory @default(regular) // メンバー区分
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   gameMembers GameMember[]
 }
@@ -210,7 +210,10 @@ model Game {
   // 天候
   gameWeather GameWeather?
 
-  // 備考
+  // 戦評
+  summary String?
+
+  // （雨天中止など）
   note String?
 
   createdAt DateTime @default(now())
@@ -225,7 +228,7 @@ model GameWeather {
   gameId      Int     @unique
   game        Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
   weather     Weather // 天気
-  temperature Float?  // 気温（℃）
+  temperature Float? // 気温（℃）
 }
 
 // イニングごとの得点

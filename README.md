@@ -1,17 +1,33 @@
-## database
+# Albatross web site
 
-### Start database
+https://albatross-baseball.vercel.app/
 
-`docker compose up -d`
+## Stack
 
-### Stop database
+### FrontEnd
 
-`docker compose down`
+- Next.js
+- React
+- TypeScript
+- TailwindCSS
 
-### Delete database
+### BackEnd
 
-`docker compose down -v`
+- PostgresSQL
+- Prisma
 
-### Migration
+### Test
 
-`pnpm prisma migrate dev`
+- Vitest
+- Playwright
+
+### Others
+
+- Biome
+- Knip
+
+## Reference
+
+- https://www.yakult-swallows.co.jp/game/202508
+- https://bb.vcuda.net/CSL/
+- https://ts-league.com/
