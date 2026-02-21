@@ -32,7 +32,9 @@ export const GamePitchers = ({ game }: Props) => {
       <table className="text-sm md:text-base border-collapse w-full">
         <thead>
           <tr className="bg-gray-800 text-white">
-            <th className="p-2 text-left whitespace-nowrap sticky left-0 bg-gray-800">投手名</th>
+            <th className="p-2 text-left whitespace-nowrap sticky left-0 bg-gray-800">
+              投手名
+            </th>
             <th className="p-2 text-center whitespace-nowrap w-10">勝敗</th>
             <th className="p-2 text-center whitespace-nowrap w-14">回</th>
             <th className="p-2 text-center whitespace-nowrap w-10">被安</th>

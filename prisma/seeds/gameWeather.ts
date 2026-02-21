@@ -1,4 +1,3 @@
-import type { PrismaClient } from "../../src/generated/prisma/client.js";
 import type { Weather } from "../../src/generated/prisma/client.js";
 
 // 試合ごとの天候データ
@@ -8,9 +7,7 @@ type GameWeatherInput = {
   temperature: number;
 };
 
-export function getGameWeathers(
-  gameIds: number[],
-): GameWeatherInput[] {
+export function getGameWeathers(gameIds: number[]): GameWeatherInput[] {
   return [
     // 試合1: 2024-04-14（4月の晴れた日）
     {

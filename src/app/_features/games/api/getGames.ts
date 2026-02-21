@@ -21,9 +21,7 @@ export const getGames = async (season: string | number) => {
 };
 
 // Game 詳細を取得
-export type GameDetail = NonNullable<
-  Awaited<ReturnType<typeof getGame>>
->;
+export type GameDetail = NonNullable<Awaited<ReturnType<typeof getGame>>>;
 
 export const getGame = async (id: number) => {
   const games = await prisma.game.findFirst({

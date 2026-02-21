@@ -1,9 +1,7 @@
 import type { GameDetail } from "@/app/_features/games/api/getGames";
 
 /** 投手成績がある選手を抽出する */
-export function getPitchers(
-  gameMembers: GameDetail["gameMembers"],
-) {
+export function getPitchers(gameMembers: GameDetail["gameMembers"]) {
   return gameMembers.filter((gm) => gm.pitchingResult !== null);
 }
 

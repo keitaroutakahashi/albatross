@@ -4,11 +4,8 @@
     "@prisma/client",
     "pg",
     "@types/pg",
-    "class-variance-authority",
-    "clsx",
-    "lucide-react",
-    "tailwind-merge"
+    "class-variance-authority"
   ],
-  "ignore": ["src/lib/utils.ts"],
-  "ignoreExportsUsedInFile": true
+  "ignoreExportsUsedInFile": true,
+  "ignore": ["src/app/_utils/sleep.ts"]
 }

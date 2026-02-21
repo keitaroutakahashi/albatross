@@ -47,9 +47,7 @@ export function getResultColorClass(result: AtBatResult): string {
 }
 
 /** 長打（二塁打・三塁打・本塁打）を打った選手をそれぞれ抽出する */
-export function getExtraBaseHitMembers(
-  gameMembers: GameDetail["gameMembers"],
-) {
+export function getExtraBaseHitMembers(gameMembers: GameDetail["gameMembers"]) {
   const doubles: GameDetail["gameMembers"] = [];
   const triples: GameDetail["gameMembers"] = [];
   const homeRuns: GameDetail["gameMembers"] = [];

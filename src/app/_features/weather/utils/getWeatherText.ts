@@ -7,9 +7,7 @@ const weatherTextMap: Record<Weather, string> = {
   snowy: "雪",
 };
 
-export const getWeatherText = (
-  weather: Weather | undefined,
-): string => {
+export const getWeatherText = (weather: Weather | undefined): string => {
   if (!weather) return "";
   return weatherTextMap[weather];
 };

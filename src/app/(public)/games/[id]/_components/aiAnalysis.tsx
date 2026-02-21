@@ -6,9 +6,7 @@ type Props = {
   game: GameDetail;
 };
 
-export const AIAnalysis = ({ game }: Props) => {
-  const participantCount = game.gameMembers.length;
-
+export const AIAnalysis = ({ game: _game }: Props) => {
   return (
     <section>
       <SectionHeader text="AI分析" />
