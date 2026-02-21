@@ -1,6 +1,6 @@
-import { getSeasons } from "@/app/_features/seasons/api/getSeasons";
+import { getSeasons } from "@/app/_features/seasons/api/get-seasons";
 import { getCurrentSeason } from "@/app/_utils/date/date";
-import { SeasonSelector } from "@/app/(public)/games/_components/seasonSelector";
+import { SeasonSelector } from "@/app/(public)/games/_components/season-selector";
 
 export async function SeasonFilter() {
   const defaultSeason = getCurrentSeason();

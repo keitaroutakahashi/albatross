@@ -1,5 +1,5 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
-import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { SectionHeader } from "@/app/(public)/games/[id]/_components/section-header";
 
 type Props = {
   game: GameDetail;

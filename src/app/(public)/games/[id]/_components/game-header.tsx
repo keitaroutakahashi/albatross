@@ -1,4 +1,4 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
 import {
   formatAsDayName,
   formatAsFullDate,

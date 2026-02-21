@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { InitialIcon } from "@/app/_components/ui/initialIcon";
-import type { GameDetail } from "@/app/_features/games/api/getGames";
-import { getGameStatusText } from "@/app/_features/games/utils/getGameStatusText";
+import { InitialIcon } from "@/app/_components/ui/initial-icon";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { getGameStatusText } from "@/app/_features/games/utils/get-game-status-text";
 
 type Props = {
   game: GameDetail;

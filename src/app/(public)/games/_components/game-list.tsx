@@ -1,5 +1,5 @@
-import { getGames } from "@/app/_features/games/api/getGames";
-import { GameCard } from "@/app/_features/games/components/gameCard";
+import { getGames } from "@/app/_features/games/api/get-games";
+import { GameCard } from "@/app/_features/games/components/game-card";
 import { getCurrentSeason } from "@/app/_utils/date/date";
 
 type Props = {

@@ -1,12 +1,12 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
 import { positionLabel } from "@/app/_features/games/constants/labels";
 import {
   formatAtBatResult,
   getResultColorClass,
   hitResults,
   nonAtBatResults,
-} from "@/app/_features/games/utils/atBatResult";
-import { AtBatResultBadge } from "@/app/(public)/games/[id]/_components/atBatResultBadge";
+} from "@/app/_features/games/utils/at-bat-result";
+import { AtBatResultBadge } from "@/app/(public)/games/[id]/_components/at-bat-result-badge";
 
 type Props = {
   gameMember: GameDetail["gameMembers"][number];

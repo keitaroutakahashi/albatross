@@ -1,4 +1,4 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
 
 /** 投手成績がある選手を抽出する */
 export function getPitchers(gameMembers: GameDetail["gameMembers"]) {

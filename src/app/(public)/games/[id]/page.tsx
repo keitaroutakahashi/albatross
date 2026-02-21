@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getGame } from "@/app/_features/games/api/getGames";
+import { getGame } from "@/app/_features/games/api/get-games";
 import { Root } from "@/app/(public)/games/[id]/_components/root";
 
 type Props = {

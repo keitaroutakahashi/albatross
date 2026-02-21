@@ -1,4 +1,4 @@
-import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/sectionSubTitle";
+import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/section-sub-title";
 
 type Props = {
   title: string;

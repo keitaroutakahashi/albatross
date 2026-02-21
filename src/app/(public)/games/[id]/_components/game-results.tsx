@@ -1,9 +1,9 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
-import { GamePitchers } from "@/app/(public)/games/[id]/_components/gamePitchers";
-import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/resultsTableHeader";
-import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/resultsTableRow";
-import { SectionGroup } from "@/app/(public)/games/[id]/_components/sectionGroup";
-import { SubSectionGroup } from "@/app/(public)/games/[id]/_components/subSectionGroup";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { GamePitchers } from "@/app/(public)/games/[id]/_components/game-pitchers";
+import { ResultsTableHeader } from "@/app/(public)/games/[id]/_components/results-table-header";
+import { ResultsTableRow } from "@/app/(public)/games/[id]/_components/results-table-row";
+import { SectionGroup } from "@/app/(public)/games/[id]/_components/section-group";
+import { SubSectionGroup } from "@/app/(public)/games/[id]/_components/sub-section-group";
 
 type Props = {
   game: GameDetail;

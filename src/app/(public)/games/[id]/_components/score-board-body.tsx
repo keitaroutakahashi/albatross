@@ -1,6 +1,6 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
-import { ScoreBoardCell } from "@/app/(public)/games/[id]/_components/scoreBoardCell";
-import { ScoreBoardTeamIcon } from "@/app/(public)/games/[id]/_components/scoreBoardTeamIcon";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { ScoreBoardCell } from "@/app/(public)/games/[id]/_components/score-board-cell";
+import { ScoreBoardTeamIcon } from "@/app/(public)/games/[id]/_components/score-board-team-icon";
 
 type Props = {
   game: GameDetail;

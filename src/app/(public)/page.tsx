@@ -1,14 +1,13 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Hero } from "@/app/(public)/_components/hero";
 
 export default function Page() {
   return (
-    <div className="flex items-center justify-center">
-      <Image
-        src="/images/logo.png"
-        alt="Albatross Logo"
-        width={300}
-        height={300}
-      />
+    <div className="">
+      <Hero />
+      <div className="">
+        <Link href="/games">試合一覧</Link>
+      </div>
     </div>
   );
 }

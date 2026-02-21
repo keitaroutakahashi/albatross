@@ -1,7 +1,7 @@
 import { Suspense } from "react";
-import { PageTitle } from "@/app/_components/ui/pageTitle";
-import { GameList } from "@/app/(public)/games/_components/gameList";
-import { SeasonFilter } from "@/app/(public)/games/_components/seasonFilter";
+import { PageTitle } from "@/app/_components/ui/page-title";
+import { GameList } from "@/app/(public)/games/_components/game-list";
+import { SeasonFilter } from "@/app/(public)/games/_components/season-filter";
 
 type Props = {
   season?: string;

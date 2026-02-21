@@ -1,7 +1,7 @@
 import Link from "next/link";
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
-import { GameCardBody } from "@/app/_features/games/components/gameCardBody";
-import { GameCardHeader } from "@/app/_features/games/components/gameCardHeader";
+import type { GameWithRelations } from "@/app/_features/games/api/get-games";
+import { GameCardBody } from "@/app/_features/games/components/game-card-body";
+import { GameCardHeader } from "@/app/_features/games/components/game-card-header";
 
 type Props = {
   game: GameWithRelations;

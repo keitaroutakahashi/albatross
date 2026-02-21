@@ -1,6 +1,6 @@
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
-import { GameCardScoreInfo } from "@/app/_features/games/components/gameCardScoreInfo";
-import { GameCardTeamInfo } from "@/app/_features/games/components/gameCardTeamInfo";
+import type { GameWithRelations } from "@/app/_features/games/api/get-games";
+import { GameCardScoreInfo } from "@/app/_features/games/components/game-card-score-info";
+import { GameCardTeamInfo } from "@/app/_features/games/components/game-card-team-info";
 
 type Props = {
   game: GameWithRelations;

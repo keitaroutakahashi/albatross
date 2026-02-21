@@ -1,4 +1,4 @@
-import type { GameDetail } from "@/app/_features/games/api/getGames";
+import type { GameDetail } from "@/app/_features/games/api/get-games";
 import type { Position } from "@/generated/prisma/client";
 
 /** 指定ポジションの選手を抽出する */

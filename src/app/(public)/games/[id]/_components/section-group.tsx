@@ -1,4 +1,4 @@
-import { SectionHeader } from "@/app/(public)/games/[id]/_components/sectionHeader";
+import { SectionHeader } from "@/app/(public)/games/[id]/_components/section-header";
 
 type Props = {
   title: string;

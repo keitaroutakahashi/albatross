@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import type { GameWithRelations } from "@/app/_features/games/api/getGames";
+import type { GameWithRelations } from "@/app/_features/games/api/get-games";
 import {
   formatAsMDWithColon,
   formatAsYYYY,
