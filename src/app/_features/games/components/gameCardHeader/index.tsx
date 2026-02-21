@@ -17,7 +17,9 @@ export const GameCardHeader = ({ game }: Props) => {
   return (
     <div className="bg-gray-100 p-3 md:p-4 flex md:flex-col md:w-64 justify-between items-center">
       <div className="flex items-center gap-x-1">
-        <p className="text-3xl font-bold">{formatAsMDWithColon(game.date)}</p>
+        <p className="text-3xl font-bold font-(family-name:--font-roboto)">
+          {formatAsMDWithColon(game.date)}
+        </p>
         <div className="">
           <p
             className={clsx("text-xs font-bold", {
@@ -28,7 +30,9 @@ export const GameCardHeader = ({ game }: Props) => {
           >
             {formatToShortDayNameEn(game.date)}
           </p>
-          <p className="text-xs font-bold">{formatAsYYYY(game.date)}</p>
+          <p className="text-xs font-bold font-(family-name:--font-roboto)">
+            {formatAsYYYY(game.date)}
+          </p>
         </div>
       </div>
       <p className="font-bold text-sm">{game.league.name}</p>

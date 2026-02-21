@@ -1,16 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "@/app/globals.css";
+import clsx from "clsx";
 import { Footer } from "@/app/_components/ui/footer";
 import { Header } from "@/app/_components/ui/header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
 });
 
@@ -26,7 +22,19 @@ export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-black`}
+        style={{
+          fontFamily:
+            '"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", sans-serif',
+          textAutospace: "normal",
+          lineBreak: "strict",
+        }}
+        className={clsx(
+          roboto.variable,
+          "antialiased",
+          "text-black",
+          "wrap-anywhere",
+          "break-normal",
+        )}
       >
         <Header />
         <div className="min-h-[calc(100vh-var(--size-header-height)-var(--size-footer-height))]">
