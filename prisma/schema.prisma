@@ -160,7 +160,7 @@ model Member {
   name         String
   jerseyNumber String? // 背番号
   position     Position?
-  subPosition  Position?
+  subPositions Position[]
   throwHand    Hand
   batHand      Hand
   category     MemberCategory @default(regular) // メンバー区分

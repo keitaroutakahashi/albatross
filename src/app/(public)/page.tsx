@@ -7,6 +7,7 @@ export default function Page() {
       <Hero />
       <div className="">
         <Link href="/games">試合一覧</Link>
+        <Link href="/members">メンバー一覧</Link>
       </div>
     </div>
   );

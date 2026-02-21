@@ -1,13 +1,13 @@
+import { SectionGroup } from "@/app/_components/ui/section-group";
+import { SubSectionGroup } from "@/app/_components/ui/sub-section-group";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
 import { getExtraBaseHitMembers } from "@/app/_features/games/utils/at-bat-result";
 import {
   getMemberWithPitchingDecision,
   getPitchers,
 } from "@/app/_features/games/utils/pitching-result";
-import { getMembersByPosition } from "@/app/_features/members/position";
+import { getMembersByPosition } from "@/app/_features/members/utils/position";
 import { getWeatherText } from "@/app/_features/weather/utils/get-weather-text";
-import { SectionGroup } from "@/app/(public)/games/[id]/_components/section-group";
-import { SubSectionGroup } from "@/app/(public)/games/[id]/_components/sub-section-group";
 
 type TableRowProps = {
   label: string;
