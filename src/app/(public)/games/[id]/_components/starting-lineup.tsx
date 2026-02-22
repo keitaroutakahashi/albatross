@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SectionGroup } from "@/app/_components/ui/section-group";
+import { positionLabel } from "@/app/_constants/labels";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
-import { positionLabel } from "@/app/_features/games/constants/labels";
 
 type Props = {
   game: GameDetail;

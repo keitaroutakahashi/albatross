@@ -1,4 +1,4 @@
-import type { AtBatResult, Position } from "@/generated/prisma/client";
+import type { AtBatResult, Hand, Position } from "@/generated/prisma/client";
 
 export const positionLabel: Record<Position, string> = {
   pitcher: "投",
@@ -29,4 +29,10 @@ export const resultLabel: Record<AtBatResult, string> = {
   fieldersChoice: "野選",
   doublePlay: "併殺",
   error: "失",
+};
+
+export const handLabel: Record<Hand, string> = {
+  left: "左",
+  right: "右",
+  both: "両",
 };

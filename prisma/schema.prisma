@@ -158,8 +158,8 @@ model Opponent {
 model Member {
   id           Int            @id @default(autoincrement())
   name         String
-  jerseyNumber String? // 背番号
-  position     Position?
+  uniformNumber String // 背番号
+  position     Position
   subPositions Position[]
   throwHand    Hand
   batHand      Hand

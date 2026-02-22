@@ -21,7 +21,7 @@ export const BenchLineup = ({ game }: Props) => {
               className="flex items-center text-sm @content:text-base border-b border-gray-300 pb-2 @content:pb-3 last:border-b-0 last:pb-0 [&:nth-last-child(2):nth-child(odd)]:border-b-0 [&:nth-last-child(2):nth-child(odd)]:pb-0"
             >
               <span className="font-bold text-primary">
-                {member.member.jerseyNumber}
+                {member.member.uniformNumber}
               </span>
               <Link href="/" className="pl-4 underline underline-offset-2">
                 {member.member.name}

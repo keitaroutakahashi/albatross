@@ -1,8 +1,5 @@
+import { positionLabel, resultLabel } from "@/app/_constants/labels";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
-import {
-  positionLabel,
-  resultLabel,
-} from "@/app/_features/games/constants/labels";
 import type { AtBatResult, Position } from "@/generated/prisma/client";
 
 /** 打数に含まれない結果 */
