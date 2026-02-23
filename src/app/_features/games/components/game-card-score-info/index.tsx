@@ -30,13 +30,13 @@ export const GameCardScoreInfo = ({ game }: Props) => {
         <>
           <div className="">
             {game.status !== "canceled" && (
-              <span className="text-4xl font-bold">
+              <span className="text-3xl font-bold">
                 {game.isFirstBatting ? game.teamScore : game.opponentScore}
               </span>
             )}
-            <span className="text-4xl font-bold mx-2">-</span>
+            <span className="text-2xl font-bold mx-2">-</span>
             {game.status !== "canceled" && (
-              <span className="text-4xl font-bold">
+              <span className="text-3xl font-bold">
                 {game.isFirstBatting ? game.opponentScore : game.teamScore}
               </span>
             )}

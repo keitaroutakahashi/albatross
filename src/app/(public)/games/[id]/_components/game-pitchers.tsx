@@ -1,8 +1,12 @@
+import type { ColumnDef } from "@/app/_components/ui/data-table";
+import { DataTable } from "@/app/_components/ui/data-table";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
 
 type Props = {
   game: GameDetail;
 };
+
+type PitcherRow = GameDetail["gameMembers"][number];
 
 /** 投球回を "5 1/3" 形式でフォーマット */
 const formatInningsPitched = (
@@ -20,6 +24,73 @@ const decisionLabel = (decision: string | null): string => {
   return "";
 };
 
+const columns: ColumnDef<PitcherRow>[] = [
+  {
+    key: "name",
+    header: "投手名",
+    cell: (row) => row.member.name,
+    align: "left",
+    cellClassName: "font-medium",
+  },
+  {
+    key: "decision",
+    header: "勝敗",
+    cell: (row) => decisionLabel(row.pitchingResult?.decision ?? null),
+    headerClassName: "w-10",
+  },
+  {
+    key: "innings",
+    header: "回",
+    cell: (row) => {
+      const pr = row.pitchingResult;
+      return pr ? formatInningsPitched(pr.inningsPitched, pr.partialOuts) : "";
+    },
+    headerClassName: "w-16",
+  },
+  {
+    key: "hits",
+    header: "被安",
+    cell: (row) => row.pitchingResult?.hitsAllowed ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "homeRuns",
+    header: "被本",
+    cell: (row) => row.pitchingResult?.homeRunsAllowed ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "strikeouts",
+    header: "奪三",
+    cell: (row) => row.pitchingResult?.strikeouts ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "walks",
+    header: "四球",
+    cell: (row) => row.pitchingResult?.walks ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "hitByPitches",
+    header: "死球",
+    cell: (row) => row.pitchingResult?.hitByPitches ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "runs",
+    header: "失点",
+    cell: (row) => row.pitchingResult?.runs ?? "",
+    headerClassName: "w-10",
+  },
+  {
+    key: "earnedRuns",
+    header: "自責",
+    cell: (row) => row.pitchingResult?.earnedRuns ?? "",
+    headerClassName: "w-10",
+  },
+];
+
 export const GamePitchers = ({ game }: Props) => {
   const pitchers = game.gameMembers.filter((gm) => gm.pitchingResult != null);
 
@@ -28,63 +99,12 @@ export const GamePitchers = ({ game }: Props) => {
   }
 
   return (
-    <div className="mt-4 overflow-x-auto">
-      <table className="text-sm @content:text-base border-collapse w-full">
-        <thead>
-          <tr className="bg-gray-800 text-white">
-            <th className="p-2 text-left whitespace-nowrap sticky left-0 bg-gray-800">
-              投手名
-            </th>
-            <th className="p-2 text-center whitespace-nowrap w-10">勝敗</th>
-            <th className="p-2 text-center whitespace-nowrap w-16">回</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">被安</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">被本</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">奪三</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">四球</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">死球</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">失点</th>
-            <th className="p-2 text-center whitespace-nowrap w-10">自責</th>
-          </tr>
-        </thead>
-        <tbody>
-          {pitchers.map((gm) => {
-            const pr = gm.pitchingResult;
-            if (!pr) return null;
-            return (
-              <tr key={gm.id} className="border-b border-gray-200">
-                <td className="p-2 whitespace-nowrap font-medium sticky left-0 bg-white">
-                  {gm.member.name}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {decisionLabel(pr.decision)}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {formatInningsPitched(pr.inningsPitched, pr.partialOuts)}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.hitsAllowed}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.homeRunsAllowed}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.strikeouts}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.walks}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.hitByPitches}
-                </td>
-                <td className="p-2 text-center whitespace-nowrap">{pr.runs}</td>
-                <td className="p-2 text-center whitespace-nowrap">
-                  {pr.earnedRuns}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      columns={columns}
+      data={pitchers}
+      keyExtractor={(row) => String(row.id)}
+      sticky={{ count: 1, offsets: ["left-0"] }}
+      className="mt-4"
+    />
   );
 };

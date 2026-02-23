@@ -3,6 +3,12 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+generator erd {
+  provider = "prisma-markdown"
+  output   = "../docs/er-diagram.md"
+  title    = "Albatross"
+}
+
 datasource db {
   provider = "postgresql"
 }
@@ -203,9 +209,13 @@ model Game {
   gameMembers GameMember[]
 
   // 試合結果（キャッシュ）
-  teamScore     Int         @default(0)
-  opponentScore Int         @default(0)
-  result        GameResult?
+  teamScore      Int         @default(0)
+  opponentScore  Int         @default(0)
+  teamHits       Int         @default(0) // 自チーム安打数
+  opponentHits   Int         @default(0) // 相手チーム安打数
+  teamErrors     Int         @default(0) // 自チームエラー数
+  opponentErrors Int         @default(0) // 相手チームエラー数
+  result         GameResult?
 
   // 天候
   gameWeather GameWeather?

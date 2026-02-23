@@ -3,14 +3,20 @@ import clsx from "clsx";
 type Props = {
   score: number;
   bgColor?: string;
+  isBold?: boolean;
 };
 
-export const ScoreBoardCell = ({ score, bgColor = "bg-white" }: Props) => {
+export const ScoreBoardCell = ({
+  score,
+  bgColor = "bg-white",
+  isBold = false,
+}: Props) => {
   return (
     <td
       className={clsx(
-        "py-2 text-center border-b border-gray-300 font-bold text-base @content:text-lg",
+        "py-2 text-center border-b border-gray-300 text-base @content:text-lg",
         bgColor,
+        { "font-bold": isBold },
       )}
     >
       {score}

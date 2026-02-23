@@ -15,7 +15,7 @@ export const GameHeader = ({ game }: Props) => {
   const time24 = formatAsTime24(game.date);
 
   return (
-    <div className="">
+    <div className="px-2">
       <p className="text-center font-bold text-sm @content:text-base">
         {game.league.name}
       </p>

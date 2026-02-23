@@ -74,6 +74,10 @@ export async function seedGames(prisma: PrismaClient) {
       opponentId: opponents[0].id,
       teamScore: 15,
       opponentScore: 3,
+      teamHits: 14,
+      opponentHits: 5,
+      teamErrors: 1,
+      opponentErrors: 3,
       result: "win",
       summary:
         "ジャイアンツ様ご対戦ありがとうございました\n投手陣が粘りの投球をしてくれた点と 前回全然打てなかった西埜投手から\n7得点とチーム全体でいい打撃をすることができました\nMVP 岡本\n4回3失点、3打数2安打2打点と投打共に大活躍\n坂本\n3打数2安打とチームの打撃を大きく牽引してくれました\n丸\n2回2失点で2回にランナーを貯めるも\n何とか粘りの投球で試合を作ってくれました\nさらには3打数2安打2打点と打線も牽引\nこれで今季の公式戦は終了となります\n皆様1年間お疲れ様でした 来季もいいシーズンにできるよう\n全員野球で引き続き頑張っていきましょう",
@@ -229,6 +233,10 @@ export async function seedGames(prisma: PrismaClient) {
       opponentId: opponents[1].id,
       teamScore: 2,
       opponentScore: 5,
+      teamHits: 4,
+      opponentHits: 8,
+      teamErrors: 2,
+      opponentErrors: 0,
       result: "lose",
     },
   });
@@ -283,6 +291,10 @@ export async function seedGames(prisma: PrismaClient) {
       opponentId: opponents[2].id,
       teamScore: 4,
       opponentScore: 4,
+      teamHits: 7,
+      opponentHits: 6,
+      teamErrors: 1,
+      opponentErrors: 1,
       result: "draw",
     },
   });

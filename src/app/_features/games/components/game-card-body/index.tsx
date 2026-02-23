@@ -8,7 +8,7 @@ type Props = {
 
 export const GameCardBody = ({ game }: Props) => {
   return (
-    <div className="grid grid-cols-3 p-3 @content:px-10 @content:flex-1">
+    <div className="grid grid-cols-3 gap-x-2 p-3 @content:px-10 @content:flex-1">
       <GameCardTeamInfo
         isHome={game.isFirstBatting}
         teamName={game.isFirstBatting ? "Albatross" : game.opponent.name}

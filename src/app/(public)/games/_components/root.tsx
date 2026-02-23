@@ -13,7 +13,7 @@ export const Root = async ({ season }: Props) => {
       <PageTitle title="GAME" subtitle="試合情報" />
 
       <main className="py-10">
-        <div className="flex justify-center mt-5">
+        <div className="flex justify-center">
           <Suspense fallback={<div>Loading...</div>}>
             <SeasonFilter />
           </Suspense>

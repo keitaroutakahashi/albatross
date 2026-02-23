@@ -17,6 +17,7 @@ export const ScoreBoardBody = ({ game }: Props) => {
         />
         {game.innings.map((inning) => (
           <ScoreBoardCell
+            isBold
             key={inning.id}
             score={
               game.isFirstBatting ? inning.opponentScore : inning.teamScore
@@ -24,8 +25,17 @@ export const ScoreBoardBody = ({ game }: Props) => {
           />
         ))}
         <ScoreBoardCell
+          isBold
           bgColor="bg-gray-100"
           score={game.isFirstBatting ? game.teamScore : game.opponentScore}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={game.isFirstBatting ? game.teamHits : game.opponentHits}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={game.isFirstBatting ? game.teamErrors : game.opponentErrors}
         />
       </tr>
 
@@ -38,6 +48,7 @@ export const ScoreBoardBody = ({ game }: Props) => {
 
         {game.innings.map((inning) => (
           <ScoreBoardCell
+            isBold
             key={inning.id}
             score={
               game.isFirstBatting ? inning.opponentScore : inning.teamScore
@@ -45,8 +56,17 @@ export const ScoreBoardBody = ({ game }: Props) => {
           />
         ))}
         <ScoreBoardCell
+          isBold
           bgColor="bg-gray-100"
           score={game.isFirstBatting ? game.opponentScore : game.teamScore}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={game.isFirstBatting ? game.opponentHits : game.teamHits}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={game.isFirstBatting ? game.opponentErrors : game.teamErrors}
         />
       </tr>
     </tbody>

@@ -17,7 +17,7 @@ export const GameOverview = ({ game }: Props) => {
         className="object-cover object-center brightness-20"
         priority
       />
-      <div className="@content:max-w-4xl @content:mx-auto relative grid grid-cols-[1fr_2fr_1fr] gap-4 place-items-center text-white">
+      <div className="@content:max-w-4xl px-3 @content:mx-auto relative grid grid-cols-[1fr_2fr_1fr] gap-4 place-items-center text-white">
         {game.isFirstBatting ? (
           <Image
             src="/images/logo-initial.png"
