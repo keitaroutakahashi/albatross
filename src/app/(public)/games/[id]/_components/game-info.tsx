@@ -7,6 +7,7 @@ import {
   getPitchers,
 } from "@/app/_features/games/utils/pitching-result";
 import { getMembersByPosition } from "@/app/_features/members/utils/position";
+import { WeatherIcon } from "@/app/_features/weather/components/weather-icon/weather-icon";
 import { getWeatherText } from "@/app/_features/weather/utils/get-weather-text";
 
 type TableRowProps = {
@@ -78,12 +79,12 @@ export const GameInfo = ({ game }: Props) => {
       </SubSectionGroup>
 
       <SubSectionGroup title="グラウンド">
-        <p className="">{game.ground?.name}</p>
-        <p className="text-sm mt-2 text-gray-500">{game.ground?.address}</p>
+        <p className="text-sm">{game.ground?.name}</p>
+        <p className="text-xs mt-2 text-gray-500">{game.ground?.address}</p>
       </SubSectionGroup>
 
       <SubSectionGroup title="天候">
-        <p className="">{getWeatherText(game.gameWeather?.weather)}</p>
+        <WeatherIcon weather={game.gameWeather?.weather} />
         <p className="text-sm mt-2 text-gray-500">
           {game.gameWeather?.temperature}℃
         </p>

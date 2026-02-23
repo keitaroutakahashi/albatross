@@ -1,6 +1,8 @@
+import { Circle } from "lucide-react";
 import type { ColumnDef } from "@/app/_components/ui/data-table";
 import { DataTable } from "@/app/_components/ui/data-table";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
+import type { Weather } from "@/generated/prisma/enums";
 
 type Props = {
   game: GameDetail;
@@ -18,9 +20,9 @@ const formatInningsPitched = (
 };
 
 /** 勝敗を記号で表示 */
-const decisionLabel = (decision: string | null): string => {
-  if (decision === "win") return "○";
-  if (decision === "loss") return "●";
+const decisionLabel = (decision: string | null) => {
+  if (decision === "win") return <Circle size={14} />;
+  if (decision === "loss") return <Circle size={14} className="fill-black" />;
   return "";
 };
 
@@ -49,37 +51,37 @@ const columns: ColumnDef<PitcherRow>[] = [
   },
   {
     key: "hits",
-    header: "被安",
+    header: "安",
     cell: (row) => row.pitchingResult?.hitsAllowed ?? "",
     headerClassName: "w-10",
   },
   {
     key: "homeRuns",
-    header: "被本",
+    header: "本",
     cell: (row) => row.pitchingResult?.homeRunsAllowed ?? "",
     headerClassName: "w-10",
   },
   {
     key: "strikeouts",
-    header: "奪三",
+    header: "三振",
     cell: (row) => row.pitchingResult?.strikeouts ?? "",
     headerClassName: "w-10",
   },
   {
     key: "walks",
-    header: "四球",
+    header: "四",
     cell: (row) => row.pitchingResult?.walks ?? "",
     headerClassName: "w-10",
   },
   {
     key: "hitByPitches",
-    header: "死球",
+    header: "死",
     cell: (row) => row.pitchingResult?.hitByPitches ?? "",
     headerClassName: "w-10",
   },
   {
     key: "runs",
-    header: "失点",
+    header: "失",
     cell: (row) => row.pitchingResult?.runs ?? "",
     headerClassName: "w-10",
   },

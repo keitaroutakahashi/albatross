@@ -140,16 +140,16 @@ const calcTeamPitchingStats = (
 
 const pitchingColumns: ColumnDef<TeamPitchingStats>[] = [
   { key: "era", header: "防御率", cell: (row) => row.era },
-  { key: "hitsAllowed", header: "被安", cell: (row) => row.hitsAllowed },
+  { key: "hitsAllowed", header: "安", cell: (row) => row.hitsAllowed },
   {
     key: "homeRunsAllowed",
-    header: "被本",
+    header: "本",
     cell: (row) => row.homeRunsAllowed,
   },
   { key: "strikeouts", header: "三振", cell: (row) => row.strikeouts },
-  { key: "walks", header: "与四", cell: (row) => row.walks },
-  { key: "hitByPitches", header: "与死", cell: (row) => row.hitByPitches },
-  { key: "runs", header: "失点", cell: (row) => row.runs },
+  { key: "walks", header: "四", cell: (row) => row.walks },
+  { key: "hitByPitches", header: "死", cell: (row) => row.hitByPitches },
+  { key: "runs", header: "失", cell: (row) => row.runs },
   { key: "earnedRuns", header: "自責", cell: (row) => row.earnedRuns },
 ];
 
@@ -164,7 +164,7 @@ const battingColumns: ColumnDef<TeamBattingStats>[] = [
   { key: "3b", header: "三", cell: (row) => row.triples },
   { key: "hr", header: "本", cell: (row) => row.hr },
   { key: "rbi", header: "打点", cell: (row) => row.rbi },
-  { key: "sb", header: "盗塁", cell: (row) => row.sb },
+  { key: "sb", header: "盗", cell: (row) => row.sb },
   { key: "bb", header: "四", cell: (row) => row.bb },
   { key: "hbp", header: "死", cell: (row) => row.hbp },
   { key: "sh", header: "犠打", cell: (row) => row.sh },
