@@ -21,7 +21,7 @@ export const GameResults = ({ game }: Props) => {
   const inningCount = game.innings.length;
 
   return (
-    <SectionGroup title="出場成績">
+    <SectionGroup title="個人成績">
       <div className="space-y-8">
         <SubSectionGroup title="打者成績">
           <div className="overflow-x-auto">
