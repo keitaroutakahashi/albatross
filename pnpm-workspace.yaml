@@ -1,8 +1,9 @@
 packages:
   - .
 
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
-
-onlyBuiltDependencies: '["prisma", "@prisma/engines"]'
+# ビルドスクリプトの実行可否(pnpm 11 以降は allowBuilds に統一）
+allowBuilds:
+  prisma: true
+  "@prisma/engines": true
+  esbuild: false
+  sharp: false
