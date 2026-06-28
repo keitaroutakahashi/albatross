@@ -1,7 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
-import { seedGames } from "./seeds/game.js";
+import { seedGames } from "./seeds/games/index.js";
 import { seedGrounds } from "./seeds/ground.js";
 import { seedLeagues } from "./seeds/league.js";
 import { seedMembers } from "./seeds/member.js";

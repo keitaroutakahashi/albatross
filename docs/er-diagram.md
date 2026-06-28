@@ -106,6 +106,7 @@ erDiagram
 "PitchingResult" {
   Int id PK
   Int gameMemberId FK,UK
+  Int pitchingOrder
   Int inningsPitched
   Int partialOuts "nullable"
   Int earnedRuns
@@ -273,6 +274,7 @@ Properties as follows:
 
 - `id`:
 - `gameMemberId`:
+- `pitchingOrder`:
 - `inningsPitched`:
 - `partialOuts`:
 - `earnedRuns`:

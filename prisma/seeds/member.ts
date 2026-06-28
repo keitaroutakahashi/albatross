@@ -4,7 +4,6 @@ import type {
 } from "../../src/generated/prisma/client.js";
 
 const memberData: Prisma.MemberCreateInput[] = [
-  // スタメン想定（9名）
   {
     name: "田中太郎",
     uniformNumber: "1",
@@ -75,7 +74,6 @@ const memberData: Prisma.MemberCreateInput[] = [
     throwHand: "right",
     batHand: "right",
   },
-  // ベンチメンバー（3名）
   {
     name: "加藤隼人",
     uniformNumber: "10",

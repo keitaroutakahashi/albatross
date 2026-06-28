@@ -281,6 +281,7 @@ model PitchingResult {
   gameMemberId Int        @unique
   gameMember   GameMember @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
 
+  pitchingOrder   Int               @default(1) // 登板順（先発 = 1）
   inningsPitched  Int               @default(0) // 投球回数（完了イニング数）
   partialOuts     Int? // イニング間交代時のアウト数（0, 1, 2, null）
   earnedRuns      Int               @default(0) // 自責点

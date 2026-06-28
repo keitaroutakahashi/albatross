@@ -94,7 +94,15 @@ const columns: ColumnDef<PitcherRow>[] = [
 ];
 
 export const GamePitchers = ({ game }: Props) => {
-  const pitchers = game.gameMembers.filter((gm) => gm.pitchingResult != null);
+  const pitchers = game.gameMembers
+    .filter((gm) => gm.pitchingResult != null)
+    .sort(
+      (a, b) =>
+        (a.pitchingResult?.pitchingOrder ?? 0) -
+        (b.pitchingResult?.pitchingOrder ?? 0),
+    );
+
+  console.log(pitchers);
 
   if (pitchers.length === 0) {
     return null;
