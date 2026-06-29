@@ -7,6 +7,7 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
+import { formatEraFromStats } from "@/app/_utils/stats/era";
 
 type Props = {
   game: GameDetail;
@@ -92,12 +93,6 @@ type TeamPitchingStats = {
   earnedRuns: number;
 };
 
-/** 防御率を "X.XX" 形式でフォーマット */
-const formatEra = (earnedRuns: number, totalInnings: number): string => {
-  if (totalInnings === 0) return "-";
-  return ((earnedRuns * 7) / totalInnings).toFixed(2);
-};
-
 /** 全投手の成績からチーム集計を算出 */
 const calcTeamPitchingStats = (
   members: GameDetail["gameMembers"],
@@ -106,7 +101,10 @@ const calcTeamPitchingStats = (
     .map((gm) => gm.pitchingResult)
     .filter((pr) => pr != null);
 
-  let totalInnings = 0;
+  // 防御率は浮動小数点の誤差を避けるため、完了イニングとアウト数を
+  // それぞれ整数で積算し、calculateEra（アウト総数ベース）に渡す。
+  let inningsPitched = 0;
+  let partialOuts = 0;
   let earnedRuns = 0;
   let runs = 0;
   let hitsAllowed = 0;
@@ -116,7 +114,8 @@ const calcTeamPitchingStats = (
   let hitByPitches = 0;
 
   for (const pr of pitchers) {
-    totalInnings += pr.inningsPitched + (pr.partialOuts ?? 0) / 3;
+    inningsPitched += pr.inningsPitched;
+    partialOuts += pr.partialOuts ?? 0;
     earnedRuns += pr.earnedRuns;
     runs += pr.runs;
     hitsAllowed += pr.hitsAllowed;
@@ -127,7 +126,7 @@ const calcTeamPitchingStats = (
   }
 
   return {
-    era: formatEra(earnedRuns, totalInnings),
+    era: formatEraFromStats({ earnedRuns, inningsPitched, partialOuts }),
     hitsAllowed,
     homeRunsAllowed,
     strikeouts,
