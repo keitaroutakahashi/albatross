@@ -90,18 +90,20 @@ export const GameInfo = ({ game }: Props) => {
         </p>
       </SubSectionGroup>
 
-      <SubSectionGroup title="試合動画">
-        <iframe
-          className="w-full h-full @content:w-140 @content:h-78.75"
-          width="560"
-          height="315"
-          src="https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-        />
-      </SubSectionGroup>
+      {game.videoUrl && (
+        <SubSectionGroup title="試合動画">
+          <iframe
+            className="w-full h-full @content:w-140 @content:h-78.75"
+            width="560"
+            height="315"
+            src={game.videoUrl}
+            title="YouTube video player"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        </SubSectionGroup>
+      )}
     </SectionGroup>
   );
 };

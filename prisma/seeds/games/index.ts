@@ -3,7 +3,6 @@ import type {
   PrismaClient,
 } from "../../../src/generated/prisma/client.js";
 import type { SeedContext } from "./_shared.js";
-import { seedSeason2024 } from "./2024/index.js";
 import { seedSeason2025 } from "./2025/index.js";
 import { seedSeason2026 } from "./2026/index.js";
 
@@ -11,9 +10,7 @@ export async function seedGames(prisma: PrismaClient) {
   console.log("Seeding games...");
 
   // マスタデータを取得
-  const season2024 = await prisma.season.findUnique({
-    where: { season: 2024 },
-  });
+
   const season2025 = await prisma.season.findUnique({
     where: { season: 2025 },
   });
@@ -27,7 +24,7 @@ export async function seedGames(prisma: PrismaClient) {
     orderBy: { id: "asc" },
   });
 
-  if (!season2024 || !season2025 || !season2026) {
+  if (!season2025 || !season2026) {
     throw new Error("Season data not found");
   }
 
@@ -61,7 +58,6 @@ export async function seedGames(prisma: PrismaClient) {
   ];
 
   const ctx: SeedContext = {
-    season2024,
     season2025,
     season2026,
     tokyoLeague,
@@ -76,7 +72,6 @@ export async function seedGames(prisma: PrismaClient) {
   };
 
   // シーズンごとにデータを投入
-  await seedSeason2024(prisma, ctx);
   await seedSeason2025(prisma, ctx);
   await seedSeason2026(prisma, ctx);
 

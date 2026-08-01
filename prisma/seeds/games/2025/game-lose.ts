@@ -7,7 +7,7 @@ import {
 } from "../_shared.js";
 
 // 試合6: 2025年 公式戦 敗北（4-6、5回制・全員打ち12人）
-export async function seedGame6(prisma: PrismaClient, ctx: SeedContext) {
+export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
   const { season2025, tokyoLeague, grounds, opponents, members } = ctx;
 
   const game = await prisma.game.create({
@@ -28,6 +28,7 @@ export async function seedGame6(prisma: PrismaClient, ctx: SeedContext) {
       teamErrors: 0,
       opponentErrors: 1,
       result: "lose",
+      videoUrl: "https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW",
     },
   });
 

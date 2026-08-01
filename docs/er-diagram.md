@@ -61,20 +61,23 @@ erDiagram
   DateTime date
   Int gameNumber
   GameType gameType
-  Boolean isFirstBatting
+  Boolean isFirstBatting "nullable"
   GameStatus status
   Int seasonId FK
-  Int leagueId FK
+  Int leagueId FK "nullable"
   Int groundId FK "nullable"
-  Int opponentId FK
-  Int teamScore
-  Int opponentScore
-  Int teamHits
-  Int opponentHits
-  Int teamErrors
-  Int opponentErrors
+  Int opponentId FK "nullable"
+  Int teamScore "nullable"
+  Int opponentScore "nullable"
+  Int teamHits "nullable"
+  Int opponentHits "nullable"
+  Int teamErrors "nullable"
+  Int opponentErrors "nullable"
   GameResult result "nullable"
   String summary "nullable"
+  String aiGoodPoints "nullable"
+  String aiBadPoints "nullable"
+  String videoUrl "nullable"
   String note "nullable"
   DateTime createdAt
   DateTime updatedAt
@@ -132,9 +135,9 @@ erDiagram
   DateTime updatedAt
 }
 "Game" }o--|| "Season" : season
-"Game" }o--|| "League" : league
+"Game" }o--o| "League" : league
 "Game" }o--o| "Ground" : ground
-"Game" }o--|| "Opponent" : opponent
+"Game" }o--o| "Opponent" : opponent
 "GameWeather" |o--|| "Game" : game
 "Inning" }o--|| "Game" : game
 "GameMember" }o--|| "Game" : game
@@ -231,6 +234,9 @@ Properties as follows:
 - `opponentErrors`:
 - `result`:
 - `summary`:
+- `aiGoodPoints`:
+- `aiBadPoints`:
+- `videoUrl`:
 - `note`:
 - `createdAt`:
 - `updatedAt`:

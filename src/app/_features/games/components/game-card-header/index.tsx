@@ -35,7 +35,7 @@ export const GameCardHeader = ({ game }: Props) => {
           </p>
         </div>
       </div>
-      <p className="font-bold text-sm">{game.league.name}</p>
+      <p className="font-bold text-sm">{game?.league?.name ?? ""}</p>
     </div>
   );
 };

@@ -1,14 +1,16 @@
 import type { PrismaClient } from "../../../../src/generated/prisma/client.js";
 import type { SeedContext } from "../_shared.js";
-import { seedGame4 } from "./game4.js";
-import { seedGame5 } from "./game5.js";
-import { seedGame6 } from "./game6.js";
-import { seedGame7 } from "./game7.js";
+import { seedGameCanceled } from "./game-canceled.js";
+import { seedGameLose } from "./game-lose.js";
+import { seedGamePractice } from "./game-practice.js";
+import { seedGameScheduled } from "./game-scheduled.js";
+import { seedGameWin } from "./game-win.js";
 
 // 2025年シーズンの試合データを投入
 export async function seedSeason2025(prisma: PrismaClient, ctx: SeedContext) {
-  await seedGame4(prisma, ctx);
-  await seedGame5(prisma, ctx);
-  await seedGame6(prisma, ctx);
-  await seedGame7(prisma, ctx);
+  await seedGameScheduled(prisma, ctx);
+  await seedGameCanceled(prisma, ctx);
+  await seedGameLose(prisma, ctx);
+  await seedGameWin(prisma, ctx);
+  await seedGamePractice(prisma, ctx);
 }

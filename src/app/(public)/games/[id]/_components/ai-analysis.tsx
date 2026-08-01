@@ -6,16 +6,20 @@ type Props = {
   game: GameDetail;
 };
 
-export const AIAnalysis = ({ game: _game }: Props) => {
+export const AIAnalysis = ({ game }: Props) => {
   return (
     <section>
       <SectionHeader text="AI分析" />
-      <section>
-        <SectionSubtitle text="評価点" />
-      </section>
-      <section>
-        <SectionSubtitle text="改善点" />
-      </section>
+      <div className="flex flex-col gap-y-5">
+        <section className="flex flex-col gap-y-2">
+          <SectionSubtitle text="評価点" />
+          <p className="whitespace-pre-line text-sm">{game?.aiGoodPoints}</p>
+        </section>
+        <section className="flex flex-col gap-y-2">
+          <SectionSubtitle text="改善点" />
+          <p className="whitespace-pre-line text-sm">{game?.aiBadPoints}</p>
+        </section>
+      </div>
     </section>
   );
 };

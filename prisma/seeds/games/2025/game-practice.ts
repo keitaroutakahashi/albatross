@@ -7,19 +7,18 @@ import {
   type SeedContext,
 } from "../_shared.js";
 
-// 試合7: 2025年 公式戦 勝利（10-3、5回コールド・11人打ち）
-export async function seedGame7(prisma: PrismaClient, ctx: SeedContext) {
-  const { season2025, tokyoLeague, grounds, opponents, members } = ctx;
+// 試合7: 2025年 練習試合 勝利（10-3、5回コールド・11人打ち）
+export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
+  const { season2025, grounds, opponents, members } = ctx;
 
   const game = await prisma.game.create({
     data: {
-      date: new Date("2025-06-08T10:00:00"),
+      date: new Date("2025-06-10T10:00:00"),
       gameNumber: 1,
-      gameType: "official",
+      gameType: "practice",
       isFirstBatting: true,
       status: "completed",
       seasonId: season2025.id,
-      leagueId: tokyoLeague.id,
       groundId: grounds[3].id,
       opponentId: opponents[3].id,
       teamScore: 10,
@@ -29,6 +28,11 @@ export async function seedGame7(prisma: PrismaClient, ctx: SeedContext) {
       teamErrors: 0,
       opponentErrors: 1,
       result: "win",
+      videoUrl: "https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW",
+      aiGoodPoints:
+        "最大の勝因は2回の集中打です。打者一巡で一挙6得点を奪い、序盤で試合の主導権を握りました。\n\nチーム13安打と打線が途切れずつながり、特に3番佐藤の3安打猛打賞、4番鈴木の2安打2打点が効果的でした。\n\n守備は無失策と堅実で、先発・渡辺が5奪三振で5回を投げ切り完投勝利。攻守がかみ合った理想的な試合運びで、5回コールド勝ちを呼び込みました。",
+      aiBadPoints:
+        "改善点は立ち上がりです。初回にいきなり先制を許し、最終回にも1点を失うなど、流れを渡しかねない失点が見られました。\n\n投球では四球2・被安打6とやや走者を背負う場面が散発。打線でも5番と6番が3打席で快音なく三振も目立ち、好機をさらに広げきれませんでした。\n\n大量点で勝てた一戦だけに、僅差の展開を見据えた守りの締めと、下位打線の奮起が次戦への課題と言えます。",
     },
   });
 

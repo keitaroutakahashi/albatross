@@ -22,6 +22,7 @@ datasource db {
 enum GameType {
   official // 公式戦
   practice // 練習試合
+  undecided // 未定
 }
 
 enum GameStatus {
@@ -162,17 +163,17 @@ model Opponent {
 
 // チームメンバー
 model Member {
-  id           Int            @id @default(autoincrement())
-  name         String
+  id            Int            @id @default(autoincrement())
+  name          String
   uniformNumber String // 背番号
-  position     Position
-  subPositions Position[]
-  throwHand    Hand
-  batHand      Hand
-  category     MemberCategory @default(regular) // メンバー区分
-  isActive     Boolean        @default(true)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  position      Position
+  subPositions  Position[]
+  throwHand     Hand
+  batHand       Hand
+  category      MemberCategory @default(regular) // メンバー区分
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   gameMembers GameMember[]
 }
@@ -188,19 +189,19 @@ model Game {
   gameNumber Int      @default(1) // 同日の試合番号（ダブルヘッダー対応）
 
   // 試合設定
-  gameType       GameType   @default(official) // 公式戦 or 練習試合
-  isFirstBatting Boolean    @default(true) // true: 先攻, false: 後攻
+  gameType       GameType   @default(undecided) // 公式戦 or 練習試合
+  isFirstBatting Boolean? // true: 先攻, false: 後攻, null: 未定
   status         GameStatus @default(scheduled)
 
   // リレーション
   seasonId   Int
-  season     Season   @relation(fields: [seasonId], references: [id])
-  leagueId   Int
-  league     League   @relation(fields: [leagueId], references: [id])
+  season     Season    @relation(fields: [seasonId], references: [id])
+  leagueId   Int?
+  league     League?   @relation(fields: [leagueId], references: [id])
   groundId   Int?
-  ground     Ground?  @relation(fields: [groundId], references: [id])
-  opponentId Int
-  opponent   Opponent @relation(fields: [opponentId], references: [id])
+  ground     Ground?   @relation(fields: [groundId], references: [id])
+  opponentId Int?
+  opponent   Opponent? @relation(fields: [opponentId], references: [id])
 
   // イニング
   innings Inning[]
@@ -209,12 +210,12 @@ model Game {
   gameMembers GameMember[]
 
   // 試合結果（キャッシュ）
-  teamScore      Int         @default(0)
-  opponentScore  Int         @default(0)
-  teamHits       Int         @default(0) // 自チーム安打数
-  opponentHits   Int         @default(0) // 相手チーム安打数
-  teamErrors     Int         @default(0) // 自チームエラー数
-  opponentErrors Int         @default(0) // 相手チームエラー数
+  teamScore      Int? // 自チーム得点
+  opponentScore  Int? // 相手チーム得点
+  teamHits       Int? // 自チーム安打数
+  opponentHits   Int? // 相手チーム安打数
+  teamErrors     Int? // 自チームエラー数
+  opponentErrors Int? // 相手チームエラー数
   result         GameResult?
 
   // 天候
@@ -222,6 +223,13 @@ model Game {
 
   // 戦評
   summary String?
+
+  // AI による講評
+  aiGoodPoints String? // AI からの評価点（良かった点）
+  aiBadPoints  String? // AI からの改善点
+
+  // 試合動画
+  videoUrl String? // 試合動画用のリンク
 
   // （雨天中止など）
   note String?

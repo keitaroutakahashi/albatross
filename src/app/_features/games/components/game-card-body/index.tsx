@@ -7,11 +7,20 @@ type Props = {
 };
 
 export const GameCardBody = ({ game }: Props) => {
+  if (game.isFirstBatting === null) {
+    return (
+      <div className="grid grid-cols-3 gap-x-2 p-3 @content:px-10 @content:flex-1">
+        <div />
+        <GameCardScoreInfo game={game} />
+        <div />
+      </div>
+    );
+  }
   return (
     <div className="grid grid-cols-3 gap-x-2 p-3 @content:px-10 @content:flex-1">
       <GameCardTeamInfo
         isHome={game.isFirstBatting}
-        teamName={game.isFirstBatting ? "Albatross" : game.opponent.name}
+        teamName={game.isFirstBatting ? "Albatross" : game?.opponent?.name}
         pitcher={""}
       />
 
@@ -19,7 +28,7 @@ export const GameCardBody = ({ game }: Props) => {
 
       <GameCardTeamInfo
         isHome={!game.isFirstBatting}
-        teamName={!game.isFirstBatting ? "Albatross" : game.opponent.name}
+        teamName={!game.isFirstBatting ? "Albatross" : game?.opponent?.name}
         pitcher={""}
       />
     </div>

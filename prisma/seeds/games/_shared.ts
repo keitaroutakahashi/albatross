@@ -12,7 +12,6 @@ import type {
 
 // 各試合シーダーに渡すマスタデータ
 export type SeedContext = {
-  season2024: Season;
   season2025: Season;
   season2026: Season;
   tokyoLeague: League;
