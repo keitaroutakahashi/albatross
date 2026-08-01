@@ -7,3 +7,5 @@ allowBuilds:
   "@prisma/engines": true
   esbuild: false
   sharp: false
+  # code-inspector の terminal agent 機能でのみ使用（本プロジェクトでは未使用）
+  node-pty: false
