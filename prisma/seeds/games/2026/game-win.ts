@@ -13,7 +13,7 @@ export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
 
   const game = await prisma.game.create({
     data: {
-      date: new Date("2026-05-30T13:00:00"),
+      date: new Date("2026-07-30T13:00:00"),
       gameNumber: 1,
       gameType: "official",
       isFirstBatting: true,

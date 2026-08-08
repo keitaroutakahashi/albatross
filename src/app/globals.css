@@ -13,6 +13,24 @@
   --color-black: #333;
 
   --container-content: 49rem;
+
+  /* ヒーロー画像のクロスフェード（1 周 12s / 3 枚 = 1 枚あたり 4s） */
+  --animate-hero-rotate: hero-rotate 12s ease-in-out infinite;
+
+  @keyframes hero-rotate {
+    /* 表示 → フェードアウト → 待機 → フェードイン */
+    0%,
+    25% {
+      opacity: 1;
+    }
+    33.333%,
+    91.666% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 }
 
 @theme inline {

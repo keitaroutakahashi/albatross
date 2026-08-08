@@ -24,6 +24,18 @@ export const formatAsYYYY = (dateString: string | Date) => {
   return format(date, "YYYY", localeJa);
 };
 
+/** "04.06" のように月日をフォーマットする */
+export const formatAsMMDDWithDot = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return format(date, "MM.DD", localeJa);
+};
+
+/** "2025.04.06" のように日付をフォーマットする */
+export const formatAsYYYYMMDDWithDot = (dateString: string | Date) => {
+  const date = new Date(dateString);
+  return format(date, "YYYY.MM.DD", localeJa);
+};
+
 /** "2025年4月6日" のように日付をフォーマットする */
 export const formatAsFullDate = (dateString: string | Date) => {
   const date = new Date(dateString);

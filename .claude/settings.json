@@ -1,6 +1,16 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm test)"],
+    "allow": [
+      "Bash(pnpm test)",
+      "Bash(lsof -nP -iTCP:3000 -sTCP:LISTEN)",
+      "mcp__chrome-devtools__list_pages",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-08-23\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-09-13\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-10-04\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-11-08\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-12-13\" \"+%Y-%m-%d %a\")",
+      "Bash(pnpm exec *)"
+    ],
     "deny": [
       "Bash(sudo:*)",
       "Bash(rm:*)",

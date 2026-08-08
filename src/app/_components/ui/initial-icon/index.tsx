@@ -2,10 +2,11 @@ import clsx from "clsx";
 
 type Props = {
   name: string;
-  size?: "xl" | "xs";
+  size?: "2xl" | "xl" | "xs";
 };
 
 const sizeStyles = {
+  "2xl": "size-16 md:size-24 text-2xl md:text-4xl",
   xl: "size-14 @content:size-24 text-xl @content:text-4xl",
   xs: "size-6 @content:size-8 text-xs @content:text-base",
 } as const;

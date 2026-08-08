@@ -36,9 +36,11 @@ export default function Layout({ children }: LayoutProps<"/">) {
           "break-normal",
         )}
       >
-        <div className="@container max-w-3xl mx-auto">
-          <Header />
-          <div className="min-h-[calc(100vh-var(--size-header-height)-var(--size-footer-height))]">
+        {/* Header は fixed のため、@container（レイアウト封じ込めが効き fixed の
+            基準要素になってしまう）の外に置く */}
+        <Header />
+        <div className="@container max-w-3xl mx-auto pt-(--size-header-height)">
+          <div className="min-h-[calc(100dvh-var(--size-header-height)-var(--size-footer-height))]">
             {children}
           </div>
           <Footer />
