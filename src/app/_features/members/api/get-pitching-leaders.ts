@@ -1,13 +1,12 @@
-import { isQualifiedPitcher } from "@/app/_features/members/utils/qualification";
 import {
   type MemberRanking,
   type MemberStatsBase,
   toMemberRanking,
 } from "@/app/_features/members/utils/ranking";
+import { calculateEra } from "@/app/_utils/stats/era";
+import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+import { isQualifiedPitcher } from "@/app/_utils/stats/qualification";
 import prisma from "@/lib/prisma";
-
-/** 1 イニングのアウト数 */
-const OUTS_PER_INNING = 3;
 
 export type PitchingLeaders = {
   /** 防御率（規定投球回を満たす投手のみ。値が小さいほど上位） */
@@ -27,10 +26,6 @@ type MemberStats = MemberStatsBase & {
   strikeouts: number;
   wins: number;
 };
-
-/** 防御率 = 自責点 * 9 / 投球回 */
-const toEra = (stat: MemberStats) =>
-  (stat.earnedRuns * 9 * OUTS_PER_INNING) / stat.outs;
 
 /**
  * 指定シーズンの投手成績上位者を取得する。
@@ -97,7 +92,17 @@ export const getPitchingLeaders = async (
 
   return {
     // 防御率は 0.00 が最上位のため、値が 0 でも除外しない
-    era: toMemberRanking(qualified, toEra, "asc"),
+    // qualified は outs > 0 のみのため、calculateEra が null になることはない
+    era: toMemberRanking(
+      qualified,
+      (stat) =>
+        calculateEra({
+          earnedRuns: stat.earnedRuns,
+          inningsPitched: Math.floor(stat.outs / OUTS_PER_INNING),
+          partialOuts: stat.outs % OUTS_PER_INNING,
+        }) ?? 0,
+      "asc",
+    ),
     // 記録が 0 の投手はランキングに含めない
     win: toMemberRanking(
       stats.filter((stat) => stat.wins > 0),

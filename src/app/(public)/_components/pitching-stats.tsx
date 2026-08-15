@@ -5,6 +5,7 @@ import {
   type PitchingLeaders,
 } from "@/app/_features/members/api/get-pitching-leaders";
 import { getCurrentSeason } from "@/app/_utils/date/date";
+import { formatInnings } from "@/app/_utils/stats/innings";
 
 const CATEGORIES = [
   { key: "era", label: "防御率" },
@@ -25,7 +26,7 @@ const formatValue = (key: keyof PitchingLeaders, value: number) => {
   }
 
   if (key === "inning") {
-    return `${Math.floor(value / 3)}.${value % 3}`;
+    return formatInnings(value);
   }
 
   return String(value);

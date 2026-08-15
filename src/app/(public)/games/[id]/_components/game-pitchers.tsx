@@ -2,6 +2,7 @@ import { Circle } from "lucide-react";
 import type { ColumnDef } from "@/app/_components/ui/data-table";
 import { DataTable } from "@/app/_components/ui/data-table";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { formatInningsPitched } from "@/app/_utils/stats/innings";
 import type { Weather } from "@/generated/prisma/enums";
 
 type Props = {
@@ -9,15 +10,6 @@ type Props = {
 };
 
 type PitcherRow = GameDetail["gameMembers"][number];
-
-/** 投球回を "5 1/3" 形式でフォーマット */
-const formatInningsPitched = (
-  inningsPitched: number,
-  partialOuts: number | null,
-): string => {
-  if (partialOuts == null) return `${inningsPitched}`;
-  return `${inningsPitched} ${partialOuts}/3`;
-};
 
 /** 勝敗を記号で表示 */
 const decisionLabel = (decision: string | null) => {

@@ -1,8 +1,7 @@
+import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+
 /** 打率などの規定打席（この打席数に達していれば試合数に関わらず対象） */
 const QUALIFIED_PLATE_APPEARANCES = 10;
-
-/** 1 イニングのアウト数 */
-const OUTS_PER_INNING = 3;
 
 /** 防御率などの規定投球回（アウト数換算。この投球回に達していれば試合数に関わらず対象） */
 const QUALIFIED_INNINGS_OUTS = 10 * OUTS_PER_INNING;

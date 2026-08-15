@@ -2,8 +2,14 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
-import { isQualifiedBatter } from "@/app/_features/members/utils/qualification";
 import type { MemberStatsBase } from "@/app/_features/members/utils/ranking";
+import {
+  calculateBattingAverage,
+  calculateOnBasePercentage,
+  calculateOps,
+  calculateSluggingPercentage,
+} from "@/app/_utils/stats/batting";
+import { isQualifiedBatter } from "@/app/_utils/stats/qualification";
 import prisma from "@/lib/prisma";
 
 /** 単打以外の安打1本あたりの塁打数 */
@@ -166,14 +172,16 @@ export const getBattingStats = async (
   const rows: BattingStatRow[] = [...statsByMemberId.values()]
     .filter((stats) => stats.plateAppearances > 0)
     .map((stats) => {
-      const onBaseDenominator =
-        stats.atBats + stats.walks + stats.sacrificeFlies;
-      const onBasePercentage =
-        onBaseDenominator > 0
-          ? (stats.hits + stats.walks) / onBaseDenominator
-          : null;
-      const sluggingPercentage =
-        stats.atBats > 0 ? stats.totalBases / stats.atBats : null;
+      const onBasePercentage = calculateOnBasePercentage({
+        hits: stats.hits,
+        walks: stats.walks,
+        atBats: stats.atBats,
+        sacrificeFlies: stats.sacrificeFlies,
+      });
+      const sluggingPercentage = calculateSluggingPercentage({
+        totalBases: stats.totalBases,
+        atBats: stats.atBats,
+      });
 
       return {
         memberId: stats.memberId,
@@ -192,13 +200,13 @@ export const getBattingStats = async (
         strikeouts: stats.strikeouts,
         sacrificeHits: stats.sacrificeHits,
         sacrificeFlies: stats.sacrificeFlies,
-        average: stats.atBats > 0 ? stats.hits / stats.atBats : null,
+        average: calculateBattingAverage({
+          hits: stats.hits,
+          atBats: stats.atBats,
+        }),
         onBasePercentage,
         sluggingPercentage,
-        ops:
-          onBasePercentage !== null && sluggingPercentage !== null
-            ? onBasePercentage + sluggingPercentage
-            : null,
+        ops: calculateOps({ onBasePercentage, sluggingPercentage }),
         isQualified: isQualifiedBatter(stats.plateAppearances, gameCount),
       };
     });

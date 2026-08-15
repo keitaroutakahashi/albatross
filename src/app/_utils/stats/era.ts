@@ -1,3 +1,5 @@
+import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+
 /** 防御率（ERA）の算出に必要な投球成績 */
 type EraInput = {
   /** 自責点 */
@@ -8,8 +10,6 @@ type EraInput = {
   partialOuts?: number | null;
 };
 
-/** 1イニングあたりのアウト数 */
-const OUTS_PER_INNING = 3;
 /** 1試合のイニング数（草野球は7イニング制） */
 const INNINGS_PER_GAME = 7;
 /** 1試合（7イニング）あたりのアウト数 */

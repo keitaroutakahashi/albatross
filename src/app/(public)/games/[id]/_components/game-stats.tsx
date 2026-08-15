@@ -7,7 +7,13 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
+import {
+  calculateBattingAverage,
+  calculateOnBasePercentage,
+  calculateSluggingPercentage,
+} from "@/app/_utils/stats/batting";
 import { formatEraFromStats } from "@/app/_utils/stats/era";
+import { formatRate } from "@/app/_utils/stats/rate";
 
 type Props = {
   game: GameDetail;
@@ -33,14 +39,6 @@ type TeamBattingStats = {
   so: number;
 };
 
-/** 率を ".000" 形式でフォーマット */
-const formatRate = (numerator: number, denominator: number): string => {
-  if (denominator === 0) return ".000";
-  const rate = numerator / denominator;
-  if (rate >= 1) return rate.toFixed(3);
-  return rate.toFixed(3).slice(1);
-};
-
 /** 全メンバーの打席データからチーム集計を算出 */
 const calcTeamBattingStats = (
   members: GameDetail["gameMembers"],
@@ -61,10 +59,22 @@ const calcTeamBattingStats = (
     if (pa.result === "homeRun") totalBases += 4;
   }
 
+  const average = calculateBattingAverage({ hits: h, atBats: ab });
+  const sluggingPercentage = calculateSluggingPercentage({
+    totalBases,
+    atBats: ab,
+  });
+  const onBasePercentage = calculateOnBasePercentage({
+    hits: h,
+    walks: bb + hbp,
+    atBats: ab,
+    sacrificeFlies: sf,
+  });
+
   return {
-    avg: formatRate(h, ab),
-    slg: formatRate(totalBases, ab),
-    obp: formatRate(h + bb + hbp, ab + bb + hbp + sf),
+    avg: formatRate(average, ".000"),
+    slg: formatRate(sluggingPercentage, ".000"),
+    obp: formatRate(onBasePercentage, ".000"),
     pa: allPAs.length,
     ab,
     h,

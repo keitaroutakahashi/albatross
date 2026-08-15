@@ -1,10 +1,9 @@
-import { isQualifiedPitcher } from "@/app/_features/members/utils/qualification";
 import type { MemberStatsBase } from "@/app/_features/members/utils/ranking";
 import { calculateEra } from "@/app/_utils/stats/era";
+import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+import { isQualifiedPitcher } from "@/app/_utils/stats/qualification";
+import { calculateWhip } from "@/app/_utils/stats/whip";
 import prisma from "@/lib/prisma";
-
-/** 1 イニングのアウト数 */
-const OUTS_PER_INNING = 3;
 
 export type PitchingStatRow = MemberStatsBase & {
   /** 登板数（その選手の投球成績レコード数） */
@@ -138,10 +137,11 @@ export const getPitchingStats = async (
         inningsPitched: Math.floor(stats.outs / OUTS_PER_INNING),
         partialOuts: stats.outs % OUTS_PER_INNING,
       });
-      const whip =
-        stats.outs > 0
-          ? (stats.walks + stats.hitsAllowed) / (stats.outs / OUTS_PER_INNING)
-          : null;
+      const whip = calculateWhip({
+        walks: stats.walks,
+        hitsAllowed: stats.hitsAllowed,
+        outs: stats.outs,
+      });
 
       return {
         memberId: stats.memberId,

@@ -1,4 +1,5 @@
 import type { PitchingStatRow } from "@/app/_features/members/api/get-pitching-stats";
+import { formatInnings } from "@/app/_utils/stats/innings";
 
 export type PitchingStatsCategory = {
   key: keyof PitchingStatRow;
@@ -12,9 +13,6 @@ export type PitchingStatsCategory = {
 };
 
 const formatDecimal2 = (value: number) => value.toFixed(2);
-
-/** アウト数を野球慣例の "5.1"（5 回 1/3）表記に変換する */
-const formatInnings = (outs: number) => `${Math.floor(outs / 3)}.${outs % 3}`;
 
 const formatCount = (value: number) => String(value);
 

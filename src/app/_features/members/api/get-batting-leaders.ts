@@ -2,12 +2,13 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
-import { isQualifiedBatter } from "@/app/_features/members/utils/qualification";
 import {
   type MemberRanking,
   type MemberStatsBase,
   toMemberRanking,
 } from "@/app/_features/members/utils/ranking";
+import { calculateBattingAverage } from "@/app/_utils/stats/batting";
+import { isQualifiedBatter } from "@/app/_utils/stats/qualification";
 import prisma from "@/lib/prisma";
 
 export type BattingLeaders = {
@@ -105,9 +106,10 @@ export const getBattingLeaders = async (
 
   // 記録が 0 の選手はランキングに含めない
   return {
+    // qualified は atBats > 0 のみのため、calculateBattingAverage が null になることはない
     average: toMemberRanking(
       qualified.filter((stat) => stat.hits > 0),
-      (stat) => stat.hits / stat.atBats,
+      (stat) => calculateBattingAverage(stat) ?? 0,
     ),
     rbi: toMemberRanking(
       stats.filter((stat) => stat.rbi > 0),
