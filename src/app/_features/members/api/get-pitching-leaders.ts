@@ -1,3 +1,4 @@
+import { isQualifiedPitcher } from "@/app/_features/members/utils/qualification";
 import {
   type MemberRanking,
   type MemberStatsBase,
@@ -7,9 +8,6 @@ import prisma from "@/lib/prisma";
 
 /** 1 イニングのアウト数 */
 const OUTS_PER_INNING = 3;
-
-/** 防御率の規定投球回（この投球回に達していれば試合数に関わらず対象） */
-const QUALIFIED_INNINGS = 10;
 
 export type PitchingLeaders = {
   /** 防御率（規定投球回を満たす投手のみ。値が小さいほど上位） */
@@ -93,12 +91,8 @@ export const getPitchingLeaders = async (
 
   const stats = [...statsByMemberId.values()];
 
-  // 規定投球回: 10 イニング以上、またはシーズンの試合数以上を投げていること
   const qualified = stats.filter(
-    (stat) =>
-      stat.outs > 0 &&
-      (stat.outs >= QUALIFIED_INNINGS * OUTS_PER_INNING ||
-        stat.outs >= gameCount * OUTS_PER_INNING),
+    (stat) => stat.outs > 0 && isQualifiedPitcher(stat.outs, gameCount),
   );
 
   return {
