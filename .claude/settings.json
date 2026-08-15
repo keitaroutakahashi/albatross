@@ -1,4 +1,6 @@
 {
+  "model": "opusplan",
+  "effortLevel": "high",
   "permissions": {
     "allow": [
       "Bash(pnpm test)",

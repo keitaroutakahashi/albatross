@@ -31,6 +31,21 @@
       opacity: 1;
     }
   }
+
+  /* 次の試合バーのドット（拡大縮小しながら点滅） */
+  --animate-pulse-dot: pulse-dot 1.5s ease-in-out infinite;
+
+  @keyframes pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(0.8);
+    }
+  }
 }
 
 @theme inline {

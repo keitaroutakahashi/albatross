@@ -85,6 +85,7 @@ export const NextGameBar = async () => {
         <div className="basis-full" />
 
         <div className="flex items-center gap-x-2">
+          <span className="block size-3 bg-secondary rounded-full animate-pulse-dot" />
           <GameCountdown targetDate={game.date.toISOString()} />
         </div>
       </div>
