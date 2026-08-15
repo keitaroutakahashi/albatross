@@ -41,6 +41,18 @@ export function SideNavigation({ children }: Props) {
               </li>
             </ul>
           </div>
+          <div>
+            <DrawerTitle className="text-sm">成績</DrawerTitle>
+            <ul className="mt-1">
+              <li>
+                <DrawerClose asChild>
+                  <Link href="/batting-stats" className="text-sm underline">
+                    打者成績
+                  </Link>
+                </DrawerClose>
+              </li>
+            </ul>
+          </div>
         </div>
       </DrawerContent>
     </Drawer>

@@ -2,15 +2,13 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
+import { isQualifiedBatter } from "@/app/_features/members/utils/qualification";
 import {
   type MemberRanking,
   type MemberStatsBase,
   toMemberRanking,
 } from "@/app/_features/members/utils/ranking";
 import prisma from "@/lib/prisma";
-
-/** 打率の規定打席（この打席数に達していれば試合数に関わらず対象） */
-const QUALIFIED_PLATE_APPEARANCES = 10;
 
 export type BattingLeaders = {
   /** 打率（規定打席を満たす選手のみ） */
@@ -100,12 +98,9 @@ export const getBattingLeaders = async (
 
   const stats = [...statsByMemberId.values()];
 
-  // 規定打席: 10 打席以上、またはシーズンの試合数以上の打席に立っていること
   const qualified = stats.filter(
     (stat) =>
-      stat.atBats > 0 &&
-      (stat.plateAppearances >= QUALIFIED_PLATE_APPEARANCES ||
-        stat.plateAppearances >= gameCount),
+      stat.atBats > 0 && isQualifiedBatter(stat.plateAppearances, gameCount),
   );
 
   // 記録が 0 の選手はランキングに含めない

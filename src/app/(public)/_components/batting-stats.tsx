@@ -5,6 +5,7 @@ import {
   getBattingLeaders,
 } from "@/app/_features/members/api/get-batting-leaders";
 import { getCurrentSeason } from "@/app/_utils/date/date";
+import { formatRate } from "@/app/_utils/stats/rate";
 
 const CATEGORIES = [
   { key: "average", label: "打率" },
@@ -16,13 +17,13 @@ const CATEGORIES = [
   label: string;
 }[];
 
-/** 打率は "1.000" 以外は先頭の 0 を落として ".333" 表記にする */
+/** 打率は ".333" 形式、それ以外はそのまま数値を表示する */
 const formatValue = (key: keyof BattingLeadersType, value: number) => {
   if (key !== "average") {
     return String(value);
   }
 
-  return value >= 1 ? "1.000" : value.toFixed(3).slice(1);
+  return formatRate(value);
 };
 
 /**

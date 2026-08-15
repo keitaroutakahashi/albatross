@@ -15,11 +15,11 @@ export type MemberRanking = MemberStatsBase & {
 };
 
 /**
- * 上位 3 位までのランキングを作る。同順位は全員含める（例: 2 位が 3 人いれば 5 人返る）。
+ * 全件のランキングを作る。同順位は同じ rank になる（1, 2, 2, 4 …）。
  * order が "asc" の場合は値が小さいほど上位（防御率など）。
  * 対象外の選手（0 の記録など）は呼び出し側で除外しておくこと。
  */
-export const toMemberRanking = <T extends MemberStatsBase>(
+export const rankMemberStats = <T extends MemberStatsBase>(
   stats: T[],
   getValue: (stat: T) => number,
   order: "asc" | "desc" = "desc",
@@ -41,10 +41,6 @@ export const toMemberRanking = <T extends MemberStatsBase>(
     // 直前と同値なら同順位、そうでなければ「自分より上にいる人数 + 1」位
     const rank = previous?.value === value ? previous.rank : index + 1;
 
-    if (rank > DISPLAY_RANK) {
-      return;
-    }
-
     ranking.push({
       memberId: stat.memberId,
       name: stat.name,
@@ -56,3 +52,15 @@ export const toMemberRanking = <T extends MemberStatsBase>(
 
   return ranking;
 };
+
+/**
+ * 上位 3 位までのランキングを作る。同順位は全員含める（例: 2 位が 3 人いれば 5 人返る）。
+ */
+export const toMemberRanking = <T extends MemberStatsBase>(
+  stats: T[],
+  getValue: (stat: T) => number,
+  order: "asc" | "desc" = "desc",
+): MemberRanking[] =>
+  rankMemberStats(stats, getValue, order).filter(
+    (ranking) => ranking.rank <= DISPLAY_RANK,
+  );

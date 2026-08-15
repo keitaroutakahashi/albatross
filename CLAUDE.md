@@ -83,6 +83,7 @@ Tailwind CSS の `md`（768px）を基準にレスポンシブ対応を行う。
 ### FrontEnd
 
 - コンポーネント名は、LowerCase、プライベートは `_` プレフィックス
+- className の結合に `${}`を使わずに、tailwind-merge を利用すること
 - 実装時は既存の実装との生合成を保ちながら、global にある、`vercel-react-best-practices`と`next-best-practices`を適宜参考にすること
 
 ### Database
