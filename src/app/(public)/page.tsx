@@ -1,6 +1,5 @@
-import Link from "next/link";
 import { Suspense } from "react";
-import { BattingLeaders } from "@/app/(public)/_components/batting-leaders";
+import { BattingStats } from "@/app/(public)/_components/batting-stats";
 import { Hero } from "@/app/(public)/_components/hero";
 import { LatestGame } from "@/app/(public)/_components/latest-game";
 import { NextGameBar } from "@/app/(public)/_components/next-game-bar";
@@ -24,7 +23,7 @@ export default function Page() {
         <Schedule />
       </Suspense>
       <Suspense fallback={null}>
-        <BattingLeaders />
+        <BattingStats />
       </Suspense>
       <Suspense fallback={null}>
         <PitchingStats />

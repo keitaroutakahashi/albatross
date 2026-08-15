@@ -29,7 +29,7 @@ const formatValue = (key: keyof BattingLeadersType, value: number) => {
  * トップページの打撃成績上位者セクション。
  * 今シーズンの公式戦を対象に、打率・打点・本塁打・盗塁の上位 3 位を表示する。
  */
-export const BattingLeaders = async () => {
+export const BattingStats = async () => {
   const season = getCurrentSeason();
   const leaders = await getBattingLeaders(season);
 
@@ -41,7 +41,7 @@ export const BattingLeaders = async () => {
   return (
     <section className="px-5 py-12 md:py-16">
       <h2 className="text-center font-(family-name:--font-roboto) text-2xl md:text-4xl font-bold tracking-widest">
-        BATTING LEADERS
+        BATTING STATS
       </h2>
       <p className="mt-2 text-center text-xs text-gray-500">
         {season} シーズン / 公式戦
