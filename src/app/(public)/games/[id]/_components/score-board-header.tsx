@@ -4,7 +4,7 @@ type Props = {
   game: GameDetail;
 };
 
-const SCORE_DETAILS = ["R", "H", "E"];
+const SCORE_DETAILS = ["R", "H", "E", "献"];
 
 export const ScoreBoardHeader = ({ game }: Props) => {
   return (

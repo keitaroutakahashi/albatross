@@ -16,6 +16,17 @@ export const ScoreBoard = ({ game }: Props) => {
         <ScoreBoardHeader game={game} />
         <ScoreBoardBody game={game} />
       </table>
+
+      {!!game.teamForfeitedRuns && (
+        <p className="text-xs mt-2 text-gray-500">
+          ※ 自チームの得点には献上点 {game.teamForfeitedRuns} 点を含む
+        </p>
+      )}
+      {!!game.opponentForfeitedRuns && (
+        <p className="text-xs mt-2 text-gray-500">
+          ※ 相手チームの得点には献上点 {game.opponentForfeitedRuns} 点を含む
+        </p>
+      )}
     </div>
   );
 };

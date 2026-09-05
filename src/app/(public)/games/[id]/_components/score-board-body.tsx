@@ -6,6 +6,12 @@ type Props = {
   game: GameDetail;
 };
 
+// イニングでの得点に献上点（試合開始時に与えられた得点）を加算した合計を返す
+const addForfeitedRuns = (
+  score: number | null,
+  forfeitedRuns: number | null,
+) => (score === null ? null : score + (forfeitedRuns ?? 0));
+
 export const ScoreBoardBody = ({ game }: Props) => {
   return (
     <tbody>
@@ -27,7 +33,11 @@ export const ScoreBoardBody = ({ game }: Props) => {
         <ScoreBoardCell
           isBold
           bgColor="bg-gray-100"
-          score={game.isFirstBatting ? game.teamScore : game.opponentScore}
+          score={
+            game.isFirstBatting
+              ? addForfeitedRuns(game.teamScore, game.teamForfeitedRuns)
+              : addForfeitedRuns(game.opponentScore, game.opponentForfeitedRuns)
+          }
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
@@ -36,6 +46,14 @@ export const ScoreBoardBody = ({ game }: Props) => {
         <ScoreBoardCell
           bgColor="bg-gray-100"
           score={game.isFirstBatting ? game.teamErrors : game.opponentErrors}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={
+            game.isFirstBatting
+              ? game.teamForfeitedRuns
+              : game.opponentForfeitedRuns
+          }
         />
       </tr>
 
@@ -58,7 +76,11 @@ export const ScoreBoardBody = ({ game }: Props) => {
         <ScoreBoardCell
           isBold
           bgColor="bg-gray-100"
-          score={game.isFirstBatting ? game.opponentScore : game.teamScore}
+          score={
+            game.isFirstBatting
+              ? addForfeitedRuns(game.opponentScore, game.opponentForfeitedRuns)
+              : addForfeitedRuns(game.teamScore, game.teamForfeitedRuns)
+          }
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
@@ -67,6 +89,14 @@ export const ScoreBoardBody = ({ game }: Props) => {
         <ScoreBoardCell
           bgColor="bg-gray-100"
           score={game.isFirstBatting ? game.opponentErrors : game.teamErrors}
+        />
+        <ScoreBoardCell
+          bgColor="bg-gray-100"
+          score={
+            game.isFirstBatting
+              ? game.opponentForfeitedRuns
+              : game.teamForfeitedRuns
+          }
         />
       </tr>
     </tbody>

@@ -210,13 +210,15 @@ model Game {
   gameMembers GameMember[]
 
   // 試合結果（キャッシュ）
-  teamScore      Int? // 自チーム得点
-  opponentScore  Int? // 相手チーム得点
-  teamHits       Int? // 自チーム安打数
-  opponentHits   Int? // 相手チーム安打数
-  teamErrors     Int? // 自チームエラー数
-  opponentErrors Int? // 相手チームエラー数
-  result         GameResult?
+  teamScore             Int? // 自チーム得点
+  opponentScore         Int? // 相手チーム得点
+  teamHits              Int? // 自チーム安打数
+  opponentHits          Int? // 相手チーム安打数
+  teamErrors            Int? // 自チームエラー数
+  opponentErrors        Int? // 相手チームエラー数
+  teamForfeitedRuns     Int? // 自チームが得た献上点（試合開始時に相手の人数不足等で与えられた得点）
+  opponentForfeitedRuns Int? // 相手チームが得た献上点（試合開始時に自チームの人数不足等で与えた得点）
+  result                GameResult?
 
   // 天候
   gameWeather GameWeather?

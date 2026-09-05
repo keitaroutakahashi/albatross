@@ -28,6 +28,7 @@ export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
       opponentHits: 6,
       teamErrors: 0,
       opponentErrors: 1,
+      teamForfeitedRuns: 1,
       result: "win",
       videoUrl: "https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW",
       aiGoodPoints:

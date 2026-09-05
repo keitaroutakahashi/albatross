@@ -1,7 +1,7 @@
 import clsx from "clsx";
 
 type Props = {
-  score: number;
+  score: number | null;
   bgColor?: string;
   isBold?: boolean;
 };
@@ -19,7 +19,7 @@ export const ScoreBoardCell = ({
         { "font-bold": isBold },
       )}
     >
-      {score}
+      {score ?? "-"}
     </td>
   );
 };

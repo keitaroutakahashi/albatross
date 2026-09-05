@@ -73,6 +73,8 @@ erDiagram
   Int opponentHits "nullable"
   Int teamErrors "nullable"
   Int opponentErrors "nullable"
+  Int teamForfeitedRuns "nullable"
+  Int opponentForfeitedRuns "nullable"
   GameResult result "nullable"
   String summary "nullable"
   String aiGoodPoints "nullable"
@@ -232,6 +234,8 @@ Properties as follows:
 - `opponentHits`:
 - `teamErrors`:
 - `opponentErrors`:
+- `teamForfeitedRuns`:
+- `opponentForfeitedRuns`:
 - `result`:
 - `summary`:
 - `aiGoodPoints`:

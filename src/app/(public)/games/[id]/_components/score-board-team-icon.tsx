@@ -2,7 +2,7 @@ import Image from "next/image";
 import { InitialIcon } from "@/app/_components/ui/initial-icon";
 
 type Props = {
-  isFirstBatting: boolean;
+  isFirstBatting: boolean | null;
   opponentName: string;
 };
 
