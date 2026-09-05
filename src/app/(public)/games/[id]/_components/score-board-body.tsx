@@ -13,7 +13,7 @@ export const ScoreBoardBody = ({ game }: Props) => {
       <tr className="bg-white">
         <ScoreBoardTeamIcon
           isFirstBatting={game.isFirstBatting}
-          opponentName={game.opponent.name}
+          opponentName={game.opponent?.name ?? "未定"}
         />
         {game.innings.map((inning) => (
           <ScoreBoardCell
@@ -43,7 +43,7 @@ export const ScoreBoardBody = ({ game }: Props) => {
       <tr className="bg-white">
         <ScoreBoardTeamIcon
           isFirstBatting={!game.isFirstBatting}
-          opponentName={game.opponent.name}
+          opponentName={game.opponent?.name ?? "未定"}
         />
 
         {game.innings.map((inning) => (
