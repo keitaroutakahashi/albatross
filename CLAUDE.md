@@ -42,22 +42,60 @@ pnpm generate:client  # Prisma Client 生成
 ```
 src/
 ├── app/                    # Next.js App Router
-│   ├── (public)/          # 公開ページ（games など）
+│   ├── (public)/          # 公開ページ
+│   │   └── games/
+│   │       ├── _components/  # games 専用コンポーネント
+│   │       ├── _data/        # データ取得関数
+│   │       └── [id]/         # 試合詳細ページ
+│   ├── (private)/         # 認証が必要なページ
+│   ├── _actions/          # Server Actions
 │   ├── _components/       # 共通コンポーネント（header, footer）
+│   ├── _features/         # 機能別コンポーネント
+│   ├── _hooks/            # カスタムフック
 │   └── _utils/            # ユーティリティ関数
 ├── generated/prisma/      # Prisma 生成ファイル（編集不可）
 └── lib/                   # ライブラリ設定
 prisma/
-└── schema.prisma          # DB スキーマ定義
+├── schema.prisma          # DB スキーマ定義
+├── seed.ts                # シードデータ実行エントリ
+├── seeds/                 # シードデータ（テーブル毎）
+└── migrations/            # マイグレーションファイル
 docs/                      # ドキュメント
 ```
 
+## ブレークポイント
+
+Tailwind CSS の `md`（768px）を基準にレスポンシブ対応を行う。
+
+| デバイス | 条件                 |
+| -------- | -------------------- |
+| SP       | `md` 未満（< 768px） |
+| PC       | `md` 以上（≥ 768px） |
+
 ## コーディング規約
 
-- **インポートパス**: 相対パス (`./`, `../`) ではなく絶対パス (`@/`) を使用
-- **フォーマット**: スペースインデント、行幅 80 文字（Biome）
-- **コンポーネント**: LowerCase、プライベートは `_` プレフィックス
-- **日本語**: コメントやドキュメントは日本語で記述
+### 共通
+
+- コメントやドキュメントは日本語で記述
+- 相対パス (`./`, `../`) ではなく絶対パス (`@/`) を使用
+- スペースインデント、行幅 80 文字（Biome）
+
+### FrontEnd
+
+- コンポーネント名は、LowerCase、プライベートは `_` プレフィックス
+- className の結合に `${}`を使わずに、tailwind-merge を利用すること
+- 実装時は既存の実装との生合成を保ちながら、global にある、`vercel-react-best-practices`と`next-best-practices`を適宜参考にすること
+
+### Database
+
+- enum を使う場合は小文字にする
+- seed データは各テーブル毎にファイルを分けて作成する
+
+### 成績計算
+
+- 打率・防御率・WHIP・OPS など、選手成績に関わる計算ロジックは `src/app/_utils/stats/` に置き、各 API・コンポーネントから呼び出す（同じ計算式を複数箇所に実装しない）
+- 規定打席・規定投球回などの資格判定も同様に `src/app/_utils/stats/` に置く
+- 投球回（アウト数）は少数第2位以下で丸め誤差が出るため、途中経過はアウト数（整数）で保持し、表示直前にフォーマットする
 
 ## 注意事項
 

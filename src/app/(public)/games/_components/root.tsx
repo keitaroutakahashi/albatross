@@ -1,0 +1,28 @@
+import { Suspense } from "react";
+import { PageTitle } from "@/app/_components/ui/page-title";
+import { GameList } from "@/app/(public)/games/_components/game-list";
+import { SeasonFilter } from "@/app/(public)/games/_components/season-filter";
+
+type Props = {
+  season?: string;
+};
+
+export const Root = async ({ season }: Props) => {
+  return (
+    <div>
+      <PageTitle title="GAME" subtitle="試合情報" />
+
+      <main className="py-10">
+        <div className="flex justify-center">
+          <Suspense fallback={<div>Loading...</div>}>
+            <SeasonFilter />
+          </Suspense>
+        </div>
+
+        <div className="px-5 mt-10">
+          <GameList season={season} />
+        </div>
+      </main>
+    </div>
+  );
+};

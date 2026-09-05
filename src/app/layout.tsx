@@ -1,35 +1,50 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto } from "next/font/google";
 import "@/app/globals.css";
-import { Footer } from "@/app/_components/footer";
-import { Header } from "@/app/_components/header";
+import clsx from "clsx";
+import { Footer } from "@/app/_components/ui/footer";
+import { Header } from "@/app/_components/ui/header";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const roboto = Roboto({
+  variable: "--font-roboto",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Albatross",
   description: "",
+  title: {
+    template: "%s | Albatross",
+    default: "Albatross",
+  },
 };
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased text-black`}
+        style={{
+          fontFamily:
+            '"Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", sans-serif',
+          textAutospace: "normal",
+          lineBreak: "strict",
+        }}
+        className={clsx(
+          roboto.variable,
+          "antialiased",
+          "text-black",
+          "wrap-anywhere",
+          "break-normal",
+        )}
       >
+        {/* Header は fixed のため、@container（レイアウト封じ込めが効き fixed の
+            基準要素になってしまう）の外に置く */}
         <Header />
-        <div className="min-h-[calc(100vh-var(--size-header-height)-var(--size-footer-height))]">
-          {children}
+        <div className="@container max-w-3xl mx-auto pt-(--size-header-height)">
+          <div className="min-h-[calc(100dvh-var(--size-header-height)-var(--size-footer-height))]">
+            {children}
+          </div>
+          <Footer />
         </div>
-        <Footer />
       </body>
     </html>
   );

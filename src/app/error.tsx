@@ -1,7 +1,7 @@
 "use client";
 
-import { ErrorPageTemplate } from "@/app/_components/ErrorPageTemplate";
+import { ErrorScreen } from "@/app/_components/ui/error-screen";
 
 export default function ErrorPage() {
-  return <ErrorPageTemplate title="Something Went wrong 🥲" />;
+  return <ErrorScreen title="エラーが発生しました 🥲" />;
 }

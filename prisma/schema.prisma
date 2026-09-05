@@ -3,9 +3,115 @@ generator client {
   output   = "../src/generated/prisma"
 }
 
+generator erd {
+  provider = "prisma-markdown"
+  output   = "../docs/er-diagram.md"
+  title    = "Albatross"
+}
+
 datasource db {
   provider = "postgresql"
 }
+
+// ============================================================
+// Enums
+// ============================================================
+
+// --- 試合関連 ---
+
+enum GameType {
+  official // 公式戦
+  practice // 練習試合
+  undecided // 未定
+}
+
+enum GameStatus {
+  scheduled // 予定
+  completed // 終了
+  canceled // 中止
+}
+
+enum GameResult {
+  win
+  lose
+  draw
+}
+
+// --- メンバー関連 ---
+
+// ポジション
+enum Position {
+  pitcher // 投手
+  catcher // 捕手
+  first // 一塁手
+  second // 二塁手
+  third // 三塁手
+  shortstop // 遊撃手
+  left // 左翼手
+  center // 中堅手
+  right // 右翼手
+  dh // 指名打者
+}
+
+// 投打
+enum Hand {
+  right // 右
+  left // 左
+  both // 両
+}
+
+// 出場タイプ
+enum MemberType {
+  starting // スターティングメンバー
+  bench // ベンチメンバー
+}
+
+// メンバー区分
+enum MemberCategory {
+  regular // 正規メンバー
+  guest // 助っ人
+}
+
+// --- 成績関連 ---
+
+// 打席結果
+enum AtBatResult {
+  single // 単打
+  double // 二塁打
+  triple // 三塁打
+  homeRun // 本塁打
+  walk // 四球
+  hitByPitch // 死球
+  strikeout // 三振
+  groundOut // ゴロアウト
+  flyOut // フライアウト
+  lineOut // ライナーアウト
+  sacrificeHit // 犠打
+  sacrificeFly // 犠飛
+  fieldersChoice // フィルダースチョイス
+  doublePlay // 併殺打
+  error // エラー出塁
+}
+
+// 投手の勝敗
+enum PitchingDecision {
+  win // 勝ち投手
+  loss // 負け投手
+}
+
+// 天気
+enum Weather {
+  sunny // 晴れ
+  cloudy // 曇り
+  rainy // 雨
+  snowy // 雪
+}
+
+// ============================================================
+// Models
+// ============================================================
+
+// --- マスタデータ ---
 
 model User {
   id        Int      @id @default(autoincrement())
@@ -13,4 +119,206 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// シーズン（年度）
+model Season {
+  id        Int      @id @default(autoincrement())
+  season    Int      @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// リーグ
+model League {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// グラウンド（球場）
+model Ground {
+  id        Int      @id @default(autoincrement())
+  name      String
+  address   String
+  access    String?
+  url       String // 公式HPのURL
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// 対戦相手チーム
+model Opponent {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  games     Game[]
+}
+
+// チームメンバー
+model Member {
+  id            Int            @id @default(autoincrement())
+  name          String
+  uniformNumber String // 背番号
+  position      Position
+  subPositions  Position[]
+  throwHand     Hand
+  batHand       Hand
+  category      MemberCategory @default(regular) // メンバー区分
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  gameMembers GameMember[]
+}
+
+// --- 試合 ---
+
+// 試合
+model Game {
+  id Int @id @default(autoincrement())
+
+  // 日時・試合番号
+  date       DateTime
+  gameNumber Int      @default(1) // 同日の試合番号（ダブルヘッダー対応）
+
+  // 試合設定
+  gameType       GameType   @default(undecided) // 公式戦 or 練習試合
+  isFirstBatting Boolean? // true: 先攻, false: 後攻, null: 未定
+  status         GameStatus @default(scheduled)
+
+  // リレーション
+  seasonId   Int
+  season     Season    @relation(fields: [seasonId], references: [id])
+  leagueId   Int?
+  league     League?   @relation(fields: [leagueId], references: [id])
+  groundId   Int?
+  ground     Ground?   @relation(fields: [groundId], references: [id])
+  opponentId Int?
+  opponent   Opponent? @relation(fields: [opponentId], references: [id])
+
+  // イニング
+  innings Inning[]
+
+  // 参加メンバー
+  gameMembers GameMember[]
+
+  // 試合結果（キャッシュ）
+  teamScore             Int? // 自チーム得点
+  opponentScore         Int? // 相手チーム得点
+  teamHits              Int? // 自チーム安打数
+  opponentHits          Int? // 相手チーム安打数
+  teamErrors            Int? // 自チームエラー数
+  opponentErrors        Int? // 相手チームエラー数
+  teamForfeitedRuns     Int? // 自チームが得た献上点（試合開始時に相手の人数不足等で与えられた得点）
+  opponentForfeitedRuns Int? // 相手チームが得た献上点（試合開始時に自チームの人数不足等で与えた得点）
+  result                GameResult?
+
+  // 天候
+  gameWeather GameWeather?
+
+  // 戦評
+  summary String?
+
+  // AI による講評
+  aiGoodPoints String? // AI からの評価点（良かった点）
+  aiBadPoints  String? // AI からの改善点
+
+  // 試合動画
+  videoUrl String? // 試合動画用のリンク
+
+  // （雨天中止など）
+  note String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([date, gameNumber])
+}
+
+// 試合日の天候
+model GameWeather {
+  id          Int     @id @default(autoincrement())
+  gameId      Int     @unique
+  game        Game    @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  weather     Weather // 天気
+  temperature Float? // 気温（℃）
+}
+
+// イニングごとの得点
+model Inning {
+  id            Int  @id @default(autoincrement())
+  gameId        Int
+  game          Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  inningNumber  Int // 1, 2, 3...（上限なし）
+  teamScore     Int  @default(0)
+  opponentScore Int  @default(0)
+
+  @@unique([gameId, inningNumber])
+}
+
+// --- 試合参加・成績 ---
+
+// 試合参加メンバー
+model GameMember {
+  id           Int        @id @default(autoincrement())
+  gameId       Int
+  game         Game       @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId     Int
+  member       Member     @relation(fields: [memberId], references: [id])
+  memberType   MemberType
+  battingOrder Int? // 打順（1〜9、ベンチは null）
+  position     Position? // 守備位置（DH 含む、ベンチは null）
+  stolenBases  Int        @default(0) // 盗塁数（試合合計）
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  plateAppearances PlateAppearance[]
+  pitchingResult   PitchingResult? // 投手成績（投手のみ）
+
+  @@unique([gameId, memberId])
+}
+
+// 投手成績（試合ごと）
+model PitchingResult {
+  id           Int        @id @default(autoincrement())
+  gameMemberId Int        @unique
+  gameMember   GameMember @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+
+  pitchingOrder   Int               @default(1) // 登板順（先発 = 1）
+  inningsPitched  Int               @default(0) // 投球回数（完了イニング数）
+  partialOuts     Int? // イニング間交代時のアウト数（0, 1, 2, null）
+  earnedRuns      Int               @default(0) // 自責点
+  runs            Int               @default(0) // 失点
+  strikeouts      Int               @default(0) // 奪三振
+  walks           Int               @default(0) // 四球
+  hitByPitches    Int               @default(0) // 死球
+  hitsAllowed     Int               @default(0) // 被安打
+  homeRunsAllowed Int               @default(0) // 被本塁打
+  decision        PitchingDecision? // 勝敗（null = 該当なし）
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 打席結果
+model PlateAppearance {
+  id           Int         @id @default(autoincrement())
+  gameMemberId Int
+  gameMember   GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+  inningNumber Int // 何回の打席か
+  atBatInGame  Int // 試合中の打席番号（1, 2, 3...）
+  result       AtBatResult // 打席結果
+  direction    Position? // 打球方向（四球・三振・死球は null）
+  rbi          Int         @default(0) // 打点
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@unique([gameMemberId, atBatInGame])
 }

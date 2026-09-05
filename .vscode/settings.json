@@ -1,8 +1,8 @@
 {
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports.biome": "explicit",
-    "source.fixAll.biome": "explicit"
+    "source.organizeImports.biome": "always",
+    "source.fixAll.biome": "always"
   },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[javascript]": {
@@ -24,5 +24,7 @@
   "cSpell.enabled": true,
   "cSpell.words": ["dotenv", "biomejs", "clsx", "vitest", "knip", "cuid"],
   "cSpell.allowCompoundWords": true,
-  "cSpell.ignorePaths": ["**/node_modules/**"]
+  "cSpell.ignorePaths": ["**/node_modules/**"],
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "javascript.preferences.importModuleSpecifier": "non-relative"
 }

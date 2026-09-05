@@ -15,14 +15,14 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true,
+      "preset": "recommended",
       "style": {
         "noRestrictedImports": {
           "level": "error",
           "options": {
             "patterns": [
               {
-                "group": ["./*", "../*"],
+                "group": ["./**", "../**"],
                 "message": "相対パスではなく絶対パス (@/) を使用してください"
               }
             ]
@@ -43,6 +43,18 @@
       "enabled": false
     }
   },
+  "overrides": [
+    {
+      "includes": ["prisma/**", "next-env.d.ts"],
+      "linter": {
+        "rules": {
+          "style": {
+            "noRestrictedImports": "off"
+          }
+        }
+      }
+    }
+  ],
   "files": {
     "ignoreUnknown": true,
     "includes": [

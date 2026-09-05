@@ -1,0 +1,17 @@
+# Worktree Plus Configuration
+version: "1.0"
+
+# Default settings for worktrees
+defaults:
+  # Base directory for worktrees (relative to repository root)
+  base_dir: ../worktrees
+
+# Hooks that run after creating a worktree
+hooks:
+  post_create:
+    - type: copy
+      from: .env.local
+      to: .env.local
+
+    - type: command
+      command: pnpm install

@@ -1,5 +1,11 @@
 packages:
   - .
-ignoredBuiltDependencies:
-  - sharp
-  - unrs-resolver
+
+# ビルドスクリプトの実行可否(pnpm 11 以降は allowBuilds に統一）
+allowBuilds:
+  prisma: true
+  "@prisma/engines": true
+  esbuild: false
+  sharp: false
+  # code-inspector の terminal agent 機能でのみ使用（本プロジェクトでは未使用）
+  node-pty: false

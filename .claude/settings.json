@@ -1,14 +1,42 @@
 {
   "permissions": {
-    "allow": ["Bash(pnpm test)"],
+    "allow": [
+      "Bash(pnpm test)",
+      "Bash(lsof -nP -iTCP:3000 -sTCP:LISTEN)",
+      "mcp__chrome-devtools__list_pages",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-08-23\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-09-13\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-10-04\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-11-08\" \"+%Y-%m-%d %a\")",
+      "Bash(date -j -f \"%Y-%m-%d\" \"2026-12-13\" \"+%Y-%m-%d %a\")",
+      "Bash(pnpm exec *)",
+      "Bash(pnpm dlx *)",
+      "Bash(git stash *)",
+      "Bash(pnpm lint:ci)",
+      "Bash(pnpm knip *)",
+      "Bash(pnpm dev *)",
+      "Bash(disown)",
+      "Read(//private/tmp/**)",
+      "Bash(break)",
+      "mcp__chrome-devtools__resize_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__click",
+      "Bash(jobs -l)",
+      "Bash(lsof -iTCP -sTCP:LISTEN -P)",
+      "Bash(jobs)",
+      "Bash(ps -p 53668 -o pid,ppid,etime,command)",
+      "Bash(ps -p 53577 -o pid,ppid,etime,command)",
+      "Bash(ps -p 53683 -o pid,ppid,etime,command)",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__emulate",
+      "mcp__chrome-devtools__hover"
+    ],
     "deny": [
       "Bash(sudo:*)",
       "Bash(rm:*)",
       "Bash(rm -rf:*)",
-      "Bash(git push:*)",
-      "Bash(git commit:*)",
-      "Bash(git reset:*)",
-      "Bash(git rebase:*)",
       "Read(.env.*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
@@ -26,5 +54,7 @@
       "Bash(mongod:*)",
       "mcp__supabase__execute_sql"
     ]
-  }
+  },
+  "model": "opusplan",
+  "effortLevel": "high"
 }
