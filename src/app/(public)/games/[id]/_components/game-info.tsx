@@ -8,7 +8,6 @@ import {
 } from "@/app/_features/games/utils/pitching-result";
 import { getMembersByPosition } from "@/app/_features/members/utils/position";
 import { WeatherIcon } from "@/app/_features/weather/components/weather-icon/weather-icon";
-import { getWeatherText } from "@/app/_features/weather/utils/get-weather-text";
 
 type TableRowProps = {
   label: string;

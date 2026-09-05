@@ -8,6 +8,7 @@ import {
   Users,
   X,
 } from "lucide-react";
+import type { Route } from "next";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -20,7 +21,7 @@ import {
 import { cn } from "@/lib/utils";
 
 type NavItem = {
-  href: string;
+  href: Route;
   label: string;
   icon: LucideIcon;
 };
