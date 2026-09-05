@@ -1,7 +1,7 @@
 import type {
   Prisma,
   PrismaClient,
-} from "../../../../src/generated/prisma/client.js";
+} from "../../../../../src/generated/prisma/client.js";
 import type { SeedContext } from "../_shared.js";
 
 // 試合4: 2026年 開催予定の試合（5件）

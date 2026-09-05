@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../../../src/generated/prisma/client.js";
+import type { PrismaClient } from "../../../../../src/generated/prisma/client.js";
 import {
   createGameMembersFromData,
   type GameMemberCreateData,
@@ -9,25 +9,26 @@ import {
 
 // 試合7: 2025年 公式戦 勝利（10-3、5回コールド・11人打ち）
 export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
-  const { season2026, tokyoLeague, grounds, opponents, members } = ctx;
+  const { season2025, tokyoLeague, grounds, opponents, members } = ctx;
 
   const game = await prisma.game.create({
     data: {
-      date: new Date("2026-07-30T13:00:00"),
+      date: new Date("2025-06-08T10:00:00"),
       gameNumber: 1,
       gameType: "official",
       isFirstBatting: true,
       status: "completed",
-      seasonId: season2026.id,
+      seasonId: season2025.id,
       leagueId: tokyoLeague.id,
       groundId: grounds[3].id,
       opponentId: opponents[3].id,
-      teamScore: 11,
-      opponentScore: 5,
+      teamScore: 10,
+      opponentScore: 3,
       teamHits: 13,
-      opponentHits: 0,
+      opponentHits: 6,
       teamErrors: 0,
-      opponentErrors: 0,
+      opponentErrors: 1,
+      teamForfeitedRuns: 1,
       result: "win",
       videoUrl: "https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW",
       aiGoodPoints:
@@ -39,10 +40,11 @@ export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
 
   await prisma.inning.createMany({
     data: [
-      { gameId: game.id, inningNumber: 1, teamScore: 0, opponentScore: 0 },
-      { gameId: game.id, inningNumber: 2, teamScore: 7, opponentScore: 5 },
-      { gameId: game.id, inningNumber: 3, teamScore: 3, opponentScore: 0 },
+      { gameId: game.id, inningNumber: 1, teamScore: 0, opponentScore: 1 },
+      { gameId: game.id, inningNumber: 2, teamScore: 6, opponentScore: 0 },
+      { gameId: game.id, inningNumber: 3, teamScore: 3, opponentScore: 1 },
       { gameId: game.id, inningNumber: 4, teamScore: 1, opponentScore: 0 },
+      { gameId: game.id, inningNumber: 5, teamScore: 0, opponentScore: 1 },
     ],
   });
 

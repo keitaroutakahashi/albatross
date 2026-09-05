@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../../../src/generated/prisma/client.js";
+import type { PrismaClient } from "../../../../../src/generated/prisma/client.js";
 import type { SeedContext } from "../_shared.js";
 import { seedGameCanceled } from "./game-canceled.js";
 import { seedGameLose } from "./game-lose.js";

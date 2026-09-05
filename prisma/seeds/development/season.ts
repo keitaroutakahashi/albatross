@@ -1,7 +1,7 @@
 import type {
   Prisma,
   PrismaClient,
-} from "../../src/generated/prisma/client.js";
+} from "../../../src/generated/prisma/client.js";
 
 const seasonData: Prisma.SeasonCreateInput[] = [
   { season: 2025, name: "2025年度シーズン" },

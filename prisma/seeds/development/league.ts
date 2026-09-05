@@ -1,7 +1,7 @@
 import type {
   Prisma,
   PrismaClient,
-} from "../../src/generated/prisma/client.js";
+} from "../../../src/generated/prisma/client.js";
 
 const leagueData: Prisma.LeagueCreateInput[] = [
   { name: "東京草野球リーグ" },

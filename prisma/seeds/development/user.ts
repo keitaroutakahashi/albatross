@@ -1,7 +1,7 @@
 import type {
   Prisma,
   PrismaClient,
-} from "../../src/generated/prisma/client.js";
+} from "../../../src/generated/prisma/client.js";
 
 const userData: Prisma.UserCreateInput[] = [
   { email: "taro@example.com", name: "田中太郎" },

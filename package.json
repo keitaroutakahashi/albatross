@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "pnpm db:up && pnpm generate:client && next dev",
     "start": "next start",
-    "build": "pnpm generate:client && next build",
+    "build": "pnpm generate:client && prisma migrate deploy && next build",
     "lint": "biome check --write . && knip",
     "lint:ci": "biome check . && knip",
     "typecheck": "tsc --noEmit",
@@ -17,8 +17,9 @@
     "db:reset": "prisma migrate reset -f",
     "db:rebuild": "pnpm db:reset && pnpm db:migrate && pnpm db:seed",
     "db:studio": "prisma studio",
-    "db:migrate:preview": "dotenv -e .env.preview -- prisma migrate deploy",
     "db:migrate:production": "dotenv -e .env.production -- prisma migrate deploy",
+    "db:seed:production": "SEED_ENV=production dotenv -e .env.production -- prisma db seed",
+    "db:dump:production": "./scripts/dump-production.sh",
     "generate:client": "prisma generate",
     "generate:next-type": "next typegen"
   },

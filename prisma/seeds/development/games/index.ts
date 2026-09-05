@@ -1,7 +1,7 @@
 import type {
   Position,
   PrismaClient,
-} from "../../../src/generated/prisma/client.js";
+} from "../../../../src/generated/prisma/client.js";
 import type { SeedContext } from "./_shared.js";
 import { seedSeason2025 } from "./2025/index.js";
 import { seedSeason2026 } from "./2026/index.js";

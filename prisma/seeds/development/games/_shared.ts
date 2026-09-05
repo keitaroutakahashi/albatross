@@ -8,7 +8,7 @@ import type {
   Position,
   PrismaClient,
   Season,
-} from "../../../src/generated/prisma/client.js";
+} from "../../../../src/generated/prisma/client.js";
 
 // 各試合シーダーに渡すマスタデータ
 export type SeedContext = {

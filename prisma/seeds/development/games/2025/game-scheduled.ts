@@ -1,4 +1,4 @@
-import type { PrismaClient } from "../../../../src/generated/prisma/client.js";
+import type { PrismaClient } from "../../../../../src/generated/prisma/client.js";
 import type { SeedContext } from "../_shared.js";
 
 // 試合4: 2025年 公式戦（予定）
