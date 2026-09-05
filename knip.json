@@ -1,11 +1,6 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
-  "ignoreDependencies": [
-    "@prisma/client",
-    "pg",
-    "@types/pg",
-    "class-variance-authority"
-  ],
+  "ignoreDependencies": ["pg", "@types/pg"],
   "ignoreExportsUsedInFile": true,
-  "ignore": ["src/app/_utils/sleep.ts"]
+  "ignore": ["src/app/_utils/sleep.ts", "src/app/_components/shadcn/**"]
 }

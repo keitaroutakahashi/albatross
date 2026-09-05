@@ -73,33 +73,3 @@ export async function createGameMembersFromData(
   }
   return created;
 }
-
-// 標準スタメン（打順1〜9）+ ベンチの GameMember を作成する（試合2・3で使用）
-export async function createGameMembers(
-  prisma: PrismaClient,
-  gameId: number,
-  starters: { id: number }[],
-  benchMembers: { id: number }[],
-  positions: Position[],
-): Promise<{ id: number }[]> {
-  const data: GameMemberCreateData[] = [
-    // スタメン（打順1〜9）
-    ...starters.map((m, i) => ({
-      gameId,
-      memberId: m.id,
-      memberType: "starting" as const,
-      battingOrder: i + 1,
-      position: positions[i],
-    })),
-    // ベンチ
-    ...benchMembers.map((m) => ({
-      gameId,
-      memberId: m.id,
-      memberType: "bench" as const,
-      battingOrder: null,
-      position: null,
-    })),
-  ];
-
-  return createGameMembersFromData(prisma, data);
-}

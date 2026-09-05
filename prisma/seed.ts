@@ -21,7 +21,9 @@ const prisma = new PrismaClient({
 const isProduction = process.env.SEED_ENV === "production";
 
 async function main() {
-  console.log(`Start seeding... (env: ${isProduction ? "production" : "development"})\n`);
+  console.log(
+    `Start seeding... (env: ${isProduction ? "production" : "development"})\n`,
+  );
 
   if (!isProduction) {
     await seedSeasons(prisma);

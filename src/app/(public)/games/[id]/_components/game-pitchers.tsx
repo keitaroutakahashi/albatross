@@ -3,7 +3,6 @@ import type { ColumnDef } from "@/app/_components/ui/data-table";
 import { DataTable } from "@/app/_components/ui/data-table";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
 import { formatInningsPitched } from "@/app/_utils/stats/innings";
-import type { Weather } from "@/generated/prisma/enums";
 
 type Props = {
   game: GameDetail;

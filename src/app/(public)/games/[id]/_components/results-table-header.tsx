@@ -32,6 +32,7 @@ export const ResultsTableHeader = ({ inningCount }: Props) => {
         </th>
         {Array.from({ length: inningCount }, (_, i) => (
           <th
+            // biome-ignore lint/suspicious/noArrayIndexKey: イニング番号は並び順そのものであり順序は変わらない
             key={`inning-header-${i + 1}`}
             className="p-2 text-xs @content:text-sm w-14 @content:w-auto text-center whitespace-nowrap bg-gray-700"
           >

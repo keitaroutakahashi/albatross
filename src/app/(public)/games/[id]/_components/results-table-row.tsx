@@ -61,12 +61,14 @@ export const ResultsTableRow = ({ gameMember, inningCount }: Props) => {
 
         return (
           <td
+            // biome-ignore lint/suspicious/noArrayIndexKey: イニング番号は並び順そのものであり順序は変わらない
             key={`${gameMember.id}-inning-${i + 1}`}
             className="p-2 w-14 @content:w-auto text-center whitespace-nowrap space-y-1"
           >
             {results
               ? results.map((r, j) => (
                   <AtBatResultBadge
+                    // biome-ignore lint/suspicious/noArrayIndexKey: 同一イニング内の打席結果は入力順で固定されており順序は変わらない
                     key={`${i + 1}-${j + 1}`}
                     text={r.text}
                     colorClass={r.colorClass}
