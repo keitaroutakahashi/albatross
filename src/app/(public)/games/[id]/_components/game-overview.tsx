@@ -27,7 +27,7 @@ export const GameOverview = ({ game }: Props) => {
             className="w-12 @content:w-24 h-auto"
           />
         ) : (
-          <InitialIcon name={game.opponent.name} size="xl" />
+          <InitialIcon name={game.opponent?.name ?? "未定"} size="xl" />
         )}
 
         <div className="flex flex-col items-center justify-center gap-y-4">
@@ -59,7 +59,7 @@ export const GameOverview = ({ game }: Props) => {
             className="w-12 @content:w-24 h-auto"
           />
         ) : (
-          <InitialIcon name={game.opponent.name} size="xl" />
+          <InitialIcon name={game.opponent?.name ?? "未定"} size="xl" />
         )}
       </div>
     </div>

@@ -17,11 +17,11 @@ export const GameHeader = ({ game }: Props) => {
   return (
     <div className="px-2">
       <p className="text-center font-bold text-sm @content:text-base">
-        {game.league.name}
+        {game.league?.name ?? ""}
       </p>
       <div className="mt-3"></div>
       <p className="text-center font-bold text-base @content:text-2xl">
-        {fullDate} ({dayName}) {time24} vs {game.opponent.name}
+        {fullDate} ({dayName}) {time24} vs {game.opponent?.name ?? "未定"}
       </p>
     </div>
   );

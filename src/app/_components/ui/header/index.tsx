@@ -17,7 +17,7 @@ export const Header = () => {
           />
         </Link>
         <SideNavigation>
-          <Button size="sm" variant="default">
+          <Button size="icon-sm" variant="default">
             <Menu />
           </Button>
         </SideNavigation>
