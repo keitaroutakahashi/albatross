@@ -1,8 +1,8 @@
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { getCurrentRole } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 export const getMasterCounts = async () => {
-  await requireAdmin();
+  await getCurrentRole();
   const [events, seasons, leagues, opponents, grounds, members, users] =
     await Promise.all([
       prisma.event.count(),

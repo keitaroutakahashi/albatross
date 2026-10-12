@@ -17,6 +17,14 @@ datasource db {
 // Enums
 // ============================================================
 
+// --- ユーザー関連 ---
+
+// ユーザーの権限
+enum UserRole {
+  admin // 管理者（全機能）
+  operator // 運営（イベントの登録・編集・削除）
+}
+
 // --- イベント関連 ---
 
 enum EventType {
@@ -124,6 +132,7 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
+  role      UserRole @default(operator) // 権限は小さい方を初期値にする
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

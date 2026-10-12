@@ -1,4 +1,7 @@
-import { eventSchema } from "@/app/(private)/admin/_schemas/event";
+import {
+  eventCreateSchema,
+  eventSchema,
+} from "@/app/(private)/admin/_schemas/event";
 
 const base = {
   date: "2026-10-25T09:00",
@@ -114,5 +117,70 @@ describe("eventSchema", () => {
       path: ["videoUrl"],
       message: "URL の形式で入力してください",
     });
+  });
+});
+
+describe("eventCreateSchema", () => {
+  it("試合: 種別・日時・シーズン・試合番号・試合種別だけで通る", () => {
+    const result = eventCreateSchema.parse({
+      type: "game",
+      date: "2026-10-25T09:00",
+      seasonId: "2",
+      gameNumber: "1",
+      gameType: "undecided",
+    });
+    expect(result).toMatchObject({
+      type: "game",
+      seasonId: 2,
+      gameNumber: 1,
+      gameType: "undecided",
+    });
+    expect(result.date.toISOString()).toBe("2026-10-25T00:00:00.000Z");
+  });
+
+  it("練習: 試合番号・試合種別は不要", () => {
+    expect(
+      eventCreateSchema.parse({
+        type: "practice",
+        date: "2026-10-25T09:00",
+        seasonId: "2",
+      }),
+    ).toMatchObject({ type: "practice", seasonId: 2 });
+  });
+
+  it("状態は受け取らない（常に開催予定で登録する）", () => {
+    const result = eventCreateSchema.parse({
+      type: "practice",
+      date: "2026-10-25T09:00",
+      seasonId: "2",
+      status: "completed",
+    });
+    expect(result).not.toHaveProperty("status");
+  });
+
+  it("試合: 試合番号・試合種別が未入力ならエラーにする", () => {
+    const result = eventCreateSchema.safeParse({
+      type: "game",
+      date: "2026-10-25T09:00",
+      seasonId: "2",
+    });
+    expect(result.error?.issues.map((i) => i.path[0])).toEqual([
+      "gameNumber",
+      "gameType",
+    ]);
+  });
+
+  it("種別が不正・シーズン未選択ならエラーにする", () => {
+    expect(
+      eventCreateSchema.safeParse({ type: "party", date: "2026-10-25T09:00" })
+        .success,
+    ).toBe(false);
+    expect(
+      eventCreateSchema.safeParse({
+        type: "practice",
+        date: "2026-10-25T09:00",
+        seasonId: "",
+      }).success,
+    ).toBe(false);
   });
 });

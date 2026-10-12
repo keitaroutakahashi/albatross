@@ -18,7 +18,7 @@ type BaseProps = {
 export const nativeControlClass =
   "border-input h-11 w-full rounded-md border bg-transparent px-3 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm";
 
-const errorId = (name: string) => `${name}-error`;
+export const errorId = (name: string) => `${name}-error`;
 
 /**
  * select は React 19 のフォームリセットで、更新後の defaultValue ではなく初回マウント時の
@@ -32,7 +32,7 @@ const toArray = (value: string | string[] | undefined): string[] =>
   value === undefined ? [] : Array.isArray(value) ? value : [value];
 
 /** エラー再表示時は送信した値、初回は初期値を表示する */
-const currentValue = (
+export const currentValue = (
   state: ActionState,
   name: string,
   initial: string | undefined,
@@ -42,20 +42,23 @@ const currentValue = (
   return initial ?? "";
 };
 
-const Field = ({
+export const Field = ({
   name,
   label,
+  labelFor = name,
   required,
   hint,
   error,
   children,
 }: Pick<BaseProps, "name" | "label" | "required" | "hint"> & {
+  /** ラベルから操作対象への紐づけ。入力欄の id が name と異なるときに指定する */
+  labelFor?: string;
   error?: string;
   children: ReactNode;
 }) => {
   return (
     <div className="flex flex-col gap-2">
-      <Label htmlFor={name}>
+      <Label htmlFor={labelFor}>
         {label}
         {required && <span className="text-xs text-destructive">必須</span>}
       </Label>
@@ -72,7 +75,7 @@ const Field = ({
 
 type TextFieldProps = BaseProps & {
   defaultValue?: string;
-  type?: "text" | "email" | "url" | "number" | "date" | "datetime-local";
+  type?: "text" | "email" | "url" | "number" | "date";
   inputMode?: ComponentProps<"input">["inputMode"];
   placeholder?: string;
   maxLength?: number;

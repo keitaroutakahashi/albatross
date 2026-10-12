@@ -12,6 +12,7 @@ erDiagram
   Int id PK
   String email UK
   String name "nullable"
+  UserRole role
   DateTime createdAt
   DateTime updatedAt
 }
@@ -184,6 +185,7 @@ Properties as follows:
 - `id`:
 - `email`:
 - `name`:
+- `role`:
 - `createdAt`:
 - `updatedAt`:
 

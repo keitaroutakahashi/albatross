@@ -18,10 +18,17 @@ type Props = {
     action: () => Promise<ActionState>;
   };
   children: (state: ActionState) => ReactNode;
+  /** 送信ボタンの文言。新規登録など、「保存」ではない操作で指定する */
+  submitLabel?: { idle: string; pending: string };
 };
 
 /** 作成・編集フォーム共通の枠。入力欄は children で受け取る */
-export const FormShell = ({ action, deleteTarget, children }: Props) => {
+export const FormShell = ({
+  action,
+  deleteTarget,
+  children,
+  submitLabel = { idle: "保存する", pending: "保存中…" },
+}: Props) => {
   const [state, formAction, isPending] = useActionState(
     action,
     initialActionState,
@@ -58,7 +65,7 @@ export const FormShell = ({ action, deleteTarget, children }: Props) => {
             disabled={isPending}
             className="h-11 w-full"
           >
-            {isPending ? "保存中…" : "保存する"}
+            {isPending ? submitLabel.pending : submitLabel.idle}
           </Button>
         </div>
       </div>

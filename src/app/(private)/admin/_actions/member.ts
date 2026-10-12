@@ -9,14 +9,14 @@ import {
   toFailureState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 export const createMember = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("members");
   const parsed = parseForm(memberSchema, formData);
   if (!parsed.success) return parsed.state;
 
@@ -35,7 +35,7 @@ export const updateMember = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("members");
   const parsed = parseForm(memberSchema, formData);
   if (!parsed.success) return parsed.state;
 
@@ -50,7 +50,7 @@ export const updateMember = async (
 };
 
 export const deleteMember = async (id: number): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("members");
 
   try {
     await prisma.member.delete({ where: { id } });

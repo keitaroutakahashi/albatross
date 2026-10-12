@@ -1,20 +1,26 @@
 import type { Metadata } from "next";
 import { createEvent } from "@/app/(private)/admin/_actions/event";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
-import { getEventFormOptions } from "@/app/(private)/admin/_data/event";
-import { EventForm } from "@/app/(private)/admin/events/_components/event-form";
+import { getEventSeasons } from "@/app/(private)/admin/_data/event";
+import { EventCreateForm } from "@/app/(private)/admin/events/_components/event-create-form";
 
 export const metadata: Metadata = {
   title: "イベントを登録",
 };
 
 export default async function Page() {
-  const options = await getEventFormOptions();
+  const seasons = await getEventSeasons();
 
   return (
     <>
       <PageHeader title="イベントを登録" backHref="/admin/events" />
-      <EventForm action={createEvent} options={options} />
+      <EventCreateForm
+        action={createEvent}
+        seasons={seasons.map((s) => ({
+          value: String(s.id),
+          label: `${s.season}年度`,
+        }))}
+      />
     </>
   );
 }

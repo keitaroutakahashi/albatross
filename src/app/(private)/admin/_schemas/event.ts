@@ -68,3 +68,26 @@ export const eventSchema = z.discriminatedUnion(
 
 export type EventInput = z.output<typeof eventSchema>;
 export type GameEventInput = Extract<EventInput, { type: "game" }>;
+
+/**
+ * 新規登録で入力する項目。状態は常に「開催予定」で登録するため入力させず、
+ * 結果・備考などの詳細は登録後に編集画面で入力する。
+ */
+export const eventCreateSchema = z.discriminatedUnion(
+  "type",
+  [
+    z.object({
+      type: z.literal("game"),
+      date: jstDateTime,
+      seasonId: requiredId,
+      gameNumber: requiredInt(1, 9),
+      gameType: enumField(GameType),
+    }),
+    z.object({
+      type: z.literal("practice"),
+      date: jstDateTime,
+      seasonId: requiredId,
+    }),
+  ],
+  { error: "種別を選択してください" },
+);

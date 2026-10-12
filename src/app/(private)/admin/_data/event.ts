@@ -1,4 +1,4 @@
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import type { EventType } from "@/generated/prisma/enums";
 import prisma from "@/lib/prisma";
 
@@ -9,7 +9,7 @@ export const getEventList = async ({
   seasonId?: number;
   type?: EventType;
 }) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.event.findMany({
     where: { seasonId, type },
     orderBy: { date: "desc" },
@@ -21,7 +21,7 @@ export const getEventList = async ({
 };
 
 export const getEvent = async (id: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.event.findUnique({
     where: { id },
     include: {
@@ -35,7 +35,7 @@ export const getEvent = async (id: number) => {
 
 /** イベントフォームの選択肢 */
 export const getEventFormOptions = async () => {
-  await requireAdmin();
+  await requireAccess("events");
   const [seasons, leagues, grounds, opponents] = await Promise.all([
     prisma.season.findMany({ orderBy: { season: "desc" } }),
     prisma.league.findMany({ orderBy: { name: "asc" } }),
@@ -52,4 +52,10 @@ export const getEventFormOptions = async () => {
     grounds: grounds.map((g) => ({ value: String(g.id), label: g.name })),
     opponents: opponents.map((o) => ({ value: String(o.id), label: o.name })),
   };
+};
+
+/** イベント一覧の絞り込み用。シーズンの管理権限がなくても使えるよう、ここで取得する */
+export const getEventSeasons = async () => {
+  await requireAccess("events");
+  return prisma.season.findMany({ orderBy: { season: "desc" } });
 };

@@ -1,8 +1,8 @@
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 export const getOpponentList = async () => {
-  await requireAdmin();
+  await requireAccess("options");
   return prisma.opponent.findMany({
     orderBy: { name: "asc" },
     include: { _count: { select: { games: true } } },
@@ -10,6 +10,6 @@ export const getOpponentList = async () => {
 };
 
 export const getOpponent = async (id: number) => {
-  await requireAdmin();
+  await requireAccess("options");
   return prisma.opponent.findUnique({ where: { id } });
 };

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { AdminHeader } from "@/app/(private)/admin/_components/admin-header";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { getCurrentRole } from "@/app/(private)/admin/_utils/auth";
 
 export const metadata: Metadata = {
   title: {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Layout({ children }: { children: ReactNode }) {
-  await requireAdmin();
+  await getCurrentRole();
 
   return (
     <>

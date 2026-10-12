@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { userRoleLabel } from "@/app/_constants/labels";
+import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
@@ -28,6 +30,11 @@ export default async function Page() {
               href={`/admin/users/${r.id}`}
               title={r.name ?? r.email}
               description={r.name ? r.email : undefined}
+              trailing={
+                <Badge tone={r.role === "admin" ? "default" : "muted"}>
+                  {userRoleLabel[r.role]}
+                </Badge>
+              }
             />
           ))}
         </ul>

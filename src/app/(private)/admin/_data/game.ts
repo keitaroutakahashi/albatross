@@ -1,9 +1,9 @@
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /** イベント配下の試合データ。イベントが試合でなければ null */
 export const getGameOfEvent = async (eventId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.game.findUnique({
     where: { eventId },
     include: { event: true, opponent: true },
@@ -12,7 +12,7 @@ export const getGameOfEvent = async (eventId: number) => {
 
 /** イベント配下の練習データ。イベントが練習でなければ null */
 export const getPracticeOfEvent = async (eventId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.practice.findUnique({
     where: { eventId },
     include: { event: true, practiceMembers: true },
@@ -20,7 +20,7 @@ export const getPracticeOfEvent = async (eventId: number) => {
 };
 
 export const getInnings = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.inning.findMany({
     where: { gameId },
     orderBy: { inningNumber: "asc" },
@@ -29,7 +29,7 @@ export const getInnings = async (gameId: number) => {
 
 /** 出場した選手を打順・背番号順で取得する */
 export const getGameMembers = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.gameMember.findMany({
     where: { gameId },
     include: { member: true, pitchingResult: { select: { id: true } } },
@@ -39,7 +39,7 @@ export const getGameMembers = async (gameId: number) => {
 
 /** 出場した選手登録フォーム用。現役メンバーと、すでに出場登録済みのメンバー */
 export const getLineupCandidates = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   const [members, gameMembers] = await Promise.all([
     prisma.member.findMany({
       where: {
@@ -54,7 +54,7 @@ export const getLineupCandidates = async (gameId: number) => {
 };
 
 export const getPlateAppearances = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.plateAppearance.findMany({
     where: { gameMember: { gameId } },
     include: { gameMember: { include: { member: true } } },
@@ -67,14 +67,14 @@ export const getPlateAppearances = async (gameId: number) => {
 };
 
 export const getPlateAppearance = async (gameId: number, id: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.plateAppearance.findFirst({
     where: { id, gameMember: { gameId } },
   });
 };
 
 export const getPitchingResults = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.pitchingResult.findMany({
     where: { gameMember: { gameId } },
     include: { gameMember: { include: { member: true } } },
@@ -83,7 +83,7 @@ export const getPitchingResults = async (gameId: number) => {
 };
 
 export const getPitchingResult = async (gameId: number, id: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.pitchingResult.findFirst({
     where: { id, gameMember: { gameId } },
   });
@@ -91,7 +91,7 @@ export const getPitchingResult = async (gameId: number, id: number) => {
 
 /** イベント編集画面に出す、関連データの件数 */
 export const getGameRelatedCounts = async (gameId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   const [innings, gameMembers, plateAppearances, pitchingResults] =
     await Promise.all([
       prisma.inning.count({ where: { gameId } }),
@@ -105,7 +105,7 @@ export const getGameRelatedCounts = async (gameId: number) => {
 
 /** 練習参加メンバー登録フォーム用 */
 export const getPracticeCandidates = async (practiceId: number) => {
-  await requireAdmin();
+  await requireAccess("events");
   return prisma.member.findMany({
     where: {
       OR: [{ isActive: true }, { practiceMembers: { some: { practiceId } } }],

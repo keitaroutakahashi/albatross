@@ -5,6 +5,7 @@ import { getJstDayRange } from "@/app/_utils/date/date";
 import { calcGameResult } from "@/app/_utils/stats/game-result";
 import {
   type EventInput,
+  eventCreateSchema,
   eventSchema,
   type GameEventInput,
 } from "@/app/(private)/admin/_schemas/event";
@@ -16,7 +17,7 @@ import {
   toFieldErrorState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import type { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
@@ -54,7 +55,7 @@ const toGameData = (data: GameEventInput) => ({
 
 /** 同日の試合番号の重複は DB 制約ではなく、ここで検証する */
 const validateGameNumber = async (
-  data: GameEventInput,
+  data: { date: Date; gameNumber: number },
   excludeEventId?: number,
 ): Promise<string | null> => {
   const { start, end } = getJstDayRange(data.date);
@@ -75,8 +76,8 @@ export const createEvent = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
-  const parsed = parseForm(eventSchema, formData);
+  await requireAccess("events");
+  const parsed = parseForm(eventCreateSchema, formData);
   if (!parsed.success) return parsed.state;
   const { data } = parsed;
 
@@ -85,37 +86,36 @@ export const createEvent = async (
     if (error) return toFieldErrorState(formData, { gameNumber: error });
   }
 
+  let eventId: number;
   try {
     // Event と子テーブルは入れ子の create で 1 トランザクションにまとめる
-    await prisma.event.create({
+    const created = await prisma.event.create({
       data: {
         type: data.type,
-        ...toEventData(data),
+        date: data.date,
+        seasonId: data.seasonId,
+        status: "scheduled",
         ...(data.type === "game"
           ? {
               game: {
                 create: {
-                  ...toGameData(data),
-                  gameWeather: data.weather
-                    ? {
-                        create: {
-                          weather: data.weather,
-                          temperature: data.temperature,
-                        },
-                      }
-                    : undefined,
+                  gameNumber: data.gameNumber,
+                  gameType: data.gameType,
                 },
               },
             }
-          : { practice: { create: { groundId: data.groundId } } }),
+          : { practice: { create: {} } }),
       },
+      select: { id: true },
     });
+    eventId = created.id;
   } catch (error) {
     return toFailureState(error, formData);
   }
 
   revalidateAll();
-  redirect(EVENTS_PATH);
+  // 続けて詳細（結果・出場した選手など）を入力できるよう、編集画面へ移動する
+  redirect(`/admin/events/${eventId}`);
 };
 
 export const updateEvent = async (
@@ -123,7 +123,7 @@ export const updateEvent = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
   const parsed = parseForm(eventSchema, formData);
   if (!parsed.success) return parsed.state;
   const { data } = parsed;
@@ -188,7 +188,7 @@ export const updateEvent = async (
 
 /** イベントの子データ（イニング・出場した選手・成績など）も Cascade で削除される */
 export const deleteEvent = async (id: number): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
 
   try {
     await prisma.event.delete({ where: { id } });

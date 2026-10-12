@@ -8,7 +8,7 @@ import {
   toFailureState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /** 練習の参加メンバーを、送信された内容に置き換える */
@@ -17,7 +17,7 @@ export const savePracticeMembers = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
   const parsed = parseForm(practiceMemberSchema, formData);
   if (!parsed.success) return parsed.state;
   const { memberIds } = parsed.data;

@@ -5,9 +5,9 @@ import type {
   GameType,
   Hand,
   MemberCategory,
-  MemberType,
   PitchingDecision,
   Position,
+  UserRole,
   Weather,
 } from "@/generated/prisma/client";
 
@@ -67,8 +67,8 @@ export const memberCategoryLabel: Record<MemberCategory, string> = {
 };
 
 export const eventStatusLabel: Record<EventStatus, string> = {
-  scheduled: "予定",
-  completed: "終了",
+  scheduled: "開催予定",
+  completed: "開催済み",
   canceled: "中止",
 };
 
@@ -114,7 +114,7 @@ export const pitchingDecisionLabel: Record<PitchingDecision, string> = {
   loss: "負け投手",
 };
 
-export const memberTypeLabel: Record<MemberType, string> = {
-  starting: "スタメン",
-  bench: "ベンチ",
+export const userRoleLabel: Record<UserRole, string> = {
+  admin: "管理者",
+  operator: "運営",
 };

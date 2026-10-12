@@ -10,8 +10,17 @@ import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { FilterChips } from "@/app/(private)/admin/_components/filter-chips";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
-import { getEventList } from "@/app/(private)/admin/_data/event";
-import { getSeasonList } from "@/app/(private)/admin/_data/season";
+import {
+  getEventList,
+  getEventSeasons,
+} from "@/app/(private)/admin/_data/event";
+
+/** 状態を色でも区別する。開催予定は強調し、終わったものは目立たせない */
+const statusTone = {
+  scheduled: "default",
+  completed: "muted",
+  canceled: "danger",
+} as const;
 
 export const metadata: Metadata = {
   title: "イベント",
@@ -25,13 +34,11 @@ export default async function Page({
   searchParams: SearchParams;
 }) {
   const params = await searchParams;
-  const seasons = await getSeasonList();
+  const seasons = await getEventSeasons();
 
-  // season 未指定は最新シーズン。"all" は全期間
-  const allSeasons = params.season === "all";
-  const selectedSeason = allSeasons
-    ? undefined
-    : (seasons.find((s) => String(s.id) === params.season) ?? seasons[0]);
+  // season 未指定は最新シーズン
+  const selectedSeason =
+    seasons.find((s) => String(s.id) === params.season) ?? seasons[0];
   const type = parseEventType(params.type);
 
   const events = await getEventList({ seasonId: selectedSeason?.id, type });
@@ -46,9 +53,7 @@ export default async function Page({
       ...(eventType ? { type: eventType } : {}),
     },
   });
-  const seasonKey = allSeasons
-    ? "all"
-    : selectedSeason && String(selectedSeason.id);
+  const seasonKey = selectedSeason && String(selectedSeason.id);
 
   return (
     <>
@@ -58,14 +63,11 @@ export default async function Page({
         addHref="/admin/events/new"
       />
       <FilterChips
-        chips={[
-          ...seasons.map((s) => ({
-            label: `${s.season}年度`,
-            href: hrefOf(String(s.id), type),
-            active: seasonKey === String(s.id),
-          })),
-          { label: "全期間", href: hrefOf("all", type), active: allSeasons },
-        ]}
+        chips={seasons.map((s) => ({
+          label: `${s.season}年度`,
+          href: hrefOf(String(s.id), type),
+          active: seasonKey === String(s.id),
+        }))}
       />
       <FilterChips
         chips={[
@@ -103,15 +105,18 @@ export default async function Page({
                   .filter(Boolean)
                   .join(" / ")}
                 trailing={
-                  hasScore ? (
-                    <Badge>
-                      {`${game.teamScore}-${game.opponentScore}${
-                        game.result ? ` ${gameResultLabel[game.result]}` : ""
-                      }`}
+                  <div className="flex flex-col items-end gap-1">
+                    <Badge tone={statusTone[event.status]}>
+                      {eventStatusLabel[event.status]}
                     </Badge>
-                  ) : (
-                    <Badge tone="muted">{eventStatusLabel[event.status]}</Badge>
-                  )
+                    {hasScore && (
+                      <span className="text-sm font-bold">
+                        {`${game.teamScore}-${game.opponentScore}${
+                          game.result ? ` ${gameResultLabel[game.result]}` : ""
+                        }`}
+                      </span>
+                    )}
+                  </div>
                 }
               />
             );

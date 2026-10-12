@@ -1,8 +1,12 @@
 "use client";
 
-import { TextField } from "@/app/(private)/admin/_components/form-fields";
+import {
+  SelectField,
+  TextField,
+} from "@/app/(private)/admin/_components/form-fields";
 import { FormShell } from "@/app/(private)/admin/_components/form-shell";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
+import { userRoleOptions } from "@/app/(private)/admin/_utils/options";
 import type { UserModel } from "@/generated/prisma/models/User";
 
 type Props = {
@@ -31,6 +35,14 @@ export const UserForm = ({ action, initial, deleteTarget }: Props) => {
             state={state}
             maxLength={50}
             defaultValue={initial?.name ?? ""}
+          />
+          <SelectField
+            name="role"
+            label="権限"
+            state={state}
+            required
+            options={userRoleOptions}
+            defaultValue={initial?.role ?? "operator"}
           />
         </>
       )}

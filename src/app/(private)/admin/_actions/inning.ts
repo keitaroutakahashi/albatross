@@ -8,7 +8,7 @@ import {
   toFailureState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /**
@@ -20,7 +20,7 @@ export const saveInnings = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
   const parsed = parseForm(inningSchema, formData);
   if (!parsed.success) return parsed.state;
   const { teamScore, opponentScore } = parsed.data;

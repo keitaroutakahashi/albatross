@@ -62,9 +62,25 @@ describe("groundSchema", () => {
 });
 
 describe("userSchema", () => {
+  const valid = { email: "taro@example.com", name: "", role: "operator" };
+
   it("メールアドレス形式でなければエラーにする", () => {
-    expect(errorsOf(userSchema.safeParse({ email: "foo", name: "" }))).toEqual({
+    expect(errorsOf(userSchema.safeParse({ ...valid, email: "foo" }))).toEqual({
       email: "メールアドレスの形式で入力してください",
+    });
+  });
+
+  it("権限は管理者・運営のみ許可する", () => {
+    expect(userSchema.parse({ ...valid, role: "admin" })).toMatchObject({
+      role: "admin",
+    });
+    expect(errorsOf(userSchema.safeParse({ ...valid, role: "owner" }))).toEqual(
+      {
+        role: "選択してください",
+      },
+    );
+    expect(errorsOf(userSchema.safeParse({ email: valid.email }))).toEqual({
+      role: "選択してください",
     });
   });
 });

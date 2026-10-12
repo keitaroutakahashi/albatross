@@ -10,7 +10,7 @@ import {
   toFieldErrorState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import { findGameId, isGameMemberOf } from "@/app/(private)/admin/_utils/game";
 import prisma from "@/lib/prisma";
 
@@ -22,7 +22,7 @@ export const createPlateAppearance = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
   const parsed = parseForm(plateAppearanceSchema, formData);
   if (!parsed.success) return parsed.state;
 
@@ -48,7 +48,7 @@ export const updatePlateAppearance = async (
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
   const parsed = parseForm(plateAppearanceSchema, formData);
   if (!parsed.success) return parsed.state;
 
@@ -77,7 +77,7 @@ export const deletePlateAppearance = async (
   eventId: number,
   id: number,
 ): Promise<ActionState> => {
-  await requireAdmin();
+  await requireAccess("events");
 
   try {
     const gameId = await findGameId(eventId);

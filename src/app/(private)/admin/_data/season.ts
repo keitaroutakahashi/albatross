@@ -1,8 +1,8 @@
-import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
+import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 export const getSeasonList = async () => {
-  await requireAdmin();
+  await requireAccess("options");
   return prisma.season.findMany({
     orderBy: { season: "desc" },
     include: { _count: { select: { events: true } } },
@@ -10,6 +10,6 @@ export const getSeasonList = async () => {
 };
 
 export const getSeason = async (id: number) => {
-  await requireAdmin();
+  await requireAccess("options");
   return prisma.season.findUnique({ where: { id } });
 };

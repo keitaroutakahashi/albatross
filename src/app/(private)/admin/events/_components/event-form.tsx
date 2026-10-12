@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { EVENT_TYPE_LABELS } from "@/app/_features/events/utils/event-type";
+import { DateTimeField } from "@/app/(private)/admin/_components/date-time-field";
 import {
   SelectField,
   TextareaField,
@@ -12,13 +12,11 @@ import { FormShell } from "@/app/(private)/admin/_components/form-shell";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import {
   eventStatusOptions,
-  eventTypeOptions,
   firstBattingOptions,
   gameTypeOptions,
   weatherOptions,
 } from "@/app/(private)/admin/_utils/options";
 import type { EventFormInitial } from "@/app/(private)/admin/events/_components/event-form-initial";
-import type { EventType } from "@/generated/prisma/enums";
 
 type Option = { value: string; label: string };
 
@@ -30,8 +28,7 @@ type Props = {
     grounds: Option[];
     opponents: Option[];
   };
-  /** 編集時のみ指定する */
-  initial?: EventFormInitial;
+  initial: EventFormInitial;
   deleteTarget?: {
     name: string;
     warning?: string;
@@ -50,39 +47,25 @@ export const EventForm = ({
   initial,
   deleteTarget,
 }: Props) => {
-  const isEdit = initial !== undefined;
-  const [type, setType] = useState<EventType>(initial?.type ?? "game");
+  // 種別は登録後に変更できない（変えると試合・練習の子データが入れ替わるため）
+  const { type } = initial;
 
   return (
     <FormShell action={action} deleteTarget={deleteTarget}>
       {(state) => (
         <>
           <FormSection title="基本情報">
-            {isEdit ? (
-              // 種別は作成後に変更できないため、表示のみにして値だけ送る
-              <div className="flex flex-col gap-2">
-                <span className="text-sm font-medium">種別</span>
-                <p className="text-base">{EVENT_TYPE_LABELS[type]}</p>
-                <input type="hidden" name="type" value={type} />
-              </div>
-            ) : (
-              <SelectField
-                name="type"
-                label="種別"
-                state={state}
-                required
-                options={eventTypeOptions}
-                defaultValue={type}
-                onChange={(value) => setType(value as EventType)}
-              />
-            )}
-            <TextField
+            <div className="flex flex-col gap-2">
+              <span className="text-sm font-medium">種別</span>
+              <p className="text-base">{EVENT_TYPE_LABELS[type]}</p>
+              <input type="hidden" name="type" value={type} />
+            </div>
+            <DateTimeField
               name="date"
               label="日時"
               state={state}
               required
-              type="datetime-local"
-              defaultValue={initial?.date}
+              defaultValue={initial.date}
             />
             <SelectField
               name="status"
@@ -90,7 +73,7 @@ export const EventForm = ({
               state={state}
               required
               options={eventStatusOptions}
-              defaultValue={initial?.status ?? "scheduled"}
+              defaultValue={initial.status ?? "scheduled"}
             />
             <SelectField
               name="seasonId"
@@ -98,7 +81,7 @@ export const EventForm = ({
               state={state}
               required
               options={options.seasons}
-              defaultValue={initial?.seasonId ?? options.seasons[0]?.value}
+              defaultValue={initial.seasonId ?? options.seasons[0]?.value}
             />
             <TextField
               name="note"
@@ -106,7 +89,7 @@ export const EventForm = ({
               state={state}
               hint="例: 雨天中止"
               maxLength={200}
-              defaultValue={initial?.note}
+              defaultValue={initial.note}
             />
           </FormSection>
 
@@ -118,7 +101,7 @@ export const EventForm = ({
                 state={state}
                 placeholder="未選択"
                 options={options.grounds}
-                defaultValue={initial?.groundId}
+                defaultValue={initial.groundId}
               />
             </FormSection>
           )}
@@ -134,7 +117,7 @@ export const EventForm = ({
                   type="number"
                   inputMode="numeric"
                   hint="同日に複数試合がある場合は 2 試合目以降を 2, 3… にする"
-                  defaultValue={initial?.gameNumber ?? "1"}
+                  defaultValue={initial.gameNumber ?? "1"}
                 />
                 <SelectField
                   name="gameType"
@@ -142,7 +125,7 @@ export const EventForm = ({
                   state={state}
                   required
                   options={gameTypeOptions}
-                  defaultValue={initial?.gameType ?? "undecided"}
+                  defaultValue={initial.gameType ?? "undecided"}
                 />
                 <SelectField
                   name="isFirstBatting"
@@ -150,7 +133,7 @@ export const EventForm = ({
                   state={state}
                   placeholder="未定"
                   options={firstBattingOptions}
-                  defaultValue={initial?.isFirstBatting}
+                  defaultValue={initial.isFirstBatting}
                 />
                 <SelectField
                   name="leagueId"
@@ -158,7 +141,7 @@ export const EventForm = ({
                   state={state}
                   placeholder="未選択"
                   options={options.leagues}
-                  defaultValue={initial?.leagueId}
+                  defaultValue={initial.leagueId}
                 />
                 <SelectField
                   name="groundId"
@@ -166,7 +149,7 @@ export const EventForm = ({
                   state={state}
                   placeholder="未選択"
                   options={options.grounds}
-                  defaultValue={initial?.groundId}
+                  defaultValue={initial.groundId}
                 />
                 <SelectField
                   name="opponentId"
@@ -174,7 +157,7 @@ export const EventForm = ({
                   state={state}
                   placeholder="未選択"
                   options={options.opponents}
-                  defaultValue={initial?.opponentId}
+                  defaultValue={initial.opponentId}
                 />
               </FormSection>
 
@@ -189,7 +172,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.teamScore}
+                    defaultValue={initial.teamScore}
                   />
                   <TextField
                     name="opponentScore"
@@ -197,7 +180,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.opponentScore}
+                    defaultValue={initial.opponentScore}
                   />
                   <TextField
                     name="teamHits"
@@ -205,7 +188,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.teamHits}
+                    defaultValue={initial.teamHits}
                   />
                   <TextField
                     name="opponentHits"
@@ -213,7 +196,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.opponentHits}
+                    defaultValue={initial.opponentHits}
                   />
                   <TextField
                     name="teamErrors"
@@ -221,7 +204,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.teamErrors}
+                    defaultValue={initial.teamErrors}
                   />
                   <TextField
                     name="opponentErrors"
@@ -229,7 +212,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.opponentErrors}
+                    defaultValue={initial.opponentErrors}
                   />
                   <TextField
                     name="teamForfeitedRuns"
@@ -237,7 +220,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.teamForfeitedRuns}
+                    defaultValue={initial.teamForfeitedRuns}
                   />
                   <TextField
                     name="opponentForfeitedRuns"
@@ -245,7 +228,7 @@ export const EventForm = ({
                     state={state}
                     type="number"
                     inputMode="numeric"
-                    defaultValue={initial?.opponentForfeitedRuns}
+                    defaultValue={initial.opponentForfeitedRuns}
                   />
                 </PairRow>
               </FormSection>
@@ -257,7 +240,7 @@ export const EventForm = ({
                   state={state}
                   placeholder="未設定"
                   options={weatherOptions}
-                  defaultValue={initial?.weather}
+                  defaultValue={initial.weather}
                 />
                 <TextField
                   name="temperature"
@@ -266,7 +249,7 @@ export const EventForm = ({
                   type="number"
                   inputMode="decimal"
                   step="0.1"
-                  defaultValue={initial?.temperature}
+                  defaultValue={initial.temperature}
                 />
               </FormSection>
 
@@ -276,7 +259,7 @@ export const EventForm = ({
                   label="戦評"
                   state={state}
                   maxLength={2000}
-                  defaultValue={initial?.summary}
+                  defaultValue={initial.summary}
                 />
                 <TextField
                   name="videoUrl"
@@ -284,7 +267,7 @@ export const EventForm = ({
                   state={state}
                   type="url"
                   placeholder="https://"
-                  defaultValue={initial?.videoUrl}
+                  defaultValue={initial.videoUrl}
                 />
               </FormSection>
 
@@ -294,14 +277,14 @@ export const EventForm = ({
                   label="良かった点"
                   state={state}
                   maxLength={2000}
-                  defaultValue={initial?.aiGoodPoints}
+                  defaultValue={initial.aiGoodPoints}
                 />
                 <TextareaField
                   name="aiBadPoints"
                   label="改善点"
                   state={state}
                   maxLength={2000}
-                  defaultValue={initial?.aiBadPoints}
+                  defaultValue={initial.aiBadPoints}
                 />
               </FormSection>
             </>
