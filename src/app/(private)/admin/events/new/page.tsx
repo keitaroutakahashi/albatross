@@ -5,7 +5,7 @@ import { getEventFormOptions } from "@/app/(private)/admin/_data/event";
 import { EventForm } from "@/app/(private)/admin/events/_components/event-form";
 
 export const metadata: Metadata = {
-  title: "イベントを追加",
+  title: "イベントを登録",
 };
 
 export default async function Page() {
@@ -13,7 +13,7 @@ export default async function Page() {
 
   return (
     <>
-      <PageHeader title="イベントを追加" backHref="/admin/events" />
+      <PageHeader title="イベントを登録" backHref="/admin/events" />
       <EventForm action={createEvent} options={options} />
     </>
   );

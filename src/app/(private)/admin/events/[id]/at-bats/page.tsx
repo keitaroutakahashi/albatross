@@ -14,7 +14,7 @@ import {
 import { parseId } from "@/app/(private)/admin/_utils/id";
 
 export const metadata: Metadata = {
-  title: "打席結果",
+  title: "打席の結果",
 };
 
 export default async function Page({
@@ -30,12 +30,12 @@ export default async function Page({
   return (
     <>
       <PageHeader
-        title="打席結果"
+        title="打席の結果"
         backHref={`/admin/events/${eventId}`}
         addHref={`/admin/events/${eventId}/at-bats/new`}
       />
       {rows.length === 0 ? (
-        <EmptyState message="打席結果がまだ登録されていません" />
+        <EmptyState message="打席の結果がまだ登録されていません" />
       ) : (
         <ul>
           {rows.map((r) => (

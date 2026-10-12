@@ -10,7 +10,7 @@ import { parseId } from "@/app/(private)/admin/_utils/id";
 import { LineupForm } from "@/app/(private)/admin/events/[id]/_components/lineup-form";
 
 export const metadata: Metadata = {
-  title: "出場メンバー",
+  title: "出場した選手",
 };
 
 export default async function Page({
@@ -27,7 +27,7 @@ export default async function Page({
 
   return (
     <>
-      <PageHeader title="出場メンバー" backHref={`/admin/events/${eventId}`} />
+      <PageHeader title="出場した選手" backHref={`/admin/events/${eventId}`} />
       <LineupForm
         action={saveLineup.bind(null, eventId)}
         members={members.map((m) => {

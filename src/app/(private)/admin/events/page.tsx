@@ -82,7 +82,7 @@ export default async function Page({
         ]}
       />
       {events.length === 0 ? (
-        <EmptyState message="イベントがありません" />
+        <EmptyState message="イベントがまだ登録されていません" />
       ) : (
         <ul className="border-t">
           {events.map((event) => {

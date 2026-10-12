@@ -12,7 +12,7 @@ import {
 import { parseId } from "@/app/(private)/admin/_utils/id";
 
 export const metadata: Metadata = {
-  title: "投手成績",
+  title: "投手の成績",
 };
 
 export default async function Page({
@@ -28,12 +28,12 @@ export default async function Page({
   return (
     <>
       <PageHeader
-        title="投手成績"
+        title="投手の成績"
         backHref={`/admin/events/${eventId}`}
         addHref={`/admin/events/${eventId}/pitching/new`}
       />
       {rows.length === 0 ? (
-        <EmptyState message="投手成績がまだ登録されていません" />
+        <EmptyState message="投手の成績がまだ登録されていません" />
       ) : (
         <ul>
           {rows.map((r) => (

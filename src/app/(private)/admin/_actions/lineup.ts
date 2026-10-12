@@ -15,8 +15,8 @@ import { requireAdmin } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /**
- * 出場メンバー（スタメン・ベンチ）を、送信された内容に置き換える。
- * 「出場なし」にしたメンバーは削除するが、打席・投手成績が残っている場合は
+ * 出場した選手（スタメン・ベンチ）を、送信された内容に置き換える。
+ * 「出場なし」にしたメンバーは削除するが、打席・投手の成績が残っている場合は
  * 成績まで消えてしまうため、先に成績を削除するよう案内する。
  */
 export const saveLineup = async (
@@ -56,7 +56,7 @@ export const saveLineup = async (
     for (const gm of removed) {
       if (gm._count.plateAppearances > 0 || pitchers.has(gm.id)) {
         blocked[lineupFieldName("memberType", gm.memberId)] =
-          "打席・投手成績があるため外せません。先に成績を削除してください";
+          "打席・投手の成績があるため外せません。先に成績を削除してください";
       }
     }
     if (Object.keys(blocked).length > 0) {

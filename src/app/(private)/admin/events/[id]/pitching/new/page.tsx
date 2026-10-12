@@ -7,10 +7,11 @@ import {
   getGameOfEvent,
 } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
+import { LineupRequiredNotice } from "@/app/(private)/admin/events/[id]/_components/lineup-required-notice";
 import { PitchingResultForm } from "@/app/(private)/admin/events/[id]/_components/pitching-result-form";
 
 export const metadata: Metadata = {
-  title: "投手成績を追加",
+  title: "投手の成績を追加",
 };
 
 export default async function Page({
@@ -23,15 +24,27 @@ export default async function Page({
   if (!game) notFound();
   const gameMembers = await getGameMembers(game.id);
 
+  if (gameMembers.length === 0) {
+    return (
+      <>
+        <PageHeader
+          title="投手の成績を追加"
+          backHref={`/admin/events/${eventId}/pitching`}
+        />
+        <LineupRequiredNotice eventId={eventId} />
+      </>
+    );
+  }
+
   return (
     <>
       <PageHeader
-        title="投手成績を追加"
+        title="投手の成績を追加"
         backHref={`/admin/events/${eventId}/pitching`}
       />
       <PitchingResultForm
         action={createPitchingResult.bind(null, eventId)}
-        // 投手成績は 1 人 1 件のため、登録済みの選手は選べない
+        // 投手の成績は 1 人 1 件のため、登録済みの選手は選べない
         gameMembers={gameMembers
           .filter((gm) => gm.pitchingResult === null)
           .map((gm) => ({

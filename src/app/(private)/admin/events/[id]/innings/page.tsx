@@ -7,7 +7,7 @@ import { parseId } from "@/app/(private)/admin/_utils/id";
 import { InningsForm } from "@/app/(private)/admin/events/[id]/_components/innings-form";
 
 export const metadata: Metadata = {
-  title: "イニング得点",
+  title: "イニングごとの得点",
 };
 
 /** イニングが未登録のときに最初に並べる回数（草野球は 7 回制が多い） */
@@ -36,7 +36,10 @@ export default async function Page({
 
   return (
     <>
-      <PageHeader title="イニング得点" backHref={`/admin/events/${eventId}`} />
+      <PageHeader
+        title="イニングごとの得点"
+        backHref={`/admin/events/${eventId}`}
+      />
       <InningsForm
         action={saveInnings.bind(null, eventId)}
         initial={initial}

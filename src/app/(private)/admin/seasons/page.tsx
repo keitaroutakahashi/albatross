@@ -6,7 +6,7 @@ import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import { getSeasonList } from "@/app/(private)/admin/_data/season";
 
 export const metadata: Metadata = {
-  title: "シーズン",
+  title: "シーズン（年度）",
 };
 
 export default async function Page() {
@@ -15,7 +15,7 @@ export default async function Page() {
   return (
     <>
       <PageHeader
-        title="シーズン"
+        title="シーズン（年度）"
         backHref="/admin"
         addHref="/admin/seasons/new"
       />

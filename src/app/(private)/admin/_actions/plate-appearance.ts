@@ -15,7 +15,7 @@ import { findGameId, isGameMemberOf } from "@/app/(private)/admin/_utils/game";
 import prisma from "@/lib/prisma";
 
 const NOT_FOUND: ActionState = { message: "データが見つかりません" };
-const NOT_IN_GAME = "この試合の出場メンバーを選択してください";
+const NOT_IN_GAME = "この試合の出場した選手を選択してください";
 
 export const createPlateAppearance = async (
   eventId: number,

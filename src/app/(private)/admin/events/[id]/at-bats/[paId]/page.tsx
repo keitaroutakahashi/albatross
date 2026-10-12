@@ -14,7 +14,7 @@ import { parseId } from "@/app/(private)/admin/_utils/id";
 import { PlateAppearanceForm } from "@/app/(private)/admin/events/[id]/_components/plate-appearance-form";
 
 export const metadata: Metadata = {
-  title: "打席結果を編集",
+  title: "打席の結果を編集",
 };
 
 export default async function Page({
@@ -36,7 +36,7 @@ export default async function Page({
   return (
     <>
       <PageHeader
-        title="打席結果を編集"
+        title="打席の結果を編集"
         backHref={`/admin/events/${eventId}/at-bats`}
       />
       <PlateAppearanceForm

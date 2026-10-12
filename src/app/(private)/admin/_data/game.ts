@@ -27,7 +27,7 @@ export const getInnings = async (gameId: number) => {
   });
 };
 
-/** 出場メンバーを打順・背番号順で取得する */
+/** 出場した選手を打順・背番号順で取得する */
 export const getGameMembers = async (gameId: number) => {
   await requireAdmin();
   return prisma.gameMember.findMany({
@@ -37,7 +37,7 @@ export const getGameMembers = async (gameId: number) => {
   });
 };
 
-/** 出場メンバー登録フォーム用。現役メンバーと、すでに出場登録済みのメンバー */
+/** 出場した選手登録フォーム用。現役メンバーと、すでに出場登録済みのメンバー */
 export const getLineupCandidates = async (gameId: number) => {
   await requireAdmin();
   const [members, gameMembers] = await Promise.all([

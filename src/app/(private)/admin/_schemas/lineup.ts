@@ -34,7 +34,7 @@ type Result =
   | { success: false; fieldErrors: Record<string, string> };
 
 /**
- * 出場メンバーフォームの入力を検証する。
+ * 出場した選手フォームの入力を検証する。
  * 「出場なし」のメンバーは結果に含めない（呼び出し側で除外・削除する）。
  */
 export const parseLineup = (

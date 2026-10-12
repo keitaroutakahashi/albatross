@@ -55,7 +55,7 @@ export default async function Page({
         deleteTarget={{
           name: `${formatJstDateTimeWithDay(event.date)} ${EVENT_TYPE_LABELS[event.type]}`,
           warning:
-            "結果・出場メンバー・成績などの関連データもすべて削除されます。",
+            "結果・出場した選手・成績などの関連データもすべて削除されます。",
           action: deleteEvent.bind(null, id),
         }}
       />

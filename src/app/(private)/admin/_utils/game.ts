@@ -9,7 +9,7 @@ export const findGameId = async (eventId: number): Promise<number | null> => {
   return game?.id ?? null;
 };
 
-/** gameMemberId が、その試合の出場メンバーかを確認する */
+/** gameMemberId が、その試合の出場した選手かを確認する */
 export const isGameMemberOf = async (
   gameId: number,
   gameMemberId: number,

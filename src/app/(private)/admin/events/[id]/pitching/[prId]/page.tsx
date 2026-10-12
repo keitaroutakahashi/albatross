@@ -14,7 +14,7 @@ import { parseId } from "@/app/(private)/admin/_utils/id";
 import { PitchingResultForm } from "@/app/(private)/admin/events/[id]/_components/pitching-result-form";
 
 export const metadata: Metadata = {
-  title: "投手成績を編集",
+  title: "投手の成績を編集",
 };
 
 export default async function Page({
@@ -38,12 +38,12 @@ export default async function Page({
   return (
     <>
       <PageHeader
-        title="投手成績を編集"
+        title="投手の成績を編集"
         backHref={`/admin/events/${eventId}/pitching`}
       />
       <PitchingResultForm
         action={updatePitchingResult.bind(null, eventId, pitchingResultId)}
-        // 投手成績は 1 人 1 件のため、他の投手の登録済み選手は選べない
+        // 投手の成績は 1 人 1 件のため、他の投手の登録済み選手は選べない
         gameMembers={gameMembers
           .filter(
             (gm) => gm.pitchingResult === null || gm.id === result.gameMemberId,
@@ -68,7 +68,7 @@ export default async function Page({
           decision: result.decision ?? "",
         }}
         deleteTarget={{
-          name: "この投手成績",
+          name: "この投手の成績",
           action: deletePitchingResult.bind(null, eventId, pitchingResultId),
         }}
       />

@@ -186,7 +186,7 @@ export const updateEvent = async (
   redirect(EVENTS_PATH);
 };
 
-/** 試合・練習の子データ（イニング・出場メンバー・成績など）も Cascade で削除される */
+/** イベントの子データ（イニング・出場した選手・成績など）も Cascade で削除される */
 export const deleteEvent = async (id: number): Promise<ActionState> => {
   await requireAdmin();
 
