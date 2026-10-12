@@ -1,5 +1,6 @@
 import type {
   AtBatResult,
+  EventStatus,
   Ground,
   League,
   Member,
@@ -25,6 +26,19 @@ export type SeedContext = {
   benchMembers: Member[];
   starterPositions: Position[];
 };
+
+// 試合（Game）の親となる Event を作成する
+export function createGameEvent(
+  prisma: PrismaClient,
+  data: {
+    date: Date;
+    status: EventStatus;
+    seasonId: number;
+    note?: string;
+  },
+) {
+  return prisma.event.create({ data: { type: "game", ...data } });
+}
 
 // GameMember 作成用データ
 export type GameMemberCreateData = {

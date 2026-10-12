@@ -1,5 +1,6 @@
 import type { PrismaClient } from "../../../../../src/generated/prisma/client.js";
 import {
+  createGameEvent,
   createGameMembersFromData,
   type GameMemberCreateData,
   type PitchingResultData,
@@ -11,14 +12,18 @@ import {
 export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
   const { season2025, tokyoLeague, grounds, opponents, members } = ctx;
 
+  const event = await createGameEvent(prisma, {
+    date: new Date("2025-06-08T10:00:00"),
+    status: "completed",
+    seasonId: season2025.id,
+  });
+
   const game = await prisma.game.create({
     data: {
-      date: new Date("2025-06-08T10:00:00"),
+      eventId: event.id,
       gameNumber: 1,
       gameType: "official",
       isFirstBatting: true,
-      status: "completed",
-      seasonId: season2025.id,
       leagueId: tokyoLeague.id,
       groundId: grounds[3].id,
       opponentId: opponents[3].id,

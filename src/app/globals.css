@@ -130,5 +130,13 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* 文字詰め */
+    font-feature-settings: "palt" 1;
+    /* 厳密な禁則処理 */
+    line-break: strict;
+    /* 文節で折り返す */
+    word-break: auto-phrase;
+    /* 日本語と英語の間に余白 */
+    text-autospace: normal;
   }
 }

@@ -10,9 +10,9 @@ type Props = {
 };
 
 export const GameHeader = ({ game }: Props) => {
-  const fullDate = formatAsFullDate(game.date);
-  const dayName = formatAsDayName(game.date);
-  const time24 = formatAsTime24(game.date);
+  const fullDate = formatAsFullDate(game.event.date);
+  const dayName = formatAsDayName(game.event.date);
+  const time24 = formatAsTime24(game.event.date);
 
   return (
     <div className="px-2">

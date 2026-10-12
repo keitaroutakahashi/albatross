@@ -2,7 +2,7 @@ import type {
   Prisma,
   PrismaClient,
 } from "../../../../../src/generated/prisma/client.js";
-import type { SeedContext } from "../_shared.js";
+import { createGameEvent, type SeedContext } from "../_shared.js";
 
 // 試合4: 2026年 開催予定の試合（5件）
 export async function seedGameScheduled(
@@ -18,13 +18,13 @@ export async function seedGameScheduled(
     opponents,
   } = ctx;
 
-  const games: Prisma.GameCreateManyInput[] = [
+  const games: (Omit<Prisma.GameUncheckedCreateInput, "eventId"> & {
+    date: Date;
+  })[] = [
     {
       date: new Date("2026-08-22T10:00:00"),
       gameNumber: 1,
       gameType: "official",
-      status: "scheduled",
-      seasonId: season2026.id,
       leagueId: tokyoLeague.id,
       groundId: grounds[1].id,
       opponentId: opponents[0].id,
@@ -33,8 +33,6 @@ export async function seedGameScheduled(
       date: new Date("2026-09-13T13:00:00"),
       gameNumber: 1,
       gameType: "official",
-      status: "scheduled",
-      seasonId: season2026.id,
       leagueId: sundayLeague.id,
       groundId: grounds[2].id,
       opponentId: opponents[1].id,
@@ -43,8 +41,6 @@ export async function seedGameScheduled(
       date: new Date("2026-10-04T09:30:00"),
       gameNumber: 1,
       gameType: "practice",
-      status: "scheduled",
-      seasonId: season2026.id,
       leagueId: practiceLeague.id,
       groundId: grounds[3].id,
       opponentId: opponents[4].id,
@@ -53,8 +49,6 @@ export async function seedGameScheduled(
       date: new Date("2026-11-08T11:00:00"),
       gameNumber: 1,
       gameType: "official",
-      status: "scheduled",
-      seasonId: season2026.id,
       leagueId: tokyoLeague.id,
       groundId: grounds[0].id,
       opponentId: opponents[3].id,
@@ -64,13 +58,23 @@ export async function seedGameScheduled(
       date: new Date("2026-12-13T10:00:00"),
       gameNumber: 1,
       gameType: "undecided",
-      status: "scheduled",
-      seasonId: season2026.id,
       groundId: grounds[0].id,
     },
   ];
 
   // 予定試合のため天候・打席データなし
 
-  return prisma.game.createManyAndReturn({ data: games });
+  const created = [];
+  for (const { date, ...data } of games) {
+    const event = await createGameEvent(prisma, {
+      date,
+      status: "scheduled",
+      seasonId: season2026.id,
+    });
+    created.push(
+      await prisma.game.create({ data: { ...data, eventId: event.id } }),
+    );
+  }
+
+  return created;
 }

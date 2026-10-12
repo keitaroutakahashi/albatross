@@ -50,9 +50,9 @@ export const LatestGame = async () => {
         <div className="grid gap-3 md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-6">
           <div className="flex items-center gap-4">
             <p className="font-(family-name:--font-roboto) text-sm md:text-base font-bold tracking-widest">
-              {formatAsYYYYMMDDWithDot(game.date)}{" "}
+              {formatAsYYYYMMDDWithDot(game.event.date)}{" "}
               <span className="uppercase">
-                {formatToShortDayNameEn(game.date)}
+                {formatToShortDayNameEn(game.event.date)}
               </span>
             </p>
             <span className="hidden md:block h-px flex-1 bg-white/30" />

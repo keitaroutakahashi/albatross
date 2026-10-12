@@ -26,16 +26,16 @@ export const GameCardScoreInfo = ({ game }: Props) => {
         {game.ground?.name}
       </p>
 
-      {game.status !== "scheduled" && (
+      {game.event.status !== "scheduled" && (
         <>
           <div className="">
-            {game.status !== "canceled" && (
+            {game.event.status !== "canceled" && (
               <span className="text-3xl font-bold">
                 {game.isFirstBatting ? game.teamScore : game.opponentScore}
               </span>
             )}
             <span className="text-2xl font-bold mx-2">-</span>
-            {game.status !== "canceled" && (
+            {game.event.status !== "canceled" && (
               <span className="text-3xl font-bold">
                 {game.isFirstBatting ? game.opponentScore : game.teamScore}
               </span>
@@ -43,7 +43,7 @@ export const GameCardScoreInfo = ({ game }: Props) => {
           </div>
 
           <div className="flex items-center">
-            {game.status === "canceled" ? (
+            {game.event.status === "canceled" ? (
               <span className="text-xs font-bold text-gray-500">中止</span>
             ) : (
               <span

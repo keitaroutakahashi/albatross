@@ -17,18 +17,25 @@ datasource db {
 // Enums
 // ============================================================
 
+// --- イベント関連 ---
+
+enum EventType {
+  game // 試合
+  practice // 練習
+}
+
+enum EventStatus {
+  scheduled // 予定
+  completed // 終了
+  canceled // 中止
+}
+
 // --- 試合関連 ---
 
 enum GameType {
   official // 公式戦
   practice // 練習試合
   undecided // 未定
-}
-
-enum GameStatus {
-  scheduled // 予定
-  completed // 終了
-  canceled // 中止
 }
 
 enum GameResult {
@@ -128,7 +135,7 @@ model Season {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  games     Game[]
+  events    Event[]
 }
 
 // リーグ
@@ -142,14 +149,15 @@ model League {
 
 // グラウンド（球場）
 model Ground {
-  id        Int      @id @default(autoincrement())
+  id        Int        @id @default(autoincrement())
   name      String
   address   String
   access    String?
   url       String // 公式HPのURL
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
   games     Game[]
+  practices Practice[]
 }
 
 // 対戦相手チーム
@@ -178,24 +186,65 @@ model Member {
   gameMembers GameMember[]
 }
 
+// --- イベント ---
+
+// チームイベント（試合・練習など共通の親）
+// 種別ごとの固有情報は type に対応する子テーブル（Game, Practice）が持つ
+model Event {
+  id Int @id @default(autoincrement())
+
+  type   EventType
+  date   DateTime
+  status EventStatus @default(scheduled)
+
+  // （雨天中止など）
+  note String?
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  // type に対応する子テーブル
+  game     Game?
+  practice Practice?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([seasonId, date])
+}
+
+// 練習
+model Practice {
+  id Int @id @default(autoincrement())
+
+  eventId Int   @unique
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  groundId Int?
+  ground   Ground? @relation(fields: [groundId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 // --- 試合 ---
 
 // 試合
+// 日時・状態・シーズンなどの共通項目は Event が持つ
+// 同日の試合番号（gameNumber）の重複は DB 制約ではなく登録処理でチェックする
 model Game {
   id Int @id @default(autoincrement())
 
-  // 日時・試合番号
-  date       DateTime
-  gameNumber Int      @default(1) // 同日の試合番号（ダブルヘッダー対応）
+  eventId Int   @unique
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  gameNumber Int @default(1) // 同日の試合番号（ダブルヘッダー対応）
 
   // 試合設定
-  gameType       GameType   @default(undecided) // 公式戦 or 練習試合
+  gameType       GameType @default(undecided) // 公式戦 or 練習試合
   isFirstBatting Boolean? // true: 先攻, false: 後攻, null: 未定
-  status         GameStatus @default(scheduled)
 
   // リレーション
-  seasonId   Int
-  season     Season    @relation(fields: [seasonId], references: [id])
   leagueId   Int?
   league     League?   @relation(fields: [leagueId], references: [id])
   groundId   Int?
@@ -233,13 +282,8 @@ model Game {
   // 試合動画
   videoUrl String? // 試合動画用のリンク
 
-  // （雨天中止など）
-  note String?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@unique([date, gameNumber])
 }
 
 // 試合日の天候
