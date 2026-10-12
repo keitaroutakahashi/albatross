@@ -1,7 +1,6 @@
 import { clsx } from "clsx";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { twMerge } from "tailwind-merge";
 import {
   getUpcomingEvents,
   type UpcomingEvent,
@@ -16,10 +15,7 @@ import {
 /** トップページに表示する今後の予定の件数 */
 const DISPLAY_COUNT = 3;
 
-const ROW_CLASS_NAME =
-  "group flex flex-col gap-y-1 px-2 py-4 md:flex-row md:items-center md:gap-x-6";
-
-// イベント種別ごとの表示内容。練習には詳細ページがないためリンクなし
+// イベント種別ごとの表示内容
 const getEventInfo = (event: UpcomingEvent) => {
   if (event.game) {
     return {
@@ -32,7 +28,7 @@ const getEventInfo = (event: UpcomingEvent) => {
 
   if (event.practice) {
     return {
-      href: null,
+      href: `/practices/${event.practice.id}` as const,
       subtitle: "",
       title: "練習",
       groundName: event.practice.ground?.name,
@@ -106,19 +102,12 @@ export const Schedule = async () => {
 
           return (
             <li key={event.id} className="border-b border-gray-200">
-              {info.href ? (
-                <Link
-                  href={info.href}
-                  className={twMerge(
-                    ROW_CLASS_NAME,
-                    "transition-colors hover:bg-gray-50",
-                  )}
-                >
-                  {content}
-                </Link>
-              ) : (
-                <div className={ROW_CLASS_NAME}>{content}</div>
-              )}
+              <Link
+                href={info.href}
+                className="group flex flex-col gap-y-1 px-2 py-4 transition-colors hover:bg-gray-50 md:flex-row md:items-center md:gap-x-6"
+              >
+                {content}
+              </Link>
             </li>
           );
         })}

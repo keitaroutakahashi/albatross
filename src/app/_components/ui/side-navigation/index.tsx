@@ -40,8 +40,8 @@ const NAV_GROUPS: NavGroup[] = [
         href: "/events",
         label: "イベント一覧",
         icon: Trophy,
-        // 試合詳細（/games/[id]）でも選択状態にする
-        activePrefixes: ["/events", "/games"],
+        // 試合・練習の詳細ページでも選択状態にする
+        activePrefixes: ["/events", "/games", "/practices"],
       },
     ],
   },

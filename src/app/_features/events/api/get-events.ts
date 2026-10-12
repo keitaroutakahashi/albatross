@@ -51,3 +51,18 @@ export const getUpcomingEvents = async (limit: number) => {
     take: limit,
   });
 };
+
+// Practice 詳細を取得
+export type PracticeDetail = NonNullable<
+  Awaited<ReturnType<typeof getPractice>>
+>;
+
+export const getPractice = async (id: number) => {
+  return prisma.practice.findUnique({
+    where: { id },
+    include: {
+      event: true,
+      ground: true,
+    },
+  });
+};
