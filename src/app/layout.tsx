@@ -20,7 +20,8 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ja">
+    // Google Tag Assistant などの拡張機能が、React の起動前に html へ属性を足すため警告を抑止する
+    <html lang="ja" suppressHydrationWarning>
       <body
         style={{
           fontFamily:

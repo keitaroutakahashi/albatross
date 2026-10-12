@@ -15,6 +15,8 @@ export type BattingStatRow = MemberStatsBase & {
   atBats: number;
   /** 安打 */
   hits: number;
+  /** 単打 */
+  singles: number;
   /** 二塁打 */
   doubles: number;
   /** 三塁打 */

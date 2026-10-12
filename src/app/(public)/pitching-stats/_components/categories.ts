@@ -16,7 +16,7 @@ const formatDecimal2 = (value: number) => value.toFixed(2);
 
 const formatCount = (value: number) => String(value);
 
-/** `/pitching-stats` の指標セレクトに並べる項目（防御率をデフォルトの先頭にする） */
+/** `/pitching-stats` の指標セレクトに並べる項目（選手詳細の投球成績表の列順に合わせる） */
 export const PITCHING_CATEGORIES = [
   {
     key: "era",
@@ -26,11 +26,11 @@ export const PITCHING_CATEGORIES = [
     format: formatDecimal2,
   },
   {
-    key: "whip",
-    label: "WHIP",
-    order: "asc",
-    isRegulated: true,
-    format: formatDecimal2,
+    key: "games",
+    label: "登板数",
+    order: "desc",
+    isRegulated: false,
+    format: formatCount,
   },
   {
     key: "wins",
@@ -43,13 +43,6 @@ export const PITCHING_CATEGORIES = [
     key: "losses",
     label: "敗戦",
     order: "asc",
-    isRegulated: false,
-    format: formatCount,
-  },
-  {
-    key: "strikeouts",
-    label: "奪三振",
-    order: "desc",
     isRegulated: false,
     format: formatCount,
   },
@@ -75,6 +68,13 @@ export const PITCHING_CATEGORIES = [
     format: formatCount,
   },
   {
+    key: "strikeouts",
+    label: "奪三振",
+    order: "desc",
+    isRegulated: false,
+    format: formatCount,
+  },
+  {
     key: "walks",
     label: "与四球",
     order: "asc",
@@ -89,13 +89,6 @@ export const PITCHING_CATEGORIES = [
     format: formatCount,
   },
   {
-    key: "earnedRuns",
-    label: "自責点",
-    order: "asc",
-    isRegulated: false,
-    format: formatCount,
-  },
-  {
     key: "runs",
     label: "失点",
     order: "asc",
@@ -103,10 +96,17 @@ export const PITCHING_CATEGORIES = [
     format: formatCount,
   },
   {
-    key: "games",
-    label: "登板数",
-    order: "desc",
+    key: "earnedRuns",
+    label: "自責点",
+    order: "asc",
     isRegulated: false,
     format: formatCount,
+  },
+  {
+    key: "whip",
+    label: "WHIP",
+    order: "asc",
+    isRegulated: true,
+    format: formatDecimal2,
   },
 ] as const satisfies readonly PitchingStatsCategory[];
