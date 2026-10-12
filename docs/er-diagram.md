@@ -143,6 +143,7 @@ erDiagram
   Int hitByPitches
   Int hitsAllowed
   Int homeRunsAllowed
+  Int pitchCount "nullable"
   PitchingDecision decision "nullable"
   DateTime createdAt
   DateTime updatedAt
@@ -155,6 +156,7 @@ erDiagram
   AtBatResult result
   Position direction "nullable"
   Int rbi
+  Boolean isScoringPosition
   DateTime createdAt
   DateTime updatedAt
 }
@@ -352,6 +354,7 @@ Properties as follows:
 - `hitByPitches`:
 - `hitsAllowed`:
 - `homeRunsAllowed`:
+- `pitchCount`:
 - `decision`:
 - `createdAt`:
 - `updatedAt`:
@@ -367,5 +370,6 @@ Properties as follows:
 - `result`:
 - `direction`:
 - `rbi`:
+- `isScoringPosition`:
 - `createdAt`:
 - `updatedAt`:

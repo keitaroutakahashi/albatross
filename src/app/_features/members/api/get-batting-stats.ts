@@ -1,24 +1,10 @@
-import {
-  hitResults,
-  nonAtBatResults,
-} from "@/app/_features/games/utils/at-bat-result";
 import type { MemberStatsBase } from "@/app/_features/members/utils/ranking";
 import {
-  calculateBattingAverage,
-  calculateOnBasePercentage,
-  calculateOps,
-  calculateSluggingPercentage,
-} from "@/app/_utils/stats/batting";
+  type BattingPlateAppearance,
+  summarizeBatting,
+} from "@/app/_utils/stats/batting-summary";
 import { isQualifiedBatter } from "@/app/_utils/stats/qualification";
 import prisma from "@/lib/prisma";
-
-/** 単打以外の安打1本あたりの塁打数 */
-const TOTAL_BASES_BY_HIT: Record<string, number> = {
-  single: 1,
-  double: 2,
-  triple: 3,
-  homeRun: 4,
-};
 
 export type BattingStatRow = MemberStatsBase & {
   /** 出場試合数（スタメン・ベンチ問わず GameMember レコード数） */
@@ -68,21 +54,10 @@ export type BattingStatsResult = {
   rows: BattingStatRow[];
 };
 
-type MemberStats = MemberStatsBase & {
+type MemberAccumulator = MemberStatsBase & {
   games: number;
-  plateAppearances: number;
-  atBats: number;
-  hits: number;
-  doubles: number;
-  triples: number;
-  homeRuns: number;
-  totalBases: number;
-  rbi: number;
   stolenBases: number;
-  walks: number;
-  strikeouts: number;
-  sacrificeHits: number;
-  sacrificeFlies: number;
+  plateAppearances: BattingPlateAppearance[];
 };
 
 /**
@@ -112,101 +87,35 @@ export const getBattingStats = async (
     }),
   ]);
 
-  // 選手ごとに 1 シーズン分の成績を積み上げる
-  const statsByMemberId = new Map<number, MemberStats>();
+  // 選手ごとに 1 シーズン分の打席結果を集める
+  const accumulatorByMemberId = new Map<number, MemberAccumulator>();
 
   for (const gameMember of gameMembers) {
-    const stats = statsByMemberId.get(gameMember.memberId) ?? {
+    const accumulator = accumulatorByMemberId.get(gameMember.memberId) ?? {
       memberId: gameMember.memberId,
       name: gameMember.member.name,
       uniformNumber: gameMember.member.uniformNumber,
       games: 0,
-      plateAppearances: 0,
-      atBats: 0,
-      hits: 0,
-      doubles: 0,
-      triples: 0,
-      homeRuns: 0,
-      totalBases: 0,
-      rbi: 0,
       stolenBases: 0,
-      walks: 0,
-      strikeouts: 0,
-      sacrificeHits: 0,
-      sacrificeFlies: 0,
+      plateAppearances: [],
     };
 
-    stats.games += 1;
-    stats.stolenBases += gameMember.stolenBases;
+    accumulator.games += 1;
+    accumulator.stolenBases += gameMember.stolenBases;
+    accumulator.plateAppearances.push(...gameMember.plateAppearances);
 
-    for (const plateAppearance of gameMember.plateAppearances) {
-      const { result } = plateAppearance;
-
-      stats.plateAppearances += 1;
-      stats.rbi += plateAppearance.rbi;
-
-      // 四死球・犠打・犠飛は打数に含めない
-      if (!nonAtBatResults.includes(result)) {
-        stats.atBats += 1;
-      }
-
-      if (hitResults.includes(result)) {
-        stats.hits += 1;
-        stats.totalBases += TOTAL_BASES_BY_HIT[result];
-
-        if (result === "double") stats.doubles += 1;
-        if (result === "triple") stats.triples += 1;
-        if (result === "homeRun") stats.homeRuns += 1;
-      }
-
-      if (result === "walk" || result === "hitByPitch") stats.walks += 1;
-      if (result === "strikeout") stats.strikeouts += 1;
-      if (result === "sacrificeHit") stats.sacrificeHits += 1;
-      if (result === "sacrificeFly") stats.sacrificeFlies += 1;
-    }
-
-    statsByMemberId.set(gameMember.memberId, stats);
+    accumulatorByMemberId.set(gameMember.memberId, accumulator);
   }
 
-  const rows: BattingStatRow[] = [...statsByMemberId.values()]
-    .filter((stats) => stats.plateAppearances > 0)
-    .map((stats) => {
-      const onBasePercentage = calculateOnBasePercentage({
-        hits: stats.hits,
-        walks: stats.walks,
-        atBats: stats.atBats,
-        sacrificeFlies: stats.sacrificeFlies,
-      });
-      const sluggingPercentage = calculateSluggingPercentage({
-        totalBases: stats.totalBases,
-        atBats: stats.atBats,
-      });
+  const rows: BattingStatRow[] = [...accumulatorByMemberId.values()]
+    .filter((accumulator) => accumulator.plateAppearances.length > 0)
+    .map(({ plateAppearances, ...accumulator }) => {
+      const summary = summarizeBatting(plateAppearances);
 
       return {
-        memberId: stats.memberId,
-        name: stats.name,
-        uniformNumber: stats.uniformNumber,
-        games: stats.games,
-        plateAppearances: stats.plateAppearances,
-        atBats: stats.atBats,
-        hits: stats.hits,
-        doubles: stats.doubles,
-        triples: stats.triples,
-        homeRuns: stats.homeRuns,
-        rbi: stats.rbi,
-        stolenBases: stats.stolenBases,
-        walks: stats.walks,
-        strikeouts: stats.strikeouts,
-        sacrificeHits: stats.sacrificeHits,
-        sacrificeFlies: stats.sacrificeFlies,
-        average: calculateBattingAverage({
-          hits: stats.hits,
-          atBats: stats.atBats,
-        }),
-        onBasePercentage,
-        sluggingPercentage,
-        ops: calculateOps({ onBasePercentage, sluggingPercentage }),
-        isQualified: isQualifiedBatter(stats.plateAppearances, gameCount),
+        ...accumulator,
+        ...summary,
+        isQualified: isQualifiedBatter(summary.plateAppearances, gameCount),
       };
     });
 

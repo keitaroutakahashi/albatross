@@ -57,6 +57,7 @@ export type PlateAppearanceData = {
   result: AtBatResult;
   direction: Position | null;
   rbi: number;
+  isScoringPosition?: boolean;
 };
 
 // PitchingResult 作成用データ
@@ -72,6 +73,7 @@ export type PitchingResultData = {
   hitByPitches: number;
   hitsAllowed: number;
   homeRunsAllowed: number;
+  pitchCount?: number | null;
   decision: PitchingDecision | null;
 };
 

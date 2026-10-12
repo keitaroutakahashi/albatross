@@ -362,6 +362,7 @@ model PitchingResult {
   hitByPitches    Int               @default(0) // 死球
   hitsAllowed     Int               @default(0) // 被安打
   homeRunsAllowed Int               @default(0) // 被本塁打
+  pitchCount      Int? // 球数（登板ごとの合計。未入力は null）
   decision        PitchingDecision? // 勝敗（null = 該当なし）
 
   createdAt DateTime @default(now())
@@ -370,16 +371,17 @@ model PitchingResult {
 
 // 打席結果
 model PlateAppearance {
-  id           Int         @id @default(autoincrement())
-  gameMemberId Int
-  gameMember   GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
-  inningNumber Int // 何回の打席か
-  atBatInGame  Int // 試合中の打席番号（1, 2, 3...）
-  result       AtBatResult // 打席結果
-  direction    Position? // 打球方向（四球・三振・死球は null）
-  rbi          Int         @default(0) // 打点
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id                Int         @id @default(autoincrement())
+  gameMemberId      Int
+  gameMember        GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+  inningNumber      Int // 何回の打席か
+  atBatInGame       Int // 試合中の打席番号（1, 2, 3...）
+  result            AtBatResult // 打席結果
+  direction         Position? // 打球方向（四球・三振・死球は null）
+  rbi               Int         @default(0) // 打点
+  isScoringPosition Boolean     @default(false) // 得点圏（二塁または三塁に走者がいる状況）での打席か
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   @@unique([gameMemberId, atBatInGame])
 }

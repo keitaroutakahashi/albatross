@@ -61,3 +61,12 @@ export const getCurrentSeason = () => {
 
   return month <= 2 ? String(Number(year) - 1) : year;
 };
+
+const monthInJstFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: "Asia/Tokyo",
+  month: "numeric",
+});
+
+/** 日本時間での月（1〜12）を返す。サーバーのタイムゾーンに依存しない */
+export const getMonthInJst = (date: Date) =>
+  Number(monthInJstFormatter.format(date));

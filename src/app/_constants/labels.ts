@@ -13,6 +13,19 @@ export const positionLabel: Record<Position, string> = {
   dh: "DH",
 };
 
+export const positionFullLabel: Record<Position, string> = {
+  pitcher: "投手",
+  catcher: "捕手",
+  first: "一塁手",
+  second: "二塁手",
+  third: "三塁手",
+  shortstop: "遊撃手",
+  left: "左翼手",
+  center: "中堅手",
+  right: "右翼手",
+  dh: "指名打者",
+};
+
 export const resultLabel: Record<AtBatResult, string> = {
   single: "安",
   double: "二",

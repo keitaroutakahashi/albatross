@@ -153,6 +153,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "right",
       rbi: 2,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[0].id,
@@ -161,6 +162,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "flyOut",
       direction: "pitcher",
       rbi: 0,
+      isScoringPosition: true,
     },
     // 2番 山田花子（遊）: 三ゴ, 左失, 四球
     {
@@ -203,6 +205,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "center",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[2].id,
@@ -211,6 +214,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     // 4番 鈴木雪（左）: 中安, 左安(2), 遊飛
     {
@@ -228,6 +232,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "left",
       rbi: 2,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[3].id,
@@ -236,6 +241,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "flyOut",
       direction: "shortstop",
       rbi: 0,
+      isScoringPosition: true,
     },
     // 5番 高橋健（二）: 四球, 三振, 四球
     {
@@ -286,6 +292,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "third",
       rbi: 0,
+      isScoringPosition: true,
     },
     // 7番 渡辺大輔（投）: 左2, 四球, 四球
     {
@@ -328,6 +335,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[7].id,
@@ -336,6 +344,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "flyOut",
       direction: "shortstop",
       rbi: 0,
+      isScoringPosition: true,
     },
     // 9番 小林勇気（DH）: 右安(1), 中安, 三ゴ
     {
@@ -345,6 +354,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "single",
       direction: "right",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[8].id,
@@ -361,6 +371,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "third",
       rbi: 0,
+      isScoringPosition: true,
     },
     // 10番 加藤隼人（DH）: 右安, 右2(2)
     {
@@ -378,6 +389,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       result: "double",
       direction: "right",
       rbi: 2,
+      isScoringPosition: true,
     },
     // 11番 吉田拓也（中）: 中安, 捕飛
     {
@@ -413,6 +425,7 @@ export async function seedGamePractice(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 0,
       hitsAllowed: 6,
       homeRunsAllowed: 0,
+      pitchCount: 98,
       decision: "win",
     },
   ];

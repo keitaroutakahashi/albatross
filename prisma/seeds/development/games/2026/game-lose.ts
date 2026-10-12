@@ -195,6 +195,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "double",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     // 4番 鈴木雪（左）: 遊ゴ, 投ゴ(1)
     {
@@ -212,6 +213,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "pitcher",
       rbi: 1,
+      isScoringPosition: true,
     },
     // 5番 高橋健（二）: 三ゴ, 三安
     {
@@ -289,6 +291,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "double",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[8].id,
@@ -323,6 +326,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "first",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[10].id,
@@ -372,6 +376,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 1,
       hitsAllowed: 2,
       homeRunsAllowed: 0,
+      pitchCount: 30,
       decision: "loss",
     },
     {
@@ -386,6 +391,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 0,
       hitsAllowed: 1,
       homeRunsAllowed: 0,
+      pitchCount: 35,
       decision: null,
     },
     {
@@ -400,6 +406,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 0,
       hitsAllowed: 3,
       homeRunsAllowed: 0,
+      pitchCount: 33,
       decision: null,
     },
     {
@@ -414,6 +421,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 1,
       hitsAllowed: 0,
       homeRunsAllowed: 0,
+      pitchCount: 24,
       decision: null,
     },
   ];
