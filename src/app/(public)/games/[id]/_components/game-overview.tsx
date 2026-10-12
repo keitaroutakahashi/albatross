@@ -32,7 +32,7 @@ export const GameOverview = ({ game }: Props) => {
 
         <div className="flex flex-col items-center justify-center gap-y-4">
           <p className="font-bold text-sm @content:text-base text-center">
-            [ {getGameStatusText(game.status)} ]
+            [ {getGameStatusText(game.event.status)} ]
           </p>
 
           <div className="grid grid-cols-3 place-items-center">

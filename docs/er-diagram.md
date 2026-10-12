@@ -56,14 +56,29 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"Event" {
+  Int id PK
+  EventType type
+  DateTime date
+  EventStatus status
+  String note "nullable"
+  Int seasonId FK
+  DateTime createdAt
+  DateTime updatedAt
+}
+"Practice" {
+  Int id PK
+  Int eventId FK,UK
+  Int groundId FK "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
 "Game" {
   Int id PK
-  DateTime date
+  Int eventId FK,UK
   Int gameNumber
   GameType gameType
   Boolean isFirstBatting "nullable"
-  GameStatus status
-  Int seasonId FK
   Int leagueId FK "nullable"
   Int groundId FK "nullable"
   Int opponentId FK "nullable"
@@ -80,7 +95,6 @@ erDiagram
   String aiGoodPoints "nullable"
   String aiBadPoints "nullable"
   String videoUrl "nullable"
-  String note "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -136,7 +150,10 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
-"Game" }o--|| "Season" : season
+"Event" }o--|| "Season" : season
+"Practice" |o--|| "Event" : event
+"Practice" }o--o| "Ground" : ground
+"Game" |o--|| "Event" : event
 "Game" }o--o| "League" : league
 "Game" }o--o| "Ground" : ground
 "Game" }o--o| "Opponent" : opponent
@@ -214,17 +231,38 @@ Properties as follows:
 - `createdAt`:
 - `updatedAt`:
 
+### `Event`
+
+Properties as follows:
+
+- `id`:
+- `type`:
+- `date`:
+- `status`:
+- `note`:
+- `seasonId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `Practice`
+
+Properties as follows:
+
+- `id`:
+- `eventId`:
+- `groundId`:
+- `createdAt`:
+- `updatedAt`:
+
 ### `Game`
 
 Properties as follows:
 
 - `id`:
-- `date`:
+- `eventId`:
 - `gameNumber`:
 - `gameType`:
 - `isFirstBatting`:
-- `status`:
-- `seasonId`:
 - `leagueId`:
 - `groundId`:
 - `opponentId`:
@@ -241,7 +279,6 @@ Properties as follows:
 - `aiGoodPoints`:
 - `aiBadPoints`:
 - `videoUrl`:
-- `note`:
 - `createdAt`:
 - `updatedAt`:
 

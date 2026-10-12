@@ -8,14 +8,15 @@ export type GameWithRelations = GamesResult[number];
 export const getGames = async (season: string | number) => {
   const games = await prisma.game.findMany({
     where: {
-      season: { season: Number(season) },
+      event: { season: { season: Number(season) } },
     },
     include: {
+      event: true,
       league: true,
       opponent: true,
       ground: true,
     },
-    orderBy: { date: "desc" },
+    orderBy: { event: { date: "desc" } },
   });
 
   return games;
@@ -25,32 +26,15 @@ export const getGames = async (season: string | number) => {
 export const getUpcomingGame = async () => {
   return prisma.game.findFirst({
     where: {
-      status: "scheduled",
-      date: { gte: new Date() },
+      event: { status: "scheduled", date: { gte: new Date() } },
     },
     include: {
+      event: true,
       league: true,
       opponent: true,
       ground: true,
     },
-    orderBy: [{ date: "asc" }, { gameNumber: "asc" }],
-  });
-};
-
-// 今後開催される試合を開催日が近い順に取得
-export const getUpcomingGames = async (limit: number) => {
-  return prisma.game.findMany({
-    where: {
-      status: "scheduled",
-      date: { gte: new Date() },
-    },
-    include: {
-      league: true,
-      opponent: true,
-      ground: true,
-    },
-    orderBy: [{ date: "asc" }, { gameNumber: "asc" }],
-    take: limit,
+    orderBy: [{ event: { date: "asc" } }, { gameNumber: "asc" }],
   });
 };
 
@@ -60,15 +44,18 @@ export const getLatestCompletedGame = async () => {
 
   return prisma.game.findFirst({
     where: {
-      status: "completed",
-      date: { gte: addMonth(now, -1), lte: now },
+      event: {
+        status: "completed",
+        date: { gte: addMonth(now, -1), lte: now },
+      },
     },
     include: {
+      event: true,
       league: true,
       opponent: true,
       ground: true,
     },
-    orderBy: [{ date: "desc" }, { gameNumber: "desc" }],
+    orderBy: [{ event: { date: "desc" } }, { gameNumber: "desc" }],
   });
 };
 
@@ -81,6 +68,7 @@ export const getGame = async (id: number) => {
       id: Number(id),
     },
     include: {
+      event: true,
       league: true,
       opponent: true,
       ground: true,
@@ -97,7 +85,6 @@ export const getGame = async (id: number) => {
         orderBy: { battingOrder: "asc" },
       },
     },
-    orderBy: { date: "desc" },
   });
 
   return games;

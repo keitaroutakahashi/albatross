@@ -39,9 +39,8 @@ export const getBattingLeaders = async (
   season: string | number,
 ): Promise<BattingLeaders> => {
   const gameWhere = {
-    status: "completed",
     gameType: "official",
-    season: { season: Number(season) },
+    event: { status: "completed", season: { season: Number(season) } },
   } as const;
 
   const [gameCount, gameMembers] = await Promise.all([

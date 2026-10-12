@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import { seedPractices } from "./seeds/development/events/practice.js";
 import { seedGames } from "./seeds/development/games/index.js";
 import { seedGrounds } from "./seeds/development/ground.js";
 import { seedLeagues } from "./seeds/development/league.js";
@@ -33,6 +34,7 @@ async function main() {
     await seedOpponents(prisma);
     await seedMembers(prisma);
     await seedGames(prisma);
+    await seedPractices(prisma);
   }
 
   console.log("\nSeeding completed!");

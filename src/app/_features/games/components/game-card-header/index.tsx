@@ -12,13 +12,13 @@ type Props = {
 };
 
 export const GameCardHeader = ({ game }: Props) => {
-  const dayOfWeek = getDayOfWeek(game.date);
+  const dayOfWeek = getDayOfWeek(game.event.date);
 
   return (
     <div className="bg-gray-100 p-3 @content:p-4 flex @content:flex-col @content:w-64 justify-between items-center">
       <div className="flex items-center gap-x-1">
         <p className="text-3xl font-bold font-(family-name:--font-roboto)">
-          {formatAsMDWithColon(game.date)}
+          {formatAsMDWithColon(game.event.date)}
         </p>
         <div className="">
           <p
@@ -28,10 +28,10 @@ export const GameCardHeader = ({ game }: Props) => {
               "text-gray-500": dayOfWeek !== 0 && dayOfWeek !== 6,
             })}
           >
-            {formatToShortDayNameEn(game.date)}
+            {formatToShortDayNameEn(game.event.date)}
           </p>
           <p className="text-xs font-bold font-(family-name:--font-roboto)">
-            {formatAsYYYY(game.date)}
+            {formatAsYYYY(game.event.date)}
           </p>
         </div>
       </div>

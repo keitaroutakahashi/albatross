@@ -24,7 +24,7 @@ export const NextGameBar = async () => {
   }
 
   const opponentName = game.opponent?.name ?? "未定";
-  const dayOfWeek = getDayOfWeek(game.date);
+  const dayOfWeek = getDayOfWeek(game.event.date);
 
   return (
     <div className="border-t-2 border-secondary bg-primary text-white">
@@ -35,7 +35,7 @@ export const NextGameBar = async () => {
 
         <div className="flex items-baseline gap-x-2">
           <p className="font-(family-name:--font-roboto) text-2xl font-bold tracking-wider">
-            {formatAsMMDDWithDot(game.date)}
+            {formatAsMMDDWithDot(game.event.date)}
           </p>
           <p className="text-sm font-bold">
             (
@@ -45,12 +45,12 @@ export const NextGameBar = async () => {
                 "text-blue-400": dayOfWeek === 6,
               })}
             >
-              {formatAsDayName(game.date)}
+              {formatAsDayName(game.event.date)}
             </span>
             )
           </p>
           <p className="font-(family-name:--font-roboto) text-sm font-bold tracking-wider">
-            {formatAsTime24(game.date)}
+            {formatAsTime24(game.event.date)}
           </p>
           <p className="text-sm font-bold">{game.ground?.name ?? "会場未定"}</p>
         </div>
@@ -86,7 +86,7 @@ export const NextGameBar = async () => {
 
         <div className="flex items-center gap-x-2">
           <span className="block size-3 bg-secondary rounded-full animate-pulse-dot" />
-          <GameCountdown targetDate={game.date.toISOString()} />
+          <GameCountdown targetDate={game.event.date.toISOString()} />
         </div>
       </div>
     </div>
