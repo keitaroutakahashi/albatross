@@ -44,7 +44,7 @@ const getEventInfo = (event: UpcomingEvent) => {
 
 /**
  * トップページの今後の予定セクション。
- * 試合・練習を開催日が近い順に 3 件表示し、末尾に試合一覧への導線を置く。
+ * 試合・練習を開催日が近い順に 3 件表示し、末尾にイベント一覧への導線を置く。
  */
 export const Schedule = async () => {
   const events = await getUpcomingEvents(DISPLAY_COUNT);
@@ -126,10 +126,10 @@ export const Schedule = async () => {
 
       <div className="mt-8 flex justify-center">
         <Link
-          href="/games"
+          href="/events"
           className="group flex items-center gap-x-1 text-sm font-bold underline underline-offset-4 hover:opacity-70"
         >
-          試合一覧を見る
+          イベント一覧を見る
           <ChevronRight
             aria-hidden
             className="size-4 transition-transform group-hover:translate-x-0.5"

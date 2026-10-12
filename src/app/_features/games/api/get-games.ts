@@ -1,26 +1,10 @@
 import { addMonth } from "@formkit/tempo";
+import type { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
-// Game 一覧を取得
-export type GamesResult = Awaited<ReturnType<typeof getGames>>;
-export type GameWithRelations = GamesResult[number];
-
-export const getGames = async (season: string | number) => {
-  const games = await prisma.game.findMany({
-    where: {
-      event: { season: { season: Number(season) } },
-    },
-    include: {
-      event: true,
-      league: true,
-      opponent: true,
-      ground: true,
-    },
-    orderBy: { event: { date: "desc" } },
-  });
-
-  return games;
-};
+export type GameWithRelations = Prisma.GameGetPayload<{
+  include: { event: true; league: true; opponent: true; ground: true };
+}>;
 
 // 次に開催される試合を 1 件取得（無ければ null）
 export const getUpcomingGame = async () => {
