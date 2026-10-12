@@ -2,16 +2,13 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { EVENT_TYPE_LABELS } from "@/app/_features/events/utils/event-type";
 import { formatJstDateTimeWithDay } from "@/app/_utils/date/date";
-import { deleteEvent, updateEvent } from "@/app/(private)/admin/_actions/event";
+import { updateEventResult } from "@/app/(private)/admin/_actions/event";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
-import {
-  getEvent,
-  getEventFormOptions,
-} from "@/app/(private)/admin/_data/event";
+import { getEvent } from "@/app/(private)/admin/_data/event";
 import { getGameRelatedCounts } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
-import { EventForm } from "@/app/(private)/admin/events/_components/event-form";
 import { toEventFormInitial } from "@/app/(private)/admin/events/_components/event-form-initial";
+import { EventResultForm } from "@/app/(private)/admin/events/_components/event-result-form";
 import { RelatedLinks } from "@/app/(private)/admin/events/[id]/_components/related-links";
 
 export const metadata: Metadata = {
@@ -24,10 +21,7 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const id = parseId((await params).id);
-  const [event, options] = await Promise.all([
-    getEvent(id),
-    getEventFormOptions(),
-  ]);
+  const event = await getEvent(id);
   if (!event) notFound();
 
   const gameCounts = event.game
@@ -40,6 +34,7 @@ export default async function Page({
       <RelatedLinks
         eventId={id}
         type={event.type}
+        summary={`${EVENT_TYPE_LABELS[event.type]} / ${formatJstDateTimeWithDay(event.date)}`}
         counts={{
           innings: gameCounts?.innings ?? 0,
           gameMembers: gameCounts?.gameMembers ?? 0,
@@ -48,17 +43,12 @@ export default async function Page({
           practiceMembers: event.practice?._count.practiceMembers ?? 0,
         }}
       />
-      <EventForm
-        action={updateEvent.bind(null, id)}
-        options={options}
-        initial={toEventFormInitial(event)}
-        deleteTarget={{
-          name: `${formatJstDateTimeWithDay(event.date)} ${EVENT_TYPE_LABELS[event.type]}`,
-          warning:
-            "結果・出場した選手・成績などの関連データもすべて削除されます。",
-          action: deleteEvent.bind(null, id),
-        }}
-      />
+      {event.type === "game" && (
+        <EventResultForm
+          action={updateEventResult.bind(null, id)}
+          initial={toEventFormInitial(event)}
+        />
+      )}
     </>
   );
 }

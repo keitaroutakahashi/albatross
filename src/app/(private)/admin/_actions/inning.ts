@@ -1,6 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { calcGameScore } from "@/app/_utils/stats/game-score";
 import { inningSchema } from "@/app/(private)/admin/_schemas/inning";
 import {
   parseForm,
@@ -12,8 +13,8 @@ import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /**
- * イニングごとの得点を、送信された内容に置き換える。
- * 試合結果（得点・安打など）は手入力のため、ここでは更新しない。
+ * イニングごとの得点と献上点を、送信された内容に置き換える。
+ * 試合の得点（各回の合計）と勝敗はここで算出して保存する。安打・失策は手入力のため更新しない。
  */
 export const saveInnings = async (
   eventId: number,
@@ -23,7 +24,14 @@ export const saveInnings = async (
   await requireAccess("events");
   const parsed = parseForm(inningSchema, formData);
   if (!parsed.success) return parsed.state;
-  const { teamScore, opponentScore } = parsed.data;
+  const { teamScore, opponentScore, teamForfeitedRuns, opponentForfeitedRuns } =
+    parsed.data;
+  const gameScore = calcGameScore({
+    teamInnings: teamScore,
+    opponentInnings: opponentScore,
+    teamForfeitedRuns,
+    opponentForfeitedRuns,
+  });
 
   try {
     const game = await prisma.game.findUnique({ where: { eventId } });
@@ -38,6 +46,10 @@ export const saveInnings = async (
           teamScore: score,
           opponentScore: opponentScore[index],
         })),
+      }),
+      prisma.game.update({
+        where: { id: game.id },
+        data: { ...gameScore, teamForfeitedRuns, opponentForfeitedRuns },
       }),
     ]);
   } catch (error) {

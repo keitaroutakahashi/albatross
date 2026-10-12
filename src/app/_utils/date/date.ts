@@ -109,3 +109,7 @@ export const getJstDayRange = (date: Date): { start: Date; end: Date } => {
   const start = new Date(`${day}T00:00:00+09:00`);
   return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
 };
+
+/** 日本時間の暦日で、now が date と同じ日、またはそれ以降か（時刻は問わない） */
+export const isOnOrAfterJstDay = (now: Date, date: Date): boolean =>
+  toJstDateTimeLocal(now).slice(0, 10) >= toJstDateTimeLocal(date).slice(0, 10);

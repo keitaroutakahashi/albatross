@@ -2,6 +2,7 @@ import {
   formatJstDateTimeWithDay,
   getJstDayRange,
   getMonthInJst,
+  isOnOrAfterJstDay,
   parseJstDateTimeLocal,
   toJstDateTimeLocal,
 } from "@/app/_utils/date/date";
@@ -49,5 +50,37 @@ describe("JST の datetime-local 変換", () => {
     const { start, end } = getJstDayRange(new Date("2025-03-31T15:30:00Z"));
     expect(start.toISOString()).toBe("2025-03-31T15:00:00.000Z");
     expect(end.toISOString()).toBe("2025-04-01T15:00:00.000Z");
+  });
+});
+
+describe("isOnOrAfterJstDay", () => {
+  // 2026-10-26 17:47 JST
+  const date = new Date("2026-10-26T08:47:00Z");
+
+  it("同じ日なら、時刻が前でも true（当日を含む）", () => {
+    // 2026-10-26 08:00 JST
+    expect(isOnOrAfterJstDay(new Date("2026-10-25T23:00:00Z"), date)).toBe(
+      true,
+    );
+  });
+
+  it("翌日以降は true", () => {
+    expect(isOnOrAfterJstDay(new Date("2026-10-27T00:00:00Z"), date)).toBe(
+      true,
+    );
+  });
+
+  it("前日は false", () => {
+    // 2026-10-25 23:59 JST
+    expect(isOnOrAfterJstDay(new Date("2026-10-25T14:59:00Z"), date)).toBe(
+      false,
+    );
+  });
+
+  it("UTC では前日でも、日本時間で当日なら true", () => {
+    // 2026-10-26 00:30 JST
+    expect(isOnOrAfterJstDay(new Date("2026-10-25T15:30:00Z"), date)).toBe(
+      true,
+    );
   });
 });

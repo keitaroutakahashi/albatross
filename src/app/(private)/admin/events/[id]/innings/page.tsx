@@ -43,6 +43,10 @@ export default async function Page({
       <InningsForm
         action={saveInnings.bind(null, eventId)}
         initial={initial}
+        initialForfeitedRuns={{
+          team: String(game.teamForfeitedRuns ?? 0),
+          opponent: String(game.opponentForfeitedRuns ?? 0),
+        }}
         isFirstBatting={game.isFirstBatting}
       />
     </>

@@ -2,12 +2,10 @@
 
 import { redirect } from "next/navigation";
 import { getJstDayRange } from "@/app/_utils/date/date";
-import { calcGameResult } from "@/app/_utils/stats/game-result";
 import {
-  type EventInput,
+  eventBasicSchema,
   eventCreateSchema,
-  eventSchema,
-  type GameEventInput,
+  eventResultSchema,
 } from "@/app/(private)/admin/_schemas/event";
 import {
   parseForm,
@@ -18,40 +16,9 @@ import {
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
-import type { Prisma } from "@/generated/prisma/client";
 import prisma from "@/lib/prisma";
 
 const EVENTS_PATH = "/admin/events";
-
-const toEventData = (data: EventInput) => ({
-  date: data.date,
-  status: data.status,
-  seasonId: data.seasonId,
-  note: data.note,
-});
-
-/** Game の保存用データ。勝敗は得点から算出する（入力欄は持たない） */
-const toGameData = (data: GameEventInput) => ({
-  gameNumber: data.gameNumber,
-  gameType: data.gameType,
-  isFirstBatting: data.isFirstBatting,
-  leagueId: data.leagueId,
-  groundId: data.groundId,
-  opponentId: data.opponentId,
-  teamScore: data.teamScore,
-  opponentScore: data.opponentScore,
-  teamHits: data.teamHits,
-  opponentHits: data.opponentHits,
-  teamErrors: data.teamErrors,
-  opponentErrors: data.opponentErrors,
-  teamForfeitedRuns: data.teamForfeitedRuns,
-  opponentForfeitedRuns: data.opponentForfeitedRuns,
-  result: calcGameResult(data.teamScore, data.opponentScore),
-  summary: data.summary,
-  videoUrl: data.videoUrl,
-  aiGoodPoints: data.aiGoodPoints,
-  aiBadPoints: data.aiBadPoints,
-});
 
 /** 同日の試合番号の重複は DB 制約ではなく、ここで検証する */
 const validateGameNumber = async (
@@ -118,13 +85,14 @@ export const createEvent = async (
   redirect(`/admin/events/${eventId}`);
 };
 
-export const updateEvent = async (
+/** 基本情報（日時・状態など、試合は天候・戦評・動画・AI 講評も含む）を更新する */
+export const updateEventBasic = async (
   id: number,
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
   await requireAccess("events");
-  const parsed = parseForm(eventSchema, formData);
+  const parsed = parseForm(eventBasicSchema, formData);
   if (!parsed.success) return parsed.state;
   const { data } = parsed;
 
@@ -145,15 +113,35 @@ export const updateEvent = async (
     }
 
     await prisma.$transaction(async (tx) => {
-      const eventData: Prisma.EventUpdateInput = toEventData(data);
+      await tx.event.update({
+        where: { id },
+        data: {
+          date: data.date,
+          status: data.status,
+          seasonId: data.seasonId,
+          note: data.note,
+          ...(data.type === "game"
+            ? {
+                game: {
+                  update: {
+                    gameNumber: data.gameNumber,
+                    gameType: data.gameType,
+                    isFirstBatting: data.isFirstBatting,
+                    leagueId: data.leagueId,
+                    groundId: data.groundId,
+                    opponentId: data.opponentId,
+                    summary: data.summary,
+                    videoUrl: data.videoUrl,
+                    aiGoodPoints: data.aiGoodPoints,
+                    aiBadPoints: data.aiBadPoints,
+                  },
+                },
+              }
+            : { practice: { update: { groundId: data.groundId } } }),
+        },
+      });
+
       if (data.type === "game" && current.game) {
-        await tx.event.update({
-          where: { id },
-          data: {
-            ...eventData,
-            game: { update: toGameData(data) },
-          },
-        });
         const gameId = current.game.id;
         if (data.weather) {
           await tx.gameWeather.upsert({
@@ -168,15 +156,36 @@ export const updateEvent = async (
         } else {
           await tx.gameWeather.deleteMany({ where: { gameId } });
         }
-      } else if (data.type === "practice") {
-        await tx.event.update({
-          where: { id },
-          data: {
-            ...eventData,
-            practice: { update: { groundId: data.groundId } },
-          },
-        });
       }
+    });
+  } catch (error) {
+    return toFailureState(error, formData);
+  }
+
+  revalidateAll();
+  redirect(`/admin/events/${id}`);
+};
+
+/** 試合結果の手入力項目（安打・失策）を更新する */
+export const updateEventResult = async (
+  id: number,
+  _prev: ActionState,
+  formData: FormData,
+): Promise<ActionState> => {
+  await requireAccess("events");
+  const parsed = parseForm(eventResultSchema, formData);
+  if (!parsed.success) return parsed.state;
+
+  try {
+    const game = await prisma.game.findUnique({
+      where: { eventId: id },
+      select: { id: true },
+    });
+    if (!game) return { message: "データが見つかりません" };
+
+    await prisma.game.update({
+      where: { id: game.id },
+      data: parsed.data,
     });
   } catch (error) {
     return toFailureState(error, formData);

@@ -23,7 +23,7 @@ export const DashboardLink = <T extends string>({
     <li className="border-b last:border-b-0">
       <Link
         href={href}
-        className="flex min-h-16 items-center gap-3 px-4 py-3 active:bg-accent"
+        className="flex min-h-16 items-center gap-3 px-4 py-3 transition-colors hover:bg-accent active:bg-accent"
       >
         <span className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
           <Icon className="size-6" />

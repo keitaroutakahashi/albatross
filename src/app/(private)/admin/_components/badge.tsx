@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 type Props = {
   children: string;
-  tone?: "default" | "muted" | "danger";
+  tone?: "default" | "muted" | "danger" | "info" | "success";
 };
 
 export const Badge = ({ children, tone = "default" }: Props) => {
@@ -13,6 +13,8 @@ export const Badge = ({ children, tone = "default" }: Props) => {
         tone === "default" && "bg-primary/10 text-primary",
         tone === "muted" && "bg-muted text-muted-foreground",
         tone === "danger" && "bg-destructive/10 text-destructive",
+        tone === "info" && "bg-sky-100 text-sky-700",
+        tone === "success" && "bg-emerald-100 text-emerald-700",
       )}
     >
       {children}

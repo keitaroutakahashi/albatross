@@ -14,7 +14,7 @@ export const getEventList = async ({
     where: { seasonId, type },
     orderBy: { date: "desc" },
     include: {
-      game: { include: { opponent: true } },
+      game: { include: { opponent: true, ground: true } },
       practice: { include: { ground: true } },
     },
   });

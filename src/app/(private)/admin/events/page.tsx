@@ -4,7 +4,10 @@ import {
   EVENT_TYPE_LABELS,
   parseEventType,
 } from "@/app/_features/events/utils/event-type";
-import { formatJstDateTimeWithDay } from "@/app/_utils/date/date";
+import {
+  formatJstDateTimeWithDay,
+  isOnOrAfterJstDay,
+} from "@/app/_utils/date/date";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { FilterChips } from "@/app/(private)/admin/_components/filter-chips";
@@ -14,13 +17,23 @@ import {
   getEventList,
   getEventSeasons,
 } from "@/app/(private)/admin/_data/event";
+import { EventTypeTag } from "@/app/(private)/admin/events/_components/event-type-tag";
 
-/** 状態を色でも区別する。開催予定は強調し、終わったものは目立たせない */
+/** 状態を色で区別する。開催予定は水色、開催済みは緑、中止は赤（紺・金はブランドカラーのため使わない） */
 const statusTone = {
-  scheduled: "default",
-  completed: "muted",
+  scheduled: "info",
+  completed: "success",
   canceled: "danger",
 } as const;
+
+/** 更新が必要なことを示す赤丸 */
+const OverdueMark = () => (
+  <span
+    role="img"
+    aria-label="更新が必要"
+    className="block size-2 rounded-full bg-destructive"
+  />
+);
 
 export const metadata: Metadata = {
   title: "イベント",
@@ -36,12 +49,18 @@ export default async function Page({
   const params = await searchParams;
   const seasons = await getEventSeasons();
 
-  // season 未指定は最新シーズン
+  // season は年（2026 など）で指定する。未指定・該当なしは最新シーズン
   const selectedSeason =
-    seasons.find((s) => String(s.id) === params.season) ?? seasons[0];
+    seasons.find((s) => String(s.season) === params.season) ?? seasons[0];
   const type = parseEventType(params.type);
 
   const events = await getEventList({ seasonId: selectedSeason?.id, type });
+
+  // 開催日の当日以降も「開催予定」のままなら、状態の更新を促す
+  const now = new Date();
+  const isOverdue = (event: (typeof events)[number]) =>
+    event.status === "scheduled" && isOnOrAfterJstDay(now, event.date);
+  const overdueCount = events.filter(isOverdue).length;
 
   const hrefOf = (
     season: string | undefined,
@@ -53,7 +72,7 @@ export default async function Page({
       ...(eventType ? { type: eventType } : {}),
     },
   });
-  const seasonKey = selectedSeason && String(selectedSeason.id);
+  const seasonKey = selectedSeason && String(selectedSeason.season);
 
   return (
     <>
@@ -65,8 +84,8 @@ export default async function Page({
       <FilterChips
         chips={seasons.map((s) => ({
           label: `${s.season}年度`,
-          href: hrefOf(String(s.id), type),
-          active: seasonKey === String(s.id),
+          href: hrefOf(String(s.season), type),
+          active: seasonKey === String(s.season),
         }))}
       />
       <FilterChips
@@ -83,37 +102,61 @@ export default async function Page({
           })),
         ]}
       />
+      {overdueCount > 0 && (
+        <p className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground">
+          <OverdueMark />
+          開催日を過ぎています。状態を更新してください。
+        </p>
+      )}
       {events.length === 0 ? (
         <EmptyState message="イベントがまだ登録されていません" />
       ) : (
         <ul className="border-t">
           {events.map((event) => {
             const game = event.game;
-            const hasScore =
-              game?.teamScore != null && game.opponentScore != null;
-            const place = event.practice?.ground?.name;
+            // 勝敗は献上点を含めた合計で決まるため、一覧もその合計を表示する
+            const score =
+              game?.teamScore != null && game.opponentScore != null
+                ? `${game.teamScore + (game.teamForfeitedRuns ?? 0)}-${game.opponentScore + (game.opponentForfeitedRuns ?? 0)}`
+                : null;
+            const groundName =
+              event.type === "game"
+                ? game?.ground?.name
+                : event.practice?.ground?.name;
             return (
               <ListCard
                 key={event.id}
                 href={`/admin/events/${event.id}`}
+                marker={isOverdue(event) ? <OverdueMark /> : undefined}
                 title={
-                  event.type === "game"
-                    ? `vs ${game?.opponent?.name ?? "相手未定"}`
-                    : "練習"
+                  <span className="flex items-center gap-2">
+                    <span className="min-w-0 truncate">
+                      {event.type === "game"
+                        ? (game?.opponent?.name ?? "未定")
+                        : "練習"}
+                    </span>
+                    <EventTypeTag type={event.type} gameType={game?.gameType} />
+                  </span>
                 }
-                description={[formatJstDateTimeWithDay(event.date), place]
-                  .filter(Boolean)
-                  .join(" / ")}
+                description={
+                  <>
+                    <span className="block">
+                      {formatJstDateTimeWithDay(event.date)}
+                    </span>
+                    <span className="block truncate">
+                      @{groundName ?? "未定"}
+                    </span>
+                  </>
+                }
                 trailing={
                   <div className="flex flex-col items-end gap-1">
                     <Badge tone={statusTone[event.status]}>
                       {eventStatusLabel[event.status]}
                     </Badge>
-                    {hasScore && (
+                    {score && (
                       <span className="text-sm font-bold">
-                        {`${game.teamScore}-${game.opponentScore}${
-                          game.result ? ` ${gameResultLabel[game.result]}` : ""
-                        }`}
+                        {score}
+                        {game?.result && ` ${gameResultLabel[game.result]}`}
                       </span>
                     )}
                   </div>

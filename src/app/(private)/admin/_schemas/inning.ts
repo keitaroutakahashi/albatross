@@ -3,11 +3,16 @@ import { arrayOf, requiredInt } from "@/app/(private)/admin/_schemas/fields";
 
 export const MAX_INNINGS = 30;
 
-/** イニング番号は入力順（1 回から連番）で決まるため、得点だけを列として受け取る */
+/**
+ * イニング番号は入力順（1 回から連番）で決まるため、得点だけを列として受け取る。
+ * 献上点（試合開始時に与えられた得点）は試合に 1 つずつ。
+ */
 export const inningSchema = z
   .object({
     teamScore: arrayOf(requiredInt(0, 99)),
     opponentScore: arrayOf(requiredInt(0, 99)),
+    teamForfeitedRuns: requiredInt(0, 99),
+    opponentForfeitedRuns: requiredInt(0, 99),
   })
   .refine(
     (v) =>
