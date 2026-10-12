@@ -13,23 +13,20 @@ export const PracticeInfo = ({ practice }: Props) => {
     <SectionGroup title="練習情報">
       <SubSectionGroup title="グラウンド">
         {ground ? (
-          <>
-            <p className="text-sm">{ground.name}</p>
-            <p className="text-xs mt-2 text-gray-500">{ground.address}</p>
-            {ground.access && (
-              <p className="text-xs mt-1 text-gray-500">{ground.access}</p>
-            )}
+          <div>
             <a
               href={ground.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs mt-2 inline-block underline underline-offset-2 hover:opacity-70"
+              className="text-sm font-semibold underline underline-offset-2 hover:opacity-70"
             >
-              公式サイト
+              {ground.name}
             </a>
-          </>
+            <p className="text-xs text-gray-500 mt-1">( {ground.address} )</p>
+            <p className="text-xs mt-2 text-gray-700">{ground.access}</p>
+          </div>
         ) : (
-          <p className="text-sm">会場未定</p>
+          <p className="text-sm font-semibold">会場未定</p>
         )}
       </SubSectionGroup>
 

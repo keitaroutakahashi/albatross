@@ -1,11 +1,11 @@
 "use client";
 
 import {
-  BarChart3,
+  Calendar,
   type LucideIcon,
-  Target,
-  Trophy,
+  Sword,
   Users,
+  Volleyball,
   X,
 } from "lucide-react";
 import type { Route } from "next";
@@ -34,7 +34,7 @@ type NavGroup = {
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "イベント",
-    items: [{ href: "/events", label: "イベント一覧", icon: Trophy }],
+    items: [{ href: "/events", label: "イベント一覧", icon: Calendar }],
   },
   {
     label: "メンバー",
@@ -43,8 +43,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "成績",
     items: [
-      { href: "/batting-stats", label: "打者成績", icon: BarChart3 },
-      { href: "/pitching-stats", label: "投手成績", icon: Target },
+      { href: "/batting-stats", label: "打者成績", icon: Sword },
+      { href: "/pitching-stats", label: "投手成績", icon: Volleyball },
     ],
   },
 ];

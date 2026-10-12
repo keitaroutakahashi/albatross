@@ -154,6 +154,7 @@ model Ground {
   address   String
   access    String?
   url       String // 公式HPのURL
+  imagePath String? // イベント詳細の背景画像のパス（例: /images/grounds/yoyogi.jpg）
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   games     Game[]
@@ -183,7 +184,8 @@ model Member {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  gameMembers GameMember[]
+  gameMembers     GameMember[]
+  practiceMembers PracticeMember[]
 }
 
 // --- イベント ---
@@ -223,8 +225,23 @@ model Practice {
   groundId Int?
   ground   Ground? @relation(fields: [groundId], references: [id])
 
+  practiceMembers PracticeMember[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// 練習参加メンバー
+model PracticeMember {
+  id         Int      @id @default(autoincrement())
+  practiceId Int
+  practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  memberId   Int
+  member     Member   @relation(fields: [memberId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([practiceId, memberId])
 }
 
 // --- 試合 ---

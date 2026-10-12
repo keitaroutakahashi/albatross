@@ -71,6 +71,10 @@ export const getPractice = async (eventId: number) => {
     include: {
       event: true,
       ground: true,
+      practiceMembers: {
+        include: { member: true },
+        orderBy: { memberId: "asc" },
+      },
     },
   });
 };

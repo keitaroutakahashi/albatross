@@ -10,6 +10,10 @@ export async function seedPractices(prisma: PrismaClient) {
     where: { season: 2026 },
   });
   const grounds = await prisma.ground.findMany({ orderBy: { id: "asc" } });
+  const members = await prisma.member.findMany({
+    where: { isActive: true },
+    orderBy: { id: "asc" },
+  });
 
   if (!season2025 || !season2026) {
     throw new Error("Season data not found");
@@ -44,11 +48,21 @@ export async function seedPractices(prisma: PrismaClient) {
   ] as const;
 
   for (const { groundId, ...event } of practices) {
+    // 開催済みの練習のみ参加メンバーを登録する
+    const participants = event.status === "completed" ? members : [];
+
     await prisma.event.create({
       data: {
         type: "practice",
         ...event,
-        practice: { create: { groundId } },
+        practice: {
+          create: {
+            groundId,
+            practiceMembers: {
+              create: participants.map((m) => ({ memberId: m.id })),
+            },
+          },
+        },
       },
     });
   }

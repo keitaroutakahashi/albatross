@@ -78,8 +78,24 @@ export const GameInfo = ({ game }: Props) => {
       </SubSectionGroup>
 
       <SubSectionGroup title="グラウンド">
-        <p className="text-sm">{game.ground?.name}</p>
-        <p className="text-xs mt-2 text-gray-500">{game.ground?.address}</p>
+        {game.ground ? (
+          <div>
+            <a
+              href={game.ground.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-semibold underline underline-offset-2 hover:opacity-70"
+            >
+              {game.ground.name}
+            </a>
+            <p className="text-xs text-gray-500 mt-1">
+              ( {game.ground?.address} )
+            </p>
+            <p className="text-xs mt-2 text-gray-700">{game.ground?.access}</p>
+          </div>
+        ) : (
+          <p className="text-sm font-semibold">会場未定</p>
+        )}
       </SubSectionGroup>
 
       <SubSectionGroup title="天候">

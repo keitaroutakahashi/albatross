@@ -34,6 +34,7 @@ erDiagram
   String address
   String access "nullable"
   String url
+  String imagePath "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -70,6 +71,13 @@ erDiagram
   Int id PK
   Int eventId FK,UK
   Int groundId FK "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
+"PracticeMember" {
+  Int id PK
+  Int practiceId FK
+  Int memberId FK
   DateTime createdAt
   DateTime updatedAt
 }
@@ -153,6 +161,8 @@ erDiagram
 "Event" }o--|| "Season" : season
 "Practice" |o--|| "Event" : event
 "Practice" }o--o| "Ground" : ground
+"PracticeMember" }o--|| "Practice" : practice
+"PracticeMember" }o--|| "Member" : member
 "Game" |o--|| "Event" : event
 "Game" }o--o| "League" : league
 "Game" }o--o| "Ground" : ground
@@ -203,6 +213,7 @@ Properties as follows:
 - `address`:
 - `access`:
 - `url`:
+- `imagePath`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -251,6 +262,16 @@ Properties as follows:
 - `id`:
 - `eventId`:
 - `groundId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `PracticeMember`
+
+Properties as follows:
+
+- `id`:
+- `practiceId`:
+- `memberId`:
 - `createdAt`:
 - `updatedAt`:
 
