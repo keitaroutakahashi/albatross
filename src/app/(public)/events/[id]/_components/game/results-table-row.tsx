@@ -6,7 +6,7 @@ import {
   hitResults,
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
-import { AtBatResultBadge } from "@/app/(public)/games/[id]/_components/at-bat-result-badge";
+import { AtBatResultBadge } from "@/app/(public)/events/[id]/_components/game/at-bat-result-badge";
 
 type Props = {
   gameMember: GameDetail["gameMembers"][number];

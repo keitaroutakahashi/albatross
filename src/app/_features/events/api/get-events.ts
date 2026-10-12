@@ -57,9 +57,17 @@ export type PracticeDetail = NonNullable<
   Awaited<ReturnType<typeof getPractice>>
 >;
 
-export const getPractice = async (id: number) => {
-  return prisma.practice.findUnique({
+// Event の種別のみ取得（詳細ページで表示内容を切り替えるために使う）
+export const getEventType = async (id: number) => {
+  return prisma.event.findUnique({
     where: { id },
+    select: { type: true },
+  });
+};
+
+export const getPractice = async (eventId: number) => {
+  return prisma.practice.findUnique({
+    where: { eventId },
     include: {
       event: true,
       ground: true,

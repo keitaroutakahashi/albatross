@@ -46,11 +46,9 @@ export const getLatestCompletedGame = async () => {
 // Game 詳細を取得
 export type GameDetail = NonNullable<Awaited<ReturnType<typeof getGame>>>;
 
-export const getGame = async (id: number) => {
-  const games = await prisma.game.findFirst({
-    where: {
-      id: Number(id),
-    },
+export const getGame = async (eventId: number) => {
+  const games = await prisma.game.findUnique({
+    where: { eventId },
     include: {
       event: true,
       league: true,

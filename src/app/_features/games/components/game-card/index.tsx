@@ -11,7 +11,7 @@ export const GameCard = ({ game }: Props) => {
   return (
     <li>
       <Link
-        href={`/games/${game.id}`}
+        href={`/events/${game.eventId}`}
         className="flex flex-col @content:flex-row border border-gray-300 rounded overflow-hidden hover:border-black transition cursor-pointer"
       >
         <GameCardHeader game={game} />

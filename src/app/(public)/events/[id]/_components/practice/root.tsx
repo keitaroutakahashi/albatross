@@ -1,7 +1,7 @@
 import type { PracticeDetail } from "@/app/_features/events/api/get-events";
-import { PracticeHeader } from "@/app/(public)/practices/[id]/_components/practice-header";
-import { PracticeInfo } from "@/app/(public)/practices/[id]/_components/practice-info";
-import { PracticeOverview } from "@/app/(public)/practices/[id]/_components/practice-overview";
+import { PracticeHeader } from "@/app/(public)/events/[id]/_components/practice/practice-header";
+import { PracticeInfo } from "@/app/(public)/events/[id]/_components/practice/practice-info";
+import { PracticeOverview } from "@/app/(public)/events/[id]/_components/practice/practice-overview";
 
 type Props = {
   practice: PracticeDetail;

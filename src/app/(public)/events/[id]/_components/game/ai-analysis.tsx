@@ -1,6 +1,6 @@
 import type { GameDetail } from "@/app/_features/games/api/get-games";
-import { SectionHeader } from "@/app/(public)/games/[id]/_components/section-header";
-import { SectionSubtitle } from "@/app/(public)/games/[id]/_components/section-sub-title";
+import { SectionHeader } from "@/app/(public)/events/[id]/_components/game/section-header";
+import { SectionSubtitle } from "@/app/(public)/events/[id]/_components/game/section-sub-title";
 
 type Props = {
   game: GameDetail;

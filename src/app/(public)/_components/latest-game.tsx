@@ -116,7 +116,7 @@ export const LatestGame = async () => {
             variant="outline"
             className="border-white/40 bg-transparent text-white hover:bg-white/10 hover:text-white"
           >
-            <Link href={`/games/${game.id}`}>試合結果を見る</Link>
+            <Link href={`/events/${game.eventId}`}>試合結果を見る</Link>
           </Button>
         </div>
       </div>

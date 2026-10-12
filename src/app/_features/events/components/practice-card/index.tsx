@@ -5,14 +5,14 @@ import type { GroundModel } from "@/generated/prisma/models/Ground";
 
 type Props = {
   event: EventModel;
-  practice: { id: number; ground: GroundModel | null };
+  practice: { ground: GroundModel | null };
 };
 
 export const PracticeCard = ({ event, practice }: Props) => {
   return (
     <li>
       <Link
-        href={`/practices/${practice.id}`}
+        href={`/events/${event.id}`}
         className="flex flex-col @content:flex-row border border-gray-300 rounded overflow-hidden hover:border-black transition cursor-pointer"
       >
         <EventCardHeader date={event.date} label="練習" />

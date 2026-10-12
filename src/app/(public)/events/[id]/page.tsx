@@ -1,6 +1,11 @@
 import { notFound } from "next/navigation";
+import {
+  getEventType,
+  getPractice,
+} from "@/app/_features/events/api/get-events";
 import { getGame } from "@/app/_features/games/api/get-games";
-import { Root } from "@/app/(public)/games/[id]/_components/root";
+import { Root as GameRoot } from "@/app/(public)/events/[id]/_components/game/root";
+import { Root as PracticeRoot } from "@/app/(public)/events/[id]/_components/practice/root";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -8,17 +13,33 @@ type Props = {
 
 export default async function Page({ params }: Props) {
   const { id } = await params;
-  const gameId = Number.parseInt(id, 10);
+  const eventId = Number.parseInt(id, 10);
 
-  if (Number.isNaN(gameId)) {
+  if (Number.isNaN(eventId)) {
     notFound();
   }
 
-  const game = await getGame(gameId);
+  const event = await getEventType(eventId);
 
-  if (!game) {
+  if (!event) {
     notFound();
   }
 
-  return <Root game={game} />;
+  if (event.type === "game") {
+    const game = await getGame(eventId);
+
+    if (!game) {
+      notFound();
+    }
+
+    return <GameRoot game={game} />;
+  }
+
+  const practice = await getPractice(eventId);
+
+  if (!practice) {
+    notFound();
+  }
+
+  return <PracticeRoot practice={practice} />;
 }

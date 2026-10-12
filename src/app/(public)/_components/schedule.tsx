@@ -19,7 +19,7 @@ const DISPLAY_COUNT = 3;
 const getEventInfo = (event: UpcomingEvent) => {
   if (event.game) {
     return {
-      href: `/games/${event.game.id}` as const,
+      href: `/events/${event.id}` as const,
       subtitle: event.game.league?.name ?? "",
       title: `vs ${event.game.opponent?.name ?? "未定"}`,
       groundName: event.game.ground?.name,
@@ -28,7 +28,7 @@ const getEventInfo = (event: UpcomingEvent) => {
 
   if (event.practice) {
     return {
-      href: `/practices/${event.practice.id}` as const,
+      href: `/events/${event.id}` as const,
       subtitle: "",
       title: "練習",
       groundName: event.practice.ground?.name,

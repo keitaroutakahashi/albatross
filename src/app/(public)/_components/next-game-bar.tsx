@@ -60,7 +60,7 @@ export const NextGameBar = async () => {
 
         {/* 対戦カード全体を試合詳細への導線にする */}
         <Link
-          href={`/games/${game.id}`}
+          href={`/events/${game.eventId}`}
           className="group flex items-center gap-x-3 border-b border-white/40 py-1.5 pl-4 pr-3 transition-colors"
         >
           {/* Albatross は常に左側に固定する */}

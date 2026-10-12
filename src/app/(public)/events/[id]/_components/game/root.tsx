@@ -1,14 +1,14 @@
 import type { GameDetail } from "@/app/_features/games/api/get-games";
-import { AIAnalysis } from "@/app/(public)/games/[id]/_components/ai-analysis";
-import { BenchLineup } from "@/app/(public)/games/[id]/_components/bench-lineup";
-import { GameHeader } from "@/app/(public)/games/[id]/_components/game-header";
-import { GameInfo } from "@/app/(public)/games/[id]/_components/game-info";
-import { GameOverview } from "@/app/(public)/games/[id]/_components/game-overview";
-import { GameResults } from "@/app/(public)/games/[id]/_components/game-results";
-import { GameStats } from "@/app/(public)/games/[id]/_components/game-stats";
-import { GameSummary } from "@/app/(public)/games/[id]/_components/game-summary";
-import { ScoreBoard } from "@/app/(public)/games/[id]/_components/score-board";
-import { StartingLineup } from "@/app/(public)/games/[id]/_components/starting-lineup";
+import { AIAnalysis } from "@/app/(public)/events/[id]/_components/game/ai-analysis";
+import { BenchLineup } from "@/app/(public)/events/[id]/_components/game/bench-lineup";
+import { GameHeader } from "@/app/(public)/events/[id]/_components/game/game-header";
+import { GameInfo } from "@/app/(public)/events/[id]/_components/game/game-info";
+import { GameOverview } from "@/app/(public)/events/[id]/_components/game/game-overview";
+import { GameResults } from "@/app/(public)/events/[id]/_components/game/game-results";
+import { GameStats } from "@/app/(public)/events/[id]/_components/game/game-stats";
+import { GameSummary } from "@/app/(public)/events/[id]/_components/game/game-summary";
+import { ScoreBoard } from "@/app/(public)/events/[id]/_components/game/score-board";
+import { StartingLineup } from "@/app/(public)/events/[id]/_components/game/starting-lineup";
 
 type Props = {
   game: GameDetail;

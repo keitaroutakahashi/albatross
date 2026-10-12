@@ -24,7 +24,6 @@ type NavItem = {
   href: Route;
   label: string;
   icon: LucideIcon;
-  activePrefixes?: string[];
 };
 
 type NavGroup = {
@@ -35,15 +34,7 @@ type NavGroup = {
 const NAV_GROUPS: NavGroup[] = [
   {
     label: "イベント",
-    items: [
-      {
-        href: "/events",
-        label: "イベント一覧",
-        icon: Trophy,
-        // 試合・練習の詳細ページでも選択状態にする
-        activePrefixes: ["/events", "/games", "/practices"],
-      },
-    ],
+    items: [{ href: "/events", label: "イベント一覧", icon: Trophy }],
   },
   {
     label: "メンバー",
@@ -91,9 +82,7 @@ export function SideNavigation({ children }: Props) {
               </p>
               <ul className="mt-2 flex flex-col gap-1">
                 {group.items.map((item) => {
-                  const isActive = (item.activePrefixes ?? [item.href]).some(
-                    (prefix) => pathname.startsWith(prefix),
-                  );
+                  const isActive = pathname.startsWith(item.href);
                   const Icon = item.icon;
                   return (
                     <li key={item.href}>
