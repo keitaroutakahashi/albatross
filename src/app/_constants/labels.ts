@@ -1,4 +1,15 @@
-import type { AtBatResult, Hand, Position } from "@/generated/prisma/client";
+import type {
+  AtBatResult,
+  EventStatus,
+  GameResult,
+  GameType,
+  Hand,
+  MemberCategory,
+  MemberType,
+  PitchingDecision,
+  Position,
+  Weather,
+} from "@/generated/prisma/client";
 
 export const positionLabel: Record<Position, string> = {
   pitcher: "投",
@@ -48,4 +59,62 @@ export const handLabel: Record<Hand, string> = {
   left: "左",
   right: "右",
   both: "両",
+};
+
+export const memberCategoryLabel: Record<MemberCategory, string> = {
+  regular: "正規メンバー",
+  guest: "助っ人",
+};
+
+export const eventStatusLabel: Record<EventStatus, string> = {
+  scheduled: "予定",
+  completed: "終了",
+  canceled: "中止",
+};
+
+export const gameTypeLabel: Record<GameType, string> = {
+  official: "公式戦",
+  practice: "練習試合",
+  undecided: "未定",
+};
+
+export const gameResultLabel: Record<GameResult, string> = {
+  win: "勝",
+  lose: "負",
+  draw: "分",
+};
+
+export const weatherLabel: Record<Weather, string> = {
+  sunny: "晴れ",
+  cloudy: "曇り",
+  rainy: "雨",
+  snowy: "雪",
+};
+
+export const atBatResultFullLabel: Record<AtBatResult, string> = {
+  single: "単打",
+  double: "二塁打",
+  triple: "三塁打",
+  homeRun: "本塁打",
+  walk: "四球",
+  hitByPitch: "死球",
+  strikeout: "三振",
+  groundOut: "ゴロアウト",
+  flyOut: "フライアウト",
+  lineOut: "ライナーアウト",
+  sacrificeHit: "犠打",
+  sacrificeFly: "犠飛",
+  fieldersChoice: "フィルダースチョイス",
+  doublePlay: "併殺打",
+  error: "エラー出塁",
+};
+
+export const pitchingDecisionLabel: Record<PitchingDecision, string> = {
+  win: "勝ち投手",
+  loss: "負け投手",
+};
+
+export const memberTypeLabel: Record<MemberType, string> = {
+  starting: "スタメン",
+  bench: "ベンチ",
 };
