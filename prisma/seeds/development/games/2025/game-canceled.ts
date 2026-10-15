@@ -9,7 +9,7 @@ export async function seedGameCanceled(prisma: PrismaClient, ctx: SeedContext) {
     date: new Date("2025-03-16T10:00:00"),
     status: "canceled",
     seasonId: season2025.id,
-    note: "雨天中止",
+    cancelReason: "雨天中止",
   });
 
   const game = await prisma.game.create({

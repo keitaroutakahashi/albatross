@@ -31,6 +31,7 @@ type Props = {
 };
 
 export const GameInfo = ({ game }: Props) => {
+  const isScheduled = game.event.status === "scheduled";
   const pitchers = getPitchers(game.gameMembers);
   const responsiblePitcher = getResponsiblePitcher(game.gameMembers);
   const decision = resolvePitchingDecision(
@@ -44,23 +45,27 @@ export const GameInfo = ({ game }: Props) => {
 
   return (
     <SectionGroup title="試合情報">
-      {game.mvps.length > 0 && (
-        <SubSectionGroup title="MVP">
-          <ul className="border-t">
-            {game.mvps.map((mvp) => (
-              <li key={mvp.id} className="border-b p-3">
-                <p className="text-sm font-semibold">
-                  {mvp.participant.member.name}
-                </p>
-                {mvp.comment && (
-                  <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
-                    {mvp.comment}
+      {isScheduled ? (
+        <SubSectionGroup title="MVP" />
+      ) : (
+        game.mvps.length > 0 && (
+          <SubSectionGroup title="MVP">
+            <ul className="border-t">
+              {game.mvps.map((mvp) => (
+                <li key={mvp.id} className="border-b p-3">
+                  <p className="text-sm font-semibold">
+                    {mvp.participant.member.name}
                   </p>
-                )}
-              </li>
-            ))}
-          </ul>
-        </SubSectionGroup>
+                  {mvp.comment && (
+                    <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
+                      {mvp.comment}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </SubSectionGroup>
+        )
       )}
 
       <SubSectionGroup title="責任投手・長打">
@@ -127,10 +132,14 @@ export const GameInfo = ({ game }: Props) => {
       </SubSectionGroup>
 
       <SubSectionGroup title="天候">
-        <WeatherIcon weather={game.gameWeather?.weather} />
-        <p className="text-sm mt-2 text-gray-500">
-          {game.gameWeather?.temperature}℃
-        </p>
+        {!isScheduled && (
+          <>
+            <WeatherIcon weather={game.gameWeather?.weather} />
+            <p className="text-sm mt-2 text-gray-500">
+              {game.gameWeather?.temperature}℃
+            </p>
+          </>
+        )}
       </SubSectionGroup>
 
       {game.videoUrl && (

@@ -65,6 +65,7 @@ erDiagram
   DateTime date
   EventStatus status
   String note "nullable"
+  String cancelReason "nullable"
   Int seasonId FK
   DateTime createdAt
   DateTime updatedAt
@@ -277,6 +278,7 @@ Properties as follows:
 - `date`:
 - `status`:
 - `note`:
+- `cancelReason`:
 - `seasonId`:
 - `createdAt`:
 - `updatedAt`:

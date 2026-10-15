@@ -1,4 +1,5 @@
 import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { EventNote } from "@/app/(public)/events/[id]/_components/event-note";
 import { AIAnalysis } from "@/app/(public)/events/[id]/_components/game/ai-analysis";
 import { BenchLineup } from "@/app/(public)/events/[id]/_components/game/bench-lineup";
 import { GameHeader } from "@/app/(public)/events/[id]/_components/game/game-header";
@@ -29,6 +30,7 @@ export const Root = async ({ game }: Props) => {
         <GameResults game={game} />
         <GameStats game={game} />
         <AIAnalysis game={game} />
+        <EventNote note={game.event.note} />
       </div>
     </div>
   );

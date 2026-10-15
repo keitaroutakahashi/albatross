@@ -18,6 +18,7 @@ export const eventScheduleSchema = z.object({
   seasonId: requiredId,
   groundId: optionalId,
   note: optionalText(200),
+  cancelReason: optionalText(200),
 });
 
 /** 対戦（試合のみ） */

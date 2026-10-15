@@ -7,7 +7,7 @@ type Props = {
 };
 
 export const PracticeInfo = ({ practice }: Props) => {
-  const { ground, event } = practice;
+  const { ground } = practice;
 
   return (
     <SectionGroup title="練習情報">
@@ -29,12 +29,6 @@ export const PracticeInfo = ({ practice }: Props) => {
           <p className="text-sm font-semibold">会場未定</p>
         )}
       </SubSectionGroup>
-
-      {event.note && (
-        <SubSectionGroup title="メモ">
-          <p className="text-sm whitespace-pre-wrap">{event.note}</p>
-        </SubSectionGroup>
-      )}
     </SectionGroup>
   );
 };

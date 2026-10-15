@@ -34,6 +34,7 @@ export function createGameEvent(
     status: EventStatus;
     seasonId: number;
     note?: string;
+    cancelReason?: string;
   },
 ) {
   return prisma.event.create({ data: { type: "game", ...data } });

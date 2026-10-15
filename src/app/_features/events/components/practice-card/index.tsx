@@ -21,9 +21,13 @@ export const PracticeCard = ({ event, practice }: Props) => {
             {practice.ground?.name ?? "会場未定"}
           </p>
           {event.status === "canceled" && (
-            <p className="text-sm font-bold">中止</p>
+            <>
+              <p className="text-sm font-bold">中止</p>
+              {event.cancelReason && (
+                <p className="text-xs text-gray-500">{event.cancelReason}</p>
+              )}
+            </>
           )}
-          {event.note && <p className="text-xs text-gray-500">{event.note}</p>}
         </div>
       </Link>
     </li>

@@ -1,4 +1,5 @@
 import type { PracticeDetail } from "@/app/_features/events/api/get-events";
+import { EventNote } from "@/app/(public)/events/[id]/_components/event-note";
 import { PracticeHeader } from "@/app/(public)/events/[id]/_components/practice/practice-header";
 import { PracticeInfo } from "@/app/(public)/events/[id]/_components/practice/practice-info";
 import { PracticeMembers } from "@/app/(public)/events/[id]/_components/practice/practice-members";
@@ -17,6 +18,7 @@ export const Root = ({ practice }: Props) => {
       <div className="@content:max-w-5xl @content:mx-auto px-3 @content:px-5 py-6 flex flex-col @content:gap-y-14 gap-y-10">
         <PracticeInfo practice={practice} />
         <PracticeMembers practice={practice} />
+        <EventNote note={practice.event.note} />
       </div>
     </div>
   );

@@ -18,6 +18,8 @@ type Props = {
     seasonId: string;
     groundId: string;
     note: string;
+    status: string;
+    cancelReason: string;
   };
 };
 
@@ -54,10 +56,20 @@ export const EventScheduleForm = ({ action, options, initial }: Props) => {
             name="note"
             label="備考"
             state={state}
-            hint="例: 雨天中止"
+            hint="イベント詳細の「備考」に表示されます"
             maxLength={200}
             defaultValue={initial.note}
           />
+          {initial.status === "canceled" && (
+            <TextField
+              name="cancelReason"
+              label="中止理由"
+              state={state}
+              hint="例: 雨天中止"
+              maxLength={200}
+              defaultValue={initial.cancelReason}
+            />
+          )}
         </>
       )}
     </FormShell>

@@ -184,6 +184,10 @@ const battingColumns: ColumnDef<TeamBattingStats>[] = [
 export const GameStats = ({ game }: Props) => {
   const members = game.gameMembers;
 
+  if (game.event.status === "scheduled") {
+    return <SectionGroup title="チーム成績" />;
+  }
+
   if (members.length === 0) {
     return null;
   }

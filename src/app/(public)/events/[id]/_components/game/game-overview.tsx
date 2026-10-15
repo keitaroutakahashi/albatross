@@ -29,6 +29,9 @@ export const GameOverview = ({ game }: Props) => {
           <p className="font-bold text-sm @content:text-base text-center">
             [ {getGameStatusText(game.event.status)} ]
           </p>
+          {game.event.status === "canceled" && game.event.cancelReason && (
+            <p className="text-sm text-center">{game.event.cancelReason}</p>
+          )}
 
           <div className="grid grid-cols-3 place-items-center">
             <span className="text-4xl @content:text-7xl font-bold tracking-wider">

@@ -9,6 +9,7 @@ export type EventFormInitial = {
   status: string;
   seasonId: string;
   note: string;
+  cancelReason: string;
   groundId: string;
   gameType: string;
   isFirstBatting: string;
@@ -43,6 +44,7 @@ export const toEventFormInitial = (event: EventDetail): EventFormInitial => {
     status: event.status,
     seasonId: str(event.seasonId),
     note: str(event.note),
+    cancelReason: str(event.cancelReason),
     groundId: str(game?.groundId ?? event.practice?.groundId),
     gameType: game?.gameType ?? "undecided",
     isFirstBatting:

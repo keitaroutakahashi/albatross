@@ -204,8 +204,11 @@ model Event {
   date   DateTime
   status EventStatus @default(scheduled)
 
-  // （雨天中止など）
+  // 備考（イベント詳細の「備考」セクションに表示する）
   note String?
+
+  // 中止の理由（雨天中止など）。status が canceled のときだけ表示する
+  cancelReason String?
 
   seasonId Int
   season   Season @relation(fields: [seasonId], references: [id])

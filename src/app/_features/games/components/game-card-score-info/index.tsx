@@ -44,7 +44,14 @@ export const GameCardScoreInfo = ({ game }: Props) => {
 
           <div className="flex items-center">
             {game.event.status === "canceled" ? (
-              <span className="text-xs font-bold text-gray-500">中止</span>
+              <div className="flex flex-col items-center gap-y-1">
+                <span className="text-xs font-bold text-gray-500">中止</span>
+                {game.event.cancelReason && (
+                  <span className="text-xs text-gray-500">
+                    {game.event.cancelReason}
+                  </span>
+                )}
+              </div>
             ) : (
               <span
                 className={`${resultBadge.className} text-white text-xs rounded size-5 font-bold flex items-center justify-center`}

@@ -11,18 +11,33 @@ describe("eventScheduleSchema", () => {
     seasonId: "2",
     groundId: "",
     note: "",
+    cancelReason: "",
   };
 
   it("日時を日本時間として解釈し、未入力は null にする", () => {
     const result = eventScheduleSchema.parse(valid);
-    expect(result).toMatchObject({ seasonId: 2, groundId: null, note: null });
+    expect(result).toMatchObject({
+      seasonId: 2,
+      groundId: null,
+      note: null,
+      cancelReason: null,
+    });
     expect(result.date.toISOString()).toBe("2026-10-25T00:00:00.000Z");
   });
 
-  it("グラウンドと備考を受け取る", () => {
+  it("グラウンド・備考・中止理由を受け取る", () => {
     expect(
-      eventScheduleSchema.parse({ ...valid, groundId: "3", note: "雨天中止" }),
-    ).toMatchObject({ groundId: 3, note: "雨天中止" });
+      eventScheduleSchema.parse({
+        ...valid,
+        groundId: "3",
+        note: "集合 8:30",
+        cancelReason: "雨天中止",
+      }),
+    ).toMatchObject({
+      groundId: 3,
+      note: "集合 8:30",
+      cancelReason: "雨天中止",
+    });
   });
 
   it("日時の形式が不正ならエラーにする", () => {

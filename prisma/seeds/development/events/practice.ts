@@ -43,7 +43,7 @@ export async function seedPractices(prisma: PrismaClient) {
       status: "canceled",
       seasonId: season2026.id,
       groundId: grounds[2].id,
-      note: "雨天中止",
+      cancelReason: "雨天中止",
     },
   ] as const;
 

@@ -14,6 +14,10 @@ export const PracticeOverview = ({ practice }: Props) => {
         <p className="font-bold text-sm @content:text-base text-center">
           [ {getPracticeStatusText(practice.event.status)} ]
         </p>
+        {practice.event.status === "canceled" &&
+          practice.event.cancelReason && (
+            <p className="text-sm text-center">{practice.event.cancelReason}</p>
+          )}
         <p className="text-4xl @content:text-7xl font-bold tracking-wider">
           練習
         </p>

@@ -10,6 +10,10 @@ type Props = {
 };
 
 export const GameResults = ({ game }: Props) => {
+  if (game.event.status === "scheduled") {
+    return <SectionGroup title="個人成績" />;
+  }
+
   const starters = game.gameMembers.filter(
     (gm) => gm.memberType === "starting",
   );
