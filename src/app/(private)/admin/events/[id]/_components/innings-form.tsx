@@ -14,6 +14,8 @@ type Props = {
   initial: { teamScore: string; opponentScore: string }[];
   /** 献上点（試合開始時に与えられた得点） */
   initialForfeitedRuns: { team: string; opponent: string };
+  /** 自チームの失策 */
+  initialTeamErrors: string;
   /** 自チームが先攻か。左右の並びの入れ替えに使う */
   isFirstBatting: boolean | null;
 };
@@ -35,6 +37,7 @@ export const InningsForm = ({
   action,
   initial,
   initialForfeitedRuns,
+  initialTeamErrors,
   isFirstBatting,
 }: Props) => {
   const [count, setCount] = useState(initial.length);
@@ -47,6 +50,7 @@ export const InningsForm = ({
         const opponent = toArray(state.values?.opponentScore);
         const error =
           state.fieldErrors?.teamScore ?? state.fieldErrors?.opponentScore;
+        const teamErrorsError = state.fieldErrors?.teamErrors;
         const forfeitedError =
           state.fieldErrors?.teamForfeitedRuns ??
           state.fieldErrors?.opponentForfeitedRuns;
@@ -148,6 +152,35 @@ export const InningsForm = ({
               {forfeitedError && (
                 <p role="alert" className="col-span-3 text-sm text-destructive">
                   {forfeitedError}
+                </p>
+              )}
+
+              <span className="pt-2 text-sm font-medium">失策</span>
+              {ordered.map((c) =>
+                c.key === "teamScore" ? (
+                  <Input
+                    key="teamErrors"
+                    name="teamErrors"
+                    type="number"
+                    inputMode="numeric"
+                    aria-label="失策 自チーム"
+                    defaultValue={forfeitedValue(
+                      state,
+                      "teamErrors",
+                      initialTeamErrors,
+                    )}
+                    className="mt-2 h-11 text-center"
+                  />
+                ) : (
+                  <span key="opponent-errors" />
+                ),
+              )}
+              <p className="col-span-3 text-xs text-muted-foreground">
+                自チームの失策です。相手の失策は打席の結果から設定されます。
+              </p>
+              {teamErrorsError && (
+                <p role="alert" className="col-span-3 text-sm text-destructive">
+                  {teamErrorsError}
                 </p>
               )}
             </div>

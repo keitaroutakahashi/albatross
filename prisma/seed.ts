@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
 import { seedPractices } from "./seeds/development/events/practice.js";
 import { seedGames } from "./seeds/development/games/index.js";
+import { seedGameParticipants } from "./seeds/development/games/participant.js";
 import { seedGrounds } from "./seeds/development/ground.js";
 import { seedLeagues } from "./seeds/development/league.js";
 import { seedMembers } from "./seeds/development/member.js";
@@ -34,6 +35,7 @@ async function main() {
     await seedOpponents(prisma);
     await seedMembers(prisma);
     await seedGames(prisma);
+    await seedGameParticipants(prisma);
     await seedPractices(prisma);
   }
 

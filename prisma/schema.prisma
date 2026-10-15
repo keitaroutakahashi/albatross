@@ -98,20 +98,14 @@ enum AtBatResult {
   walk // 四球
   hitByPitch // 死球
   strikeout // 三振
-  groundOut // ゴロアウト
-  flyOut // フライアウト
-  lineOut // ライナーアウト
+  groundOut // ゴロ
+  flyOut // フライ
+  lineOut // ライナー
   sacrificeHit // 犠打
   sacrificeFly // 犠飛
   fieldersChoice // フィルダースチョイス
   doublePlay // 併殺打
-  error // エラー出塁
-}
-
-// 投手の勝敗
-enum PitchingDecision {
-  win // 勝ち投手
-  loss // 負け投手
+  error // エラー
 }
 
 // 天気
@@ -158,16 +152,17 @@ model League {
 
 // グラウンド（球場）
 model Ground {
-  id        Int        @id @default(autoincrement())
-  name      String
-  address   String
-  access    String?
-  url       String // 公式HPのURL
-  imagePath String? // イベント詳細の背景画像のパス（例: /images/grounds/yoyogi.jpg）
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  games     Game[]
-  practices Practice[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  address     String
+  access      String?
+  url         String // 公式HPのURL
+  imagePath   String? // イベント詳細の背景画像のパス（例: /images/grounds/yoyogi.jpg）
+  mapEmbedUrl String? // Google マップの埋め込み用 URL（iframe の src のみ。タグは保存しない）
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  games       Game[]
+  practices   Practice[]
 }
 
 // 対戦相手チーム
@@ -193,8 +188,9 @@ model Member {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  gameMembers     GameMember[]
-  practiceMembers PracticeMember[]
+  gameParticipants GameParticipant[]
+  gameMembers      GameMember[]
+  practiceMembers  PracticeMember[]
 }
 
 // --- イベント ---
@@ -257,14 +253,15 @@ model PracticeMember {
 
 // 試合
 // 日時・状態・シーズンなどの共通項目は Event が持つ
-// 同日の試合番号（gameNumber）の重複は DB 制約ではなく登録処理でチェックする
+// 試合番号（gameNumber）は、同日の試合を日時順に並べた順位。
+// DB 制約ではなく、登録・日時の変更・削除の処理で振り直す
 model Game {
   id Int @id @default(autoincrement())
 
   eventId Int   @unique
   event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-  gameNumber Int @default(1) // 同日の試合番号（ダブルヘッダー対応）
+  gameNumber Int @default(1) // 同日の試合番号（日時順。ダブルヘッダー対応）
 
   // 試合設定
   gameType       GameType @default(undecided) // 公式戦 or 練習試合
@@ -281,7 +278,13 @@ model Game {
   // イニング
   innings Inning[]
 
-  // 参加メンバー
+  // 参加メンバー（この中から出場した選手を選ぶ）
+  participants GameParticipant[]
+
+  // MVP（表示順つき。参加メンバーの中から選ぶ）
+  mvps GameMvp[]
+
+  // 出場した選手
   gameMembers GameMember[]
 
   // 試合結果（キャッシュ）
@@ -310,6 +313,40 @@ model Game {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// 試合参加メンバー
+// 試合に参加する選手。この中から出場した選手（GameMember）を選ぶ
+model GameParticipant {
+  id        Int      @id @default(autoincrement())
+  gameId    Int
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId  Int
+  member    Member   @relation(fields: [memberId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  mvp GameMvp?
+
+  @@unique([gameId, memberId])
+}
+
+// 試合の MVP
+// 1 試合に複数人まで登録でき、order で表示順を持つ。MVP は参加メンバーの中からしか選べない
+model GameMvp {
+  id          Int             @id @default(autoincrement())
+  gameId      Int
+  game        Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId    Int
+  // 参加メンバーを外すときは MVP を先に外す必要がある（試合ごと削除するときは、Game の Cascade で一緒に消える）
+  participant GameParticipant @relation(fields: [gameId, memberId], references: [gameId, memberId], onDelete: NoAction)
+  order       Int // 表示順（1 から）
+  comment     String? // MVP に添えるコメント
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([gameId, memberId])
+  @@unique([gameId, order])
 }
 
 // 試合日の天候
@@ -361,18 +398,18 @@ model PitchingResult {
   gameMemberId Int        @unique
   gameMember   GameMember @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
 
-  pitchingOrder   Int               @default(1) // 登板順（先発 = 1）
-  inningsPitched  Int               @default(0) // 投球回数（完了イニング数）
+  pitchingOrder   Int     @default(1) // 登板順（先発 = 1）
+  inningsPitched  Int     @default(0) // 投球回数（完了イニング数）
   partialOuts     Int? // イニング間交代時のアウト数（0, 1, 2, null）
-  earnedRuns      Int               @default(0) // 自責点
-  runs            Int               @default(0) // 失点
-  strikeouts      Int               @default(0) // 奪三振
-  walks           Int               @default(0) // 四球
-  hitByPitches    Int               @default(0) // 死球
-  hitsAllowed     Int               @default(0) // 被安打
-  homeRunsAllowed Int               @default(0) // 被本塁打
+  earnedRuns      Int     @default(0) // 自責点
+  runs            Int     @default(0) // 失点
+  strikeouts      Int     @default(0) // 奪三振
+  walks           Int     @default(0) // 四球
+  hitByPitches    Int     @default(0) // 死球
+  hitsAllowed     Int     @default(0) // 被安打
+  homeRunsAllowed Int     @default(0) // 被本塁打
   pitchCount      Int? // 球数（登板ごとの合計。未入力は null）
-  decision        PitchingDecision? // 勝敗（null = 該当なし）
+  isResponsible   Boolean @default(false) // 責任投手か（勝ち投手・負け投手は試合結果から決まる）
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

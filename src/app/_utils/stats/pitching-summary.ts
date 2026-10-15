@@ -1,7 +1,7 @@
 import { calculateEra } from "@/app/_utils/stats/era";
 import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+import type { PitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import { calculateWhip } from "@/app/_utils/stats/whip";
-import type { PitchingDecision } from "@/generated/prisma/client";
 
 export type PitchingGameResult = {
   /** 登板順（先発 = 1） */
@@ -17,6 +17,7 @@ export type PitchingGameResult = {
   homeRunsAllowed: number;
   /** 登板ごとの合計球数（未入力は null） */
   pitchCount: number | null;
+  /** 勝敗（試合結果と責任投手から決まる。該当なしは null） */
   decision: PitchingDecision | null;
 };
 

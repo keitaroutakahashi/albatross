@@ -1,4 +1,5 @@
 import type { MemberStatsBase } from "@/app/_features/members/utils/ranking";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import {
   type PitchingGameResult,
   summarizePitching,
@@ -73,7 +74,9 @@ export const getPitchingStats = async (
         },
       },
       include: {
-        gameMember: { include: { member: true } },
+        gameMember: {
+          include: { member: true, game: { select: { result: true } } },
+        },
       },
     }),
   ]);
@@ -91,7 +94,13 @@ export const getPitchingStats = async (
       results: [],
     };
 
-    accumulator.results.push(pitchingResult);
+    accumulator.results.push({
+      ...pitchingResult,
+      decision: resolvePitchingDecision(
+        pitchingResult.isResponsible,
+        pitchingResult.gameMember.game.result,
+      ),
+    });
     accumulatorByMemberId.set(memberId, accumulator);
   }
 

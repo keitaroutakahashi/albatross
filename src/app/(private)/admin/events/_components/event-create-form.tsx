@@ -2,10 +2,7 @@
 
 import { useState } from "react";
 import { DateTimeField } from "@/app/(private)/admin/_components/date-time-field";
-import {
-  SelectField,
-  TextField,
-} from "@/app/(private)/admin/_components/form-fields";
+import { SelectField } from "@/app/(private)/admin/_components/form-fields";
 import { FormShell } from "@/app/(private)/admin/_components/form-shell";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import {
@@ -49,26 +46,14 @@ export const EventCreateForm = ({ action, seasons }: Props) => {
             defaultValue={seasons[0]?.value}
           />
           {type === "game" && (
-            <>
-              <TextField
-                name="gameNumber"
-                label="試合番号"
-                state={state}
-                required
-                type="number"
-                inputMode="numeric"
-                hint="同日に複数試合がある場合は 2 試合目以降を 2, 3… にする"
-                defaultValue="1"
-              />
-              <SelectField
-                name="gameType"
-                label="試合種別"
-                state={state}
-                required
-                options={gameTypeOptions}
-                defaultValue="undecided"
-              />
-            </>
+            <SelectField
+              name="gameType"
+              label="試合種別"
+              state={state}
+              required
+              options={gameTypeOptions}
+              defaultValue="undecided"
+            />
           )}
         </>
       )}

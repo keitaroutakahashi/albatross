@@ -25,9 +25,21 @@ export const getEvent = async (id: number) => {
   return prisma.event.findUnique({
     where: { id },
     include: {
-      game: { include: { gameWeather: true } },
+      season: true,
+      game: {
+        include: {
+          gameWeather: true,
+          opponent: true,
+          league: true,
+          ground: true,
+          mvps: { select: { id: true } },
+        },
+      },
       practice: {
-        include: { _count: { select: { practiceMembers: true } } },
+        include: {
+          ground: true,
+          _count: { select: { practiceMembers: true } },
+        },
       },
     },
   });

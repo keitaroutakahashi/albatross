@@ -3,6 +3,7 @@ import type { ColumnDef } from "@/app/_components/ui/data-table";
 import { DataTable } from "@/app/_components/ui/data-table";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
 import { formatInningsPitched } from "@/app/_utils/stats/innings";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 
 type Props = {
   game: GameDetail;
@@ -17,7 +18,7 @@ const decisionLabel = (decision: string | null) => {
   return "";
 };
 
-const columns: ColumnDef<PitcherRow>[] = [
+const columns = (gameResult: GameDetail["result"]): ColumnDef<PitcherRow>[] => [
   {
     key: "name",
     header: "投手名",
@@ -28,7 +29,13 @@ const columns: ColumnDef<PitcherRow>[] = [
   {
     key: "decision",
     header: "勝敗",
-    cell: (row) => decisionLabel(row.pitchingResult?.decision ?? null),
+    cell: (row) =>
+      decisionLabel(
+        resolvePitchingDecision(
+          row.pitchingResult?.isResponsible ?? false,
+          gameResult,
+        ),
+      ),
     headerClassName: "w-10",
   },
   {
@@ -93,15 +100,13 @@ export const GamePitchers = ({ game }: Props) => {
         (b.pitchingResult?.pitchingOrder ?? 0),
     );
 
-  console.log(pitchers);
-
   if (pitchers.length === 0) {
     return null;
   }
 
   return (
     <DataTable
-      columns={columns}
+      columns={columns(game.result)}
       data={pitchers}
       keyExtractor={(row) => String(row.id)}
       sticky={{ count: 1, offsets: ["left-0"] }}

@@ -5,7 +5,7 @@ export const MAX_INNINGS = 30;
 
 /**
  * イニング番号は入力順（1 回から連番）で決まるため、得点だけを列として受け取る。
- * 献上点（試合開始時に与えられた得点）は試合に 1 つずつ。
+ * 献上点（試合開始時に与えられた得点）と自チームの失策は試合に 1 つずつ。
  */
 export const inningSchema = z
   .object({
@@ -13,6 +13,7 @@ export const inningSchema = z
     opponentScore: arrayOf(requiredInt(0, 99)),
     teamForfeitedRuns: requiredInt(0, 99),
     opponentForfeitedRuns: requiredInt(0, 99),
+    teamErrors: requiredInt(0, 99),
   })
   .refine(
     (v) =>

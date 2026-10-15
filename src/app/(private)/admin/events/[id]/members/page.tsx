@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { savePracticeMembers } from "@/app/(private)/admin/_actions/practice-member";
+import { saveEventMembers } from "@/app/(private)/admin/_actions/event-member";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
-import {
-  getPracticeCandidates,
-  getPracticeOfEvent,
-} from "@/app/(private)/admin/_data/game";
+import { getEventParticipation } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
-import { PracticeMembersForm } from "@/app/(private)/admin/events/[id]/_components/practice-members-form";
+import { EventMembersForm } from "@/app/(private)/admin/events/[id]/_components/event-members-form";
 
 export const metadata: Metadata = {
   title: "参加メンバー",
@@ -19,20 +16,19 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const eventId = parseId((await params).id);
-  const practice = await getPracticeOfEvent(eventId);
-  if (!practice) notFound();
-  const members = await getPracticeCandidates(practice.id);
+  const participation = await getEventParticipation(eventId);
+  if (!participation) notFound();
 
   return (
     <>
       <PageHeader title="参加メンバー" backHref={`/admin/events/${eventId}`} />
-      <PracticeMembersForm
-        action={savePracticeMembers.bind(null, eventId)}
-        options={members.map((m) => ({
+      <EventMembersForm
+        action={saveEventMembers.bind(null, eventId)}
+        options={participation.members.map((m) => ({
           value: String(m.id),
           label: `#${m.uniformNumber} ${m.name}`,
         }))}
-        selected={practice.practiceMembers.map((pm) => String(pm.memberId))}
+        selected={participation.selectedMemberIds.map(String)}
       />
     </>
   );

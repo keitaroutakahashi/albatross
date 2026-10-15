@@ -1,5 +1,6 @@
 "use client";
 
+import { GoogleMapEmbed } from "@/app/_components/ui/google-map-embed";
 import {
   TextareaField,
   TextField,
@@ -51,6 +52,23 @@ export const GroundForm = ({ action, initial, deleteTarget }: Props) => {
             placeholder="https://"
             defaultValue={initial?.url}
           />
+          <TextareaField
+            name="mapEmbedUrl"
+            label="Google マップの埋め込みコード"
+            state={state}
+            hint="Google マップで「共有」→「地図を埋め込む」を開き、表示されるコード（<iframe …>）を、そのまま貼り付けてください"
+            maxLength={2000}
+            defaultValue={initial?.mapEmbedUrl ?? ""}
+          />
+          {initial?.mapEmbedUrl && (
+            <div className="flex flex-col gap-2">
+              <p className="text-sm font-medium">保存済みの地図</p>
+              <GoogleMapEmbed
+                url={initial.mapEmbedUrl}
+                title={`${initial.name}の地図`}
+              />
+            </div>
+          )}
           <TextField
             name="imagePath"
             label="背景画像パス"

@@ -12,7 +12,7 @@ export const OverviewBackground = ({ imagePath }: Props) => {
       src={imagePath || FALLBACK_IMAGE}
       alt=""
       fill
-      className="object-cover object-center brightness-25"
+      className="object-cover object-center brightness-60"
       priority
     />
   );

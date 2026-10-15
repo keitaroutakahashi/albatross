@@ -5,6 +5,7 @@ import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import {
   getGameMembers,
   getGameOfEvent,
+  getNextPitchingOrder,
 } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
 import { LineupRequiredNotice } from "@/app/(private)/admin/events/[id]/_components/lineup-required-notice";
@@ -22,7 +23,10 @@ export default async function Page({
   const eventId = parseId((await params).id);
   const game = await getGameOfEvent(eventId);
   if (!game) notFound();
-  const gameMembers = await getGameMembers(game.id);
+  const [gameMembers, nextPitchingOrder] = await Promise.all([
+    getGameMembers(game.id),
+    getNextPitchingOrder(game.id),
+  ]);
 
   if (gameMembers.length === 0) {
     return (
@@ -44,6 +48,8 @@ export default async function Page({
       />
       <PitchingResultForm
         action={createPitchingResult.bind(null, eventId)}
+        defaultPitchingOrder={String(nextPitchingOrder)}
+        gameResult={game.result}
         // 投手の成績は 1 人 1 件のため、登録済みの選手は選べない
         gameMembers={gameMembers
           .filter((gm) => gm.pitchingResult === null)

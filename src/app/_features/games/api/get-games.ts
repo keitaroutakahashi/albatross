@@ -66,6 +66,11 @@ export const getGame = async (eventId: number) => {
         },
         orderBy: { battingOrder: "asc" },
       },
+      // MVP は参加メンバーに付くため、オーダーとは別に、表示順で取得する
+      mvps: {
+        include: { participant: { include: { member: true } } },
+        orderBy: { order: "asc" },
+      },
     },
   });
 

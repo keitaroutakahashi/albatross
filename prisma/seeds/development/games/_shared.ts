@@ -5,7 +5,6 @@ import type {
   League,
   Member,
   Opponent,
-  PitchingDecision,
   Position,
   PrismaClient,
   Season,
@@ -74,7 +73,7 @@ export type PitchingResultData = {
   hitsAllowed: number;
   homeRunsAllowed: number;
   pitchCount?: number | null;
-  decision: PitchingDecision | null;
+  isResponsible: boolean;
 };
 
 // 明示的な GameMember データ配列から順次作成する（試合1・6・7のような独自打順）

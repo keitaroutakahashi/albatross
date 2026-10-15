@@ -15,7 +15,7 @@ type Props = {
  * 紺・金はブランドカラーのため使わない。赤は状態（中止）で使っている。
  */
 export const EventTypeTag = ({ type, gameType }: Props) => {
-  if (type !== "game" || !gameType) return null;
+  if (type !== "game" || !gameType || gameType === "undecided") return null;
 
   return (
     <span
@@ -23,10 +23,9 @@ export const EventTypeTag = ({ type, gameType }: Props) => {
         "shrink-0 rounded px-1.5 py-0.5 text-xs font-bold",
         gameType === "official" && "bg-violet-100 text-violet-700",
         gameType === "practice" && "bg-pink-100 text-pink-700",
-        gameType === "undecided" && "bg-slate-100 text-slate-600",
       )}
     >
-      {gameType === "undecided" ? null : gameTypeLabel[gameType]}
+      {gameTypeLabel[gameType]}
     </span>
   );
 };

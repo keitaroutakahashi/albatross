@@ -36,6 +36,7 @@ erDiagram
   String access "nullable"
   String url
   String imagePath "nullable"
+  String mapEmbedUrl "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -107,6 +108,22 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"GameParticipant" {
+  Int id PK
+  Int gameId FK
+  Int memberId FK
+  DateTime createdAt
+  DateTime updatedAt
+}
+"GameMvp" {
+  Int id PK
+  Int gameId FK
+  Int memberId
+  Int order
+  String comment "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
 "GameWeather" {
   Int id PK
   Int gameId FK,UK
@@ -145,7 +162,7 @@ erDiagram
   Int hitsAllowed
   Int homeRunsAllowed
   Int pitchCount "nullable"
-  PitchingDecision decision "nullable"
+  Boolean isResponsible
   DateTime createdAt
   DateTime updatedAt
 }
@@ -170,6 +187,10 @@ erDiagram
 "Game" }o--o| "League" : league
 "Game" }o--o| "Ground" : ground
 "Game" }o--o| "Opponent" : opponent
+"GameParticipant" }o--|| "Game" : game
+"GameParticipant" }o--|| "Member" : member
+"GameMvp" }o--|| "Game" : game
+"GameMvp" }o--|| "GameParticipant" : participant
 "GameWeather" |o--|| "Game" : game
 "Inning" }o--|| "Game" : game
 "GameMember" }o--|| "Game" : game
@@ -218,6 +239,7 @@ Properties as follows:
 - `access`:
 - `url`:
 - `imagePath`:
+- `mapEmbedUrl`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -307,6 +329,28 @@ Properties as follows:
 - `createdAt`:
 - `updatedAt`:
 
+### `GameParticipant`
+
+Properties as follows:
+
+- `id`:
+- `gameId`:
+- `memberId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `GameMvp`
+
+Properties as follows:
+
+- `id`:
+- `gameId`:
+- `memberId`:
+- `order`:
+- `comment`:
+- `createdAt`:
+- `updatedAt`:
+
 ### `GameWeather`
 
 Properties as follows:
@@ -357,7 +401,7 @@ Properties as follows:
 - `hitsAllowed`:
 - `homeRunsAllowed`:
 - `pitchCount`:
-- `decision`:
+- `isResponsible`:
 - `createdAt`:
 - `updatedAt`:
 

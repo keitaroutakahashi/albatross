@@ -1,3 +1,4 @@
+import type { PitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import type {
   AtBatResult,
   EventStatus,
@@ -5,7 +6,6 @@ import type {
   GameType,
   Hand,
   MemberCategory,
-  PitchingDecision,
   Position,
   UserRole,
   Weather,
@@ -99,14 +99,14 @@ export const atBatResultFullLabel: Record<AtBatResult, string> = {
   walk: "四球",
   hitByPitch: "死球",
   strikeout: "三振",
-  groundOut: "ゴロアウト",
-  flyOut: "フライアウト",
-  lineOut: "ライナーアウト",
+  groundOut: "ゴロ",
+  flyOut: "フライ",
+  lineOut: "ライナー",
   sacrificeHit: "犠打",
   sacrificeFly: "犠飛",
   fieldersChoice: "フィルダースチョイス",
   doublePlay: "併殺打",
-  error: "エラー出塁",
+  error: "エラー",
 };
 
 export const pitchingDecisionLabel: Record<PitchingDecision, string> = {

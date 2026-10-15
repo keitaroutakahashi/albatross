@@ -1,122 +1,33 @@
 import {
-  eventBasicSchema,
   eventCreateSchema,
-  eventResultSchema,
+  eventMatchupSchema,
+  eventReviewSchema,
+  eventScheduleSchema,
 } from "@/app/(private)/admin/_schemas/event";
 
-const base = {
-  date: "2026-10-25T09:00",
-  status: "scheduled",
-  seasonId: "2",
-  note: "",
-};
+describe("eventScheduleSchema", () => {
+  const valid = {
+    date: "2026-10-25T09:00",
+    seasonId: "2",
+    groundId: "",
+    note: "",
+  };
 
-const validGameBasic = {
-  ...base,
-  type: "game",
-  gameNumber: "1",
-  gameType: "official",
-  isFirstBatting: "",
-  leagueId: "",
-  groundId: "",
-  opponentId: "3",
-  weather: "",
-  temperature: "",
-  summary: "",
-  videoUrl: "",
-  aiGoodPoints: "",
-  aiBadPoints: "",
-};
-
-const validResult = {
-  teamHits: "",
-  opponentHits: "",
-  teamErrors: "",
-  opponentErrors: "",
-};
-
-describe("eventBasicSchema", () => {
-  it("試合: 日時を日本時間として解釈し、未入力は null にする", () => {
-    const result = eventBasicSchema.parse(validGameBasic);
-    expect(result).toMatchObject({
-      type: "game",
-      seasonId: 2,
-      gameNumber: 1,
-      gameType: "official",
-      opponentId: 3,
-      leagueId: null,
-      groundId: null,
-      isFirstBatting: null,
-      note: null,
-      weather: null,
-      temperature: null,
-      summary: null,
-      videoUrl: null,
-    });
+  it("日時を日本時間として解釈し、未入力は null にする", () => {
+    const result = eventScheduleSchema.parse(valid);
+    expect(result).toMatchObject({ seasonId: 2, groundId: null, note: null });
     expect(result.date.toISOString()).toBe("2026-10-25T00:00:00.000Z");
   });
 
-  it("試合: 先攻・後攻を真偽値に変換する", () => {
+  it("グラウンドと備考を受け取る", () => {
     expect(
-      eventBasicSchema.parse({ ...validGameBasic, isFirstBatting: "false" }),
-    ).toMatchObject({ isFirstBatting: false });
-  });
-
-  it("試合: 天候・気温を変換する", () => {
-    expect(
-      eventBasicSchema.parse({
-        ...validGameBasic,
-        weather: "rainy",
-        temperature: "21.5",
-      }),
-    ).toMatchObject({ weather: "rainy", temperature: 21.5 });
-  });
-
-  it("試合: 天気がないまま気温だけ入力するとエラーにする", () => {
-    const result = eventBasicSchema.safeParse({
-      ...validGameBasic,
-      temperature: "20",
-    });
-    expect(result.error?.issues[0]).toMatchObject({
-      path: ["weather"],
-      message: "気温を入力する場合は天気も選択してください",
-    });
-  });
-
-  it("試合: 動画 URL の形式が不正ならエラーにする", () => {
-    const result = eventBasicSchema.safeParse({
-      ...validGameBasic,
-      videoUrl: "foo",
-    });
-    expect(result.error?.issues[0]).toMatchObject({
-      path: ["videoUrl"],
-      message: "URL の形式で入力してください",
-    });
-  });
-
-  it("試合: 得点などの試合結果は受け取らない", () => {
-    const result = eventBasicSchema.parse({
-      ...validGameBasic,
-      teamScore: "5",
-    });
-    expect(result).not.toHaveProperty("teamScore");
-  });
-
-  it("練習: 試合用の項目がなくても通る", () => {
-    expect(
-      eventBasicSchema.parse({ ...base, type: "practice", groundId: "1" }),
-    ).toMatchObject({ type: "practice", groundId: 1 });
-  });
-
-  it("種別が不正ならエラーにする", () => {
-    expect(eventBasicSchema.safeParse({ ...base, type: "party" }).success).toBe(
-      false,
-    );
+      eventScheduleSchema.parse({ ...valid, groundId: "3", note: "雨天中止" }),
+    ).toMatchObject({ groundId: 3, note: "雨天中止" });
   });
 
   it("日時の形式が不正ならエラーにする", () => {
-    const result = eventBasicSchema.safeParse({
-      ...validGameBasic,
+    const result = eventScheduleSchema.safeParse({
+      ...valid,
       date: "2026/10/25",
     });
     expect(result.error?.issues[0]).toMatchObject({
@@ -125,78 +36,140 @@ describe("eventBasicSchema", () => {
     });
   });
 
-  it("試合番号・試合種別が不正ならエラーにする", () => {
+  it("状態・試合番号は受け取らない", () => {
+    const result = eventScheduleSchema.parse({
+      ...valid,
+      status: "completed",
+      gameNumber: "3",
+    });
+    expect(result).not.toHaveProperty("status");
+    expect(result).not.toHaveProperty("gameNumber");
+  });
+});
+
+describe("eventMatchupSchema", () => {
+  const valid = {
+    opponentId: "3",
+    leagueId: "",
+    gameType: "official",
+    isFirstBatting: "",
+  };
+
+  it("未入力は null にする", () => {
+    expect(eventMatchupSchema.parse(valid)).toEqual({
+      opponentId: 3,
+      leagueId: null,
+      gameType: "official",
+      isFirstBatting: null,
+    });
+  });
+
+  it("先攻・後攻を真偽値に変換する", () => {
     expect(
-      eventBasicSchema.safeParse({ ...validGameBasic, gameNumber: "0" })
-        .success,
-    ).toBe(false);
+      eventMatchupSchema.parse({ ...valid, isFirstBatting: "false" }),
+    ).toMatchObject({ isFirstBatting: false });
+  });
+
+  it("試合種別が不正ならエラーにする", () => {
     expect(
-      eventBasicSchema.safeParse({ ...validGameBasic, gameType: "league" })
-        .success,
+      eventMatchupSchema.safeParse({ ...valid, gameType: "league" }).success,
     ).toBe(false);
   });
 });
 
-describe("eventResultSchema", () => {
-  it("未入力はすべて null にする", () => {
-    expect(eventResultSchema.parse(validResult)).toEqual({
-      teamHits: null,
-      opponentHits: null,
-      teamErrors: null,
-      opponentErrors: null,
+describe("eventReviewSchema", () => {
+  const valid = {
+    weather: "",
+    temperature: "",
+    summary: "",
+    videoUrl: "",
+    aiGoodPoints: "",
+    aiBadPoints: "",
+  };
+
+  it("すべて未入力でも通り、null にする", () => {
+    expect(eventReviewSchema.parse(valid)).toEqual({
+      weather: null,
+      temperature: null,
+      summary: null,
+      videoUrl: null,
+      aiGoodPoints: null,
+      aiBadPoints: null,
     });
   });
 
-  it("0 は未入力ではなく 0 として扱う", () => {
+  it("天候・気温を変換する", () => {
     expect(
-      eventResultSchema.parse({
-        ...validResult,
-        teamHits: "0",
-        teamErrors: "0",
+      eventReviewSchema.parse({
+        ...valid,
+        weather: "rainy",
+        temperature: "21.5",
       }),
-    ).toMatchObject({ teamHits: 0, teamErrors: 0 });
+    ).toMatchObject({ weather: "rainy", temperature: 21.5 });
   });
 
-  it("得点・献上点は受け取らない（イニングごとの得点から設定する）", () => {
-    const result = eventResultSchema.parse({
-      ...validResult,
-      teamScore: "5",
-      teamForfeitedRuns: "1",
+  it("天気がないまま気温だけ入力するとエラーにする", () => {
+    const result = eventReviewSchema.safeParse({ ...valid, temperature: "20" });
+    expect(result.error?.issues[0]).toMatchObject({
+      path: ["weather"],
+      message: "気温を入力する場合は天気も選択してください",
     });
-    expect(result).not.toHaveProperty("teamScore");
-    expect(result).not.toHaveProperty("teamForfeitedRuns");
   });
 
-  it("範囲外・小数ならエラーにする", () => {
+  it("動画 URL は、YouTube の埋め込み用の URL に直して保存する", () => {
     expect(
-      eventResultSchema.safeParse({ ...validResult, teamHits: "100" }).success,
-    ).toBe(false);
+      eventReviewSchema.parse({
+        ...valid,
+        videoUrl: "https://youtu.be/5b3pysWf_Yk?si=54JGTd5Vah9xIvcb",
+      }),
+    ).toMatchObject({
+      videoUrl: "https://www.youtube.com/embed/5b3pysWf_Yk",
+    });
     expect(
-      eventResultSchema.safeParse({ ...validResult, teamErrors: "1.5" })
-        .success,
-    ).toBe(false);
+      eventReviewSchema.parse({
+        ...valid,
+        videoUrl: "https://www.youtube.com/watch?v=5b3pysWf_Yk&t=90",
+      }),
+    ).toMatchObject({
+      videoUrl: "https://www.youtube.com/embed/5b3pysWf_Yk?start=90",
+    });
+  });
+
+  it("YouTube の動画 URL でなければ、動画 URL の欄にエラーを返す", () => {
+    for (const videoUrl of ["foo", "https://example.com/video"]) {
+      const result = eventReviewSchema.safeParse({ ...valid, videoUrl });
+      expect(result.error?.issues[0]).toMatchObject({
+        path: ["videoUrl"],
+        message: "YouTube の動画 URL を入力してください",
+      });
+    }
+  });
+
+  it("得点などの試合結果は受け取らない", () => {
+    expect(
+      eventReviewSchema.parse({ ...valid, teamScore: "5" }),
+    ).not.toHaveProperty("teamScore");
   });
 });
 
 describe("eventCreateSchema", () => {
-  it("試合: 種別・日時・シーズン・試合番号・試合種別だけで通る", () => {
+  it("試合: 種別・日時・シーズン・試合種別だけで通る（試合番号は自動で付く）", () => {
     const result = eventCreateSchema.parse({
       type: "game",
       date: "2026-10-25T09:00",
       seasonId: "2",
-      gameNumber: "1",
       gameType: "undecided",
     });
     expect(result).toMatchObject({
       type: "game",
       seasonId: 2,
-      gameNumber: 1,
       gameType: "undecided",
     });
+    expect(result).not.toHaveProperty("gameNumber");
     expect(result.date.toISOString()).toBe("2026-10-25T00:00:00.000Z");
   });
 
-  it("練習: 試合番号・試合種別は不要", () => {
+  it("練習: 試合種別は不要", () => {
     expect(
       eventCreateSchema.parse({
         type: "practice",
@@ -216,16 +189,13 @@ describe("eventCreateSchema", () => {
     expect(result).not.toHaveProperty("status");
   });
 
-  it("試合: 試合番号・試合種別が未入力ならエラーにする", () => {
+  it("試合: 試合種別が未入力ならエラーにする", () => {
     const result = eventCreateSchema.safeParse({
       type: "game",
       date: "2026-10-25T09:00",
       seasonId: "2",
     });
-    expect(result.error?.issues.map((i) => i.path[0])).toEqual([
-      "gameNumber",
-      "gameType",
-    ]);
+    expect(result.error?.issues.map((i) => i.path[0])).toEqual(["gameType"]);
   });
 
   it("種別が不正・シーズン未選択ならエラーにする", () => {

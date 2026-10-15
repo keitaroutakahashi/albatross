@@ -1,8 +1,7 @@
 "use client";
 
-import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
-import { Button } from "@/app/_components/shadcn/button";
+import { AddRemoveButtons } from "@/app/(private)/admin/_components/add-remove-buttons";
 import { nativeControlClass } from "@/app/(private)/admin/_components/form-fields";
 import { FormSection } from "@/app/(private)/admin/_components/form-section";
 import { FormShell } from "@/app/(private)/admin/_components/form-shell";
@@ -81,44 +80,6 @@ const RowSelect = ({
   );
 };
 
-const AddRemove = ({
-  count,
-  min = 0,
-  max,
-  noun,
-  onChange,
-}: {
-  count: number;
-  /** これ以下には減らせない（「最後を削除」を押せなくする） */
-  min?: number;
-  max: number;
-  noun: string;
-  onChange: (next: number) => void;
-}) => (
-  <div className="flex gap-2">
-    <Button
-      type="button"
-      variant="outline"
-      className="h-11 flex-1"
-      disabled={count >= max}
-      onClick={() => onChange(count + 1)}
-    >
-      <Plus />
-      {noun}を追加
-    </Button>
-    <Button
-      type="button"
-      variant="outline"
-      className="h-11 flex-1"
-      disabled={count <= min}
-      onClick={() => onChange(count - 1)}
-    >
-      <Minus />
-      最後を削除
-    </Button>
-  </div>
-);
-
 export const LineupForm = ({
   action,
   members,
@@ -185,7 +146,7 @@ export const LineupForm = ({
                   {state.fieldErrors[STARTERS_ERROR_KEY]}
                 </p>
               )}
-              <AddRemove
+              <AddRemoveButtons
                 count={starterCount}
                 min={MIN_STARTERS}
                 max={MAX_STARTERS}
@@ -221,7 +182,7 @@ export const LineupForm = ({
                   {state.fieldErrors[LINEUP_FIELDS.benchMember]}
                 </p>
               )}
-              <AddRemove
+              <AddRemoveButtons
                 count={benchCount}
                 max={MAX_BENCH}
                 noun="ベンチ"

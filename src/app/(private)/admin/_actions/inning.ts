@@ -13,8 +13,8 @@ import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /**
- * イニングごとの得点と献上点を、送信された内容に置き換える。
- * 試合の得点（各回の合計）と勝敗はここで算出して保存する。安打・失策は手入力のため更新しない。
+ * イニングごとの得点・献上点・自チームの失策を、送信された内容に置き換える。
+ * 試合の得点（各回の合計）と勝敗はここで算出して保存する。安打と相手の失策は打席・投手成績の保存で設定するため更新しない。
  */
 export const saveInnings = async (
   eventId: number,
@@ -24,8 +24,13 @@ export const saveInnings = async (
   await requireAccess("events");
   const parsed = parseForm(inningSchema, formData);
   if (!parsed.success) return parsed.state;
-  const { teamScore, opponentScore, teamForfeitedRuns, opponentForfeitedRuns } =
-    parsed.data;
+  const {
+    teamScore,
+    opponentScore,
+    teamForfeitedRuns,
+    opponentForfeitedRuns,
+    teamErrors,
+  } = parsed.data;
   const gameScore = calcGameScore({
     teamInnings: teamScore,
     opponentInnings: opponentScore,
@@ -49,7 +54,12 @@ export const saveInnings = async (
       }),
       prisma.game.update({
         where: { id: game.id },
-        data: { ...gameScore, teamForfeitedRuns, opponentForfeitedRuns },
+        data: {
+          ...gameScore,
+          teamForfeitedRuns,
+          opponentForfeitedRuns,
+          teamErrors,
+        },
       }),
     ]);
   } catch (error) {

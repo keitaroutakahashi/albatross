@@ -12,7 +12,7 @@ import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import prisma from "@/lib/prisma";
 
 /**
- * 出場した選手（打順・守備位置・ベンチ）を、送信された内容に置き換える。
+ * オーダー（打順・守備位置・ベンチ）を、送信された内容に置き換える。
  * フォームから外した選手は削除するが、打席・投手の成績が残っている場合は
  * 成績まで消えてしまうため、先に成績を削除するよう案内する。
  * 盗塁数はこの画面では扱わないので、保存済みの値は変更しない。
@@ -41,6 +41,20 @@ export const saveLineup = async (
       },
     });
     if (!game) return { message: "データが見つかりません" };
+
+    // 出場できるのは、この試合の参加メンバーだけ
+    const participants = await prisma.gameParticipant.findMany({
+      where: { gameId: game.id },
+      select: { memberId: true },
+    });
+    const participantIds = new Set(participants.map((p) => p.memberId));
+    if (parsed.entries.some((e) => !participantIds.has(e.memberId))) {
+      return {
+        ...toFieldErrorState(formData, {}),
+        message:
+          "参加メンバーに登録されていない選手は、オーダーに入れられません",
+      };
+    }
 
     const entered = new Set(parsed.entries.map((e) => e.memberId));
     const removed = game.gameMembers.filter((gm) => !entered.has(gm.memberId));

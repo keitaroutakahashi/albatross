@@ -43,6 +43,7 @@ export default async function Page({
       />
       <PitchingResultForm
         action={updatePitchingResult.bind(null, eventId, pitchingResultId)}
+        gameResult={game.result}
         // 投手の成績は 1 人 1 件のため、他の投手の登録済み選手は選べない
         gameMembers={gameMembers
           .filter(
@@ -65,7 +66,7 @@ export default async function Page({
           hitsAllowed: String(result.hitsAllowed),
           homeRunsAllowed: String(result.homeRunsAllowed),
           pitchCount: str(result.pitchCount),
-          decision: result.decision ?? "",
+          isResponsible: result.isResponsible,
         }}
         deleteTarget={{
           name: "この投手の成績",

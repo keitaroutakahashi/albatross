@@ -12,11 +12,13 @@ import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { FilterChips } from "@/app/(private)/admin/_components/filter-chips";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
+import { OverdueMark } from "@/app/(private)/admin/_components/overdue-mark";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import {
   getEventList,
   getEventSeasons,
 } from "@/app/(private)/admin/_data/event";
+import { formatGameScore } from "@/app/(private)/admin/_utils/event-display";
 import { EventTypeTag } from "@/app/(private)/admin/events/_components/event-type-tag";
 
 /** 状態を色で区別する。開催予定は水色、開催済みは緑、中止は赤（紺・金はブランドカラーのため使わない） */
@@ -25,15 +27,6 @@ const statusTone = {
   completed: "success",
   canceled: "danger",
 } as const;
-
-/** 更新が必要なことを示す赤丸 */
-const OverdueMark = () => (
-  <span
-    role="img"
-    aria-label="更新が必要"
-    className="block size-2 rounded-full bg-destructive"
-  />
-);
 
 export const metadata: Metadata = {
   title: "イベント",
@@ -114,11 +107,7 @@ export default async function Page({
         <ul className="border-t">
           {events.map((event) => {
             const game = event.game;
-            // 勝敗は献上点を含めた合計で決まるため、一覧もその合計を表示する
-            const score =
-              game?.teamScore != null && game.opponentScore != null
-                ? `${game.teamScore + (game.teamForfeitedRuns ?? 0)}-${game.opponentScore + (game.opponentForfeitedRuns ?? 0)}`
-                : null;
+            const score = game ? formatGameScore(game) : null;
             const groundName =
               event.type === "game"
                 ? game?.ground?.name

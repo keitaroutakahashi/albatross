@@ -10,7 +10,7 @@ type Props = {
   selected: string[];
 };
 
-export const PracticeMembersForm = ({ action, options, selected }: Props) => {
+export const EventMembersForm = ({ action, options, selected }: Props) => {
   return (
     <FormShell action={action}>
       {(state) => (

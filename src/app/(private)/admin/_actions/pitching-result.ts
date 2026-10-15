@@ -11,11 +11,35 @@ import {
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
-import { findGameId, isGameMemberOf } from "@/app/(private)/admin/_utils/game";
+import {
+  findGameId,
+  findGameResult,
+  isGameMemberOf,
+  isPitchingOrderTaken,
+  isResponsiblePitcherTaken,
+} from "@/app/(private)/admin/_utils/game";
+import { syncPitchingTotals } from "@/app/(private)/admin/_utils/game-stats";
 import prisma from "@/lib/prisma";
 
 const NOT_FOUND: ActionState = { message: "データが見つかりません" };
-const NOT_IN_GAME = "この試合の出場した選手を選択してください";
+const NOT_IN_GAME = "この試合のオーダーに入っている選手を選択してください";
+const ORDER_TAKEN = "この登板順の投手がすでに登録されています";
+const RESPONSIBLE_TAKEN = "責任投手がすでに登録されています";
+const RESPONSIBLE_DRAW = "引き分けの試合では責任投手を設定できません";
+
+/** 責任投手にできるかを確認する。できないときは、その理由を返す */
+const checkResponsible = async (
+  gameId: number,
+  isResponsible: boolean,
+  excludeId?: number,
+): Promise<string | null> => {
+  if (!isResponsible) return null;
+  if ((await findGameResult(gameId)) === "draw") return RESPONSIBLE_DRAW;
+  if (await isResponsiblePitcherTaken(gameId, excludeId)) {
+    return RESPONSIBLE_TAKEN;
+  }
+  return null;
+};
 
 export const createPitchingResult = async (
   eventId: number,
@@ -33,7 +57,22 @@ export const createPitchingResult = async (
       return toFieldErrorState(formData, { gameMemberId: NOT_IN_GAME });
     }
 
-    await prisma.pitchingResult.create({ data: parsed.data });
+    if (await isPitchingOrderTaken(gameId, parsed.data.pitchingOrder)) {
+      return toFieldErrorState(formData, { pitchingOrder: ORDER_TAKEN });
+    }
+
+    const responsibleError = await checkResponsible(
+      gameId,
+      parsed.data.isResponsible,
+    );
+    if (responsibleError) {
+      return toFieldErrorState(formData, { isResponsible: responsibleError });
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.pitchingResult.create({ data: parsed.data });
+      await syncPitchingTotals(tx, gameId);
+    });
   } catch (error) {
     return toFailureState(error, formData, { uniqueField: "gameMemberId" });
   }
@@ -59,10 +98,27 @@ export const updatePitchingResult = async (
       return toFieldErrorState(formData, { gameMemberId: NOT_IN_GAME });
     }
 
+    if (await isPitchingOrderTaken(gameId, parsed.data.pitchingOrder, id)) {
+      return toFieldErrorState(formData, { pitchingOrder: ORDER_TAKEN });
+    }
+
+    const responsibleError = await checkResponsible(
+      gameId,
+      parsed.data.isResponsible,
+      id,
+    );
+    if (responsibleError) {
+      return toFieldErrorState(formData, { isResponsible: responsibleError });
+    }
+
     // 他の試合のデータを更新できないよう、試合の範囲で絞り込む
-    const { count } = await prisma.pitchingResult.updateMany({
-      where: { id, gameMember: { gameId } },
-      data: parsed.data,
+    const count = await prisma.$transaction(async (tx) => {
+      const { count } = await tx.pitchingResult.updateMany({
+        where: { id, gameMember: { gameId } },
+        data: parsed.data,
+      });
+      if (count > 0) await syncPitchingTotals(tx, gameId);
+      return count;
     });
     if (count === 0) return NOT_FOUND;
   } catch (error) {
@@ -83,8 +139,12 @@ export const deletePitchingResult = async (
     const gameId = await findGameId(eventId);
     if (gameId === null) return NOT_FOUND;
 
-    const { count } = await prisma.pitchingResult.deleteMany({
-      where: { id, gameMember: { gameId } },
+    const count = await prisma.$transaction(async (tx) => {
+      const { count } = await tx.pitchingResult.deleteMany({
+        where: { id, gameMember: { gameId } },
+      });
+      if (count > 0) await syncPitchingTotals(tx, gameId);
+      return count;
     });
     if (count === 0) return NOT_FOUND;
   } catch (error) {

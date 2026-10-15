@@ -25,6 +25,7 @@ import { GroundPitching } from "@/app/(public)/members/[id]/_components/ground-p
 import { HitDirection } from "@/app/(public)/members/[id]/_components/hit-direction";
 import { MonthlyBatting } from "@/app/(public)/members/[id]/_components/monthly-batting";
 import { MonthlyPitching } from "@/app/(public)/members/[id]/_components/monthly-pitching";
+import { MvpGames } from "@/app/(public)/members/[id]/_components/mvp-games";
 import { OrderBatting } from "@/app/(public)/members/[id]/_components/order-batting";
 import { PitchingStats } from "@/app/(public)/members/[id]/_components/pitching-stats";
 import { PositionBatting } from "@/app/(public)/members/[id]/_components/position-batting";
@@ -83,6 +84,8 @@ export const Stats = ({ memberId, seasons, initialStats }: Props) => {
           isPending && "opacity-50",
         )}
       >
+        <MvpGames rows={stats.mvpGames} />
+
         <Tabs defaultValue="batting">
           <TabsList>
             <TabsTrigger value="batting">打撃成績</TabsTrigger>

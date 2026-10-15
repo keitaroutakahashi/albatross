@@ -17,8 +17,6 @@ export const Root = async ({ id }: Props) => {
     getMemberStats(id, ALL_SEASONS),
   ]);
 
-  console.log(member);
-
   return (
     <div>
       <PageTitle title="MEMBERS" subtitle="メンバー" />

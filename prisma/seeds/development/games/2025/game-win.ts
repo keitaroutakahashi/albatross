@@ -428,7 +428,7 @@ export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
       hitsAllowed: 6,
       homeRunsAllowed: 0,
       pitchCount: 98,
-      decision: "win",
+      isResponsible: true,
     },
   ];
   await prisma.pitchingResult.createMany({ data: pitchingResults });

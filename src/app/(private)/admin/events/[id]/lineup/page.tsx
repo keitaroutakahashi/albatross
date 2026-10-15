@@ -9,9 +9,10 @@ import {
 import { MAX_STARTERS } from "@/app/(private)/admin/_schemas/lineup";
 import { parseId } from "@/app/(private)/admin/_utils/id";
 import { LineupForm } from "@/app/(private)/admin/events/[id]/_components/lineup-form";
+import { ParticipantsRequiredNotice } from "@/app/(private)/admin/events/[id]/_components/participants-required-notice";
 
 export const metadata: Metadata = {
-  title: "出場した選手",
+  title: "オーダー",
 };
 
 /** 打順が未登録のときに最初に並べる行数 */
@@ -26,6 +27,15 @@ export default async function Page({
   const game = await getGameOfEvent(eventId);
   if (!game) notFound();
   const { members, gameMembers } = await getLineupCandidates(game.id);
+
+  if (members.length === 0) {
+    return (
+      <>
+        <PageHeader title="オーダー" backHref={`/admin/events/${eventId}`} />
+        <ParticipantsRequiredNotice eventId={eventId} />
+      </>
+    );
+  }
 
   // 打順 N の選手を N 行目に置く。打順が未設定・重複のスタメンは空いている行へ
   const starters = gameMembers.filter((gm) => gm.memberType === "starting");
@@ -61,7 +71,7 @@ export default async function Page({
 
   return (
     <>
-      <PageHeader title="出場した選手" backHref={`/admin/events/${eventId}`} />
+      <PageHeader title="オーダー" backHref={`/admin/events/${eventId}`} />
       <LineupForm
         action={saveLineup.bind(null, eventId)}
         members={members.map((m) => ({

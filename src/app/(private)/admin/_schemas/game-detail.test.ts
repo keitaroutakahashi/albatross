@@ -1,10 +1,13 @@
+import { eventMemberSchema } from "@/app/(private)/admin/_schemas/event-member";
 import { inningSchema } from "@/app/(private)/admin/_schemas/inning";
 import { pitchingResultSchema } from "@/app/(private)/admin/_schemas/pitching-result";
-import { plateAppearanceSchema } from "@/app/(private)/admin/_schemas/plate-appearance";
-import { practiceMemberSchema } from "@/app/(private)/admin/_schemas/practice-member";
 
 describe("inningSchema", () => {
-  const forfeited = { teamForfeitedRuns: "0", opponentForfeitedRuns: "0" };
+  const forfeited = {
+    teamForfeitedRuns: "0",
+    opponentForfeitedRuns: "0",
+    teamErrors: "0",
+  };
 
   it("同名の入力欄が複数なら配列、1 件なら文字列でも配列として扱う", () => {
     expect(
@@ -18,6 +21,7 @@ describe("inningSchema", () => {
       opponentScore: [0, 2],
       teamForfeitedRuns: 0,
       opponentForfeitedRuns: 0,
+      teamErrors: 0,
     });
     expect(
       inningSchema.parse({ ...forfeited, teamScore: "3", opponentScore: "1" }),
@@ -38,12 +42,31 @@ describe("inningSchema", () => {
         opponentScore: ["0"],
         teamForfeitedRuns: "2",
         opponentForfeitedRuns: "0",
+        teamErrors: "3",
       }),
-    ).toMatchObject({ teamForfeitedRuns: 2, opponentForfeitedRuns: 0 });
+    ).toMatchObject({
+      teamForfeitedRuns: 2,
+      opponentForfeitedRuns: 0,
+      teamErrors: 3,
+    });
+  });
+
+  it("失策が未入力・負数・小数ならエラーにする", () => {
+    const base = {
+      teamScore: ["1"],
+      opponentScore: ["0"],
+      teamForfeitedRuns: "0",
+      opponentForfeitedRuns: "0",
+    };
+    for (const teamErrors of ["", "-1", "1.5", "100"]) {
+      expect(inningSchema.safeParse({ ...base, teamErrors }).success).toBe(
+        false,
+      );
+    }
   });
 
   it("献上点が未入力・負数・小数ならエラーにする", () => {
-    const base = { teamScore: ["1"], opponentScore: ["0"] };
+    const base = { teamScore: ["1"], opponentScore: ["0"], teamErrors: "0" };
     expect(
       inningSchema.safeParse({
         ...base,
@@ -92,48 +115,6 @@ describe("inningSchema", () => {
   });
 });
 
-describe("plateAppearanceSchema", () => {
-  const valid = {
-    gameMemberId: "5",
-    inningNumber: "2",
-    atBatInGame: "1",
-    result: "single",
-    direction: "",
-    rbi: "0",
-  };
-
-  it("方向なし・得点圏なしを null / false にする", () => {
-    expect(plateAppearanceSchema.parse(valid)).toEqual({
-      gameMemberId: 5,
-      inningNumber: 2,
-      atBatInGame: 1,
-      result: "single",
-      direction: null,
-      rbi: 0,
-      isScoringPosition: false,
-    });
-  });
-
-  it("得点圏のチェックと打球方向を変換する", () => {
-    expect(
-      plateAppearanceSchema.parse({
-        ...valid,
-        direction: "left",
-        isScoringPosition: "on",
-      }),
-    ).toMatchObject({ direction: "left", isScoringPosition: true });
-  });
-
-  it("結果が不正・選手未選択ならエラーにする", () => {
-    expect(
-      plateAppearanceSchema.safeParse({ ...valid, result: "homerun" }).success,
-    ).toBe(false);
-    expect(
-      plateAppearanceSchema.safeParse({ ...valid, gameMemberId: "" }).success,
-    ).toBe(false);
-  });
-});
-
 describe("pitchingResultSchema", () => {
   const valid = {
     gameMemberId: "5",
@@ -148,42 +129,40 @@ describe("pitchingResultSchema", () => {
     hitsAllowed: "4",
     homeRunsAllowed: "0",
     pitchCount: "",
-    decision: "",
   };
 
   it("任意項目の未入力は null にし、0 は 0 として扱う", () => {
     expect(pitchingResultSchema.parse(valid)).toMatchObject({
       partialOuts: null,
       pitchCount: null,
-      decision: null,
+      isResponsible: false,
       walks: 0,
     });
   });
 
-  it("途中のアウト数は 0〜2、勝敗は列挙値のみ許可する", () => {
+  it("途中のアウト数は 0〜2 のみ許可する", () => {
     expect(
-      pitchingResultSchema.parse({
-        ...valid,
-        partialOuts: "0",
-        decision: "win",
-      }),
-    ).toMatchObject({ partialOuts: 0, decision: "win" });
+      pitchingResultSchema.parse({ ...valid, partialOuts: "0" }),
+    ).toMatchObject({ partialOuts: 0 });
     expect(
       pitchingResultSchema.safeParse({ ...valid, partialOuts: "3" }).success,
     ).toBe(false);
+  });
+
+  it("責任投手はチェックされたときだけ true にする", () => {
     expect(
-      pitchingResultSchema.safeParse({ ...valid, decision: "save" }).success,
-    ).toBe(false);
+      pitchingResultSchema.parse({ ...valid, isResponsible: "on" }),
+    ).toMatchObject({ isResponsible: true });
   });
 });
 
-describe("practiceMemberSchema", () => {
+describe("eventMemberSchema", () => {
   it("選択 0 件・1 件・複数件をすべて ID の配列にする", () => {
-    expect(practiceMemberSchema.parse({})).toEqual({ memberIds: [] });
-    expect(practiceMemberSchema.parse({ memberIds: "3" })).toEqual({
+    expect(eventMemberSchema.parse({})).toEqual({ memberIds: [] });
+    expect(eventMemberSchema.parse({ memberIds: "3" })).toEqual({
       memberIds: [3],
     });
-    expect(practiceMemberSchema.parse({ memberIds: ["1", "2"] })).toEqual({
+    expect(eventMemberSchema.parse({ memberIds: ["1", "2"] })).toEqual({
       memberIds: [1, 2],
     });
   });

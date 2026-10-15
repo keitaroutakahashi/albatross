@@ -1,94 +1,63 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { plateAppearanceSchema } from "@/app/(private)/admin/_schemas/plate-appearance";
+import { parseAtBats } from "@/app/(private)/admin/_schemas/plate-appearance";
 import {
-  parseForm,
   revalidateAll,
-  toDeleteFailureState,
   toFailureState,
   toFieldErrorState,
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import { findGameId, isGameMemberOf } from "@/app/(private)/admin/_utils/game";
+import { syncBattingTotals } from "@/app/(private)/admin/_utils/game-stats";
 import prisma from "@/lib/prisma";
 
-const NOT_FOUND: ActionState = { message: "データが見つかりません" };
-const NOT_IN_GAME = "この試合の出場した選手を選択してください";
-
-export const createPlateAppearance = async (
+/**
+ * 1 人分の打席を、送信された内容に置き換える。
+ * 打席番号は行の位置で決まり、フォームから外した（空にした）打席は削除する。
+ * 試合の安打（自）・失策（相手）も、同じトランザクションで再計算する。
+ */
+export const savePlateAppearances = async (
   eventId: number,
+  gameMemberId: number,
   _prev: ActionState,
   formData: FormData,
 ): Promise<ActionState> => {
   await requireAccess("events");
-  const parsed = parseForm(plateAppearanceSchema, formData);
-  if (!parsed.success) return parsed.state;
+
+  const parsed = parseAtBats(formData);
+  if (!parsed.success) return toFieldErrorState(formData, parsed.fieldErrors);
 
   try {
     const gameId = await findGameId(eventId);
-    if (gameId === null) return NOT_FOUND;
-    if (!(await isGameMemberOf(gameId, parsed.data.gameMemberId))) {
-      return toFieldErrorState(formData, { gameMemberId: NOT_IN_GAME });
+    if (gameId === null || !(await isGameMemberOf(gameId, gameMemberId))) {
+      return { message: "データが見つかりません" };
     }
 
-    await prisma.plateAppearance.create({ data: parsed.data });
-  } catch (error) {
-    return toFailureState(error, formData, { uniqueField: "atBatInGame" });
-  }
-
-  revalidateAll();
-  redirect(`/admin/events/${eventId}/at-bats`);
-};
-
-export const updatePlateAppearance = async (
-  eventId: number,
-  id: number,
-  _prev: ActionState,
-  formData: FormData,
-): Promise<ActionState> => {
-  await requireAccess("events");
-  const parsed = parseForm(plateAppearanceSchema, formData);
-  if (!parsed.success) return parsed.state;
-
-  try {
-    const gameId = await findGameId(eventId);
-    if (gameId === null) return NOT_FOUND;
-    if (!(await isGameMemberOf(gameId, parsed.data.gameMemberId))) {
-      return toFieldErrorState(formData, { gameMemberId: NOT_IN_GAME });
-    }
-
-    // 他の試合のデータを更新できないよう、試合の範囲で絞り込む
-    const { count } = await prisma.plateAppearance.updateMany({
-      where: { id, gameMember: { gameId } },
-      data: parsed.data,
+    await prisma.$transaction(async (tx) => {
+      await tx.plateAppearance.deleteMany({
+        where: {
+          gameMemberId,
+          atBatInGame: { notIn: parsed.entries.map((e) => e.atBatInGame) },
+        },
+      });
+      for (const entry of parsed.entries) {
+        await tx.plateAppearance.upsert({
+          where: {
+            gameMemberId_atBatInGame: {
+              gameMemberId,
+              atBatInGame: entry.atBatInGame,
+            },
+          },
+          create: { gameMemberId, ...entry },
+          update: entry,
+        });
+      }
+      await syncBattingTotals(tx, gameId);
     });
-    if (count === 0) return NOT_FOUND;
   } catch (error) {
-    return toFailureState(error, formData, { uniqueField: "atBatInGame" });
-  }
-
-  revalidateAll();
-  redirect(`/admin/events/${eventId}/at-bats`);
-};
-
-export const deletePlateAppearance = async (
-  eventId: number,
-  id: number,
-): Promise<ActionState> => {
-  await requireAccess("events");
-
-  try {
-    const gameId = await findGameId(eventId);
-    if (gameId === null) return NOT_FOUND;
-
-    const { count } = await prisma.plateAppearance.deleteMany({
-      where: { id, gameMember: { gameId } },
-    });
-    if (count === 0) return NOT_FOUND;
-  } catch (error) {
-    return toDeleteFailureState(error);
+    return toFailureState(error, formData);
   }
 
   revalidateAll();

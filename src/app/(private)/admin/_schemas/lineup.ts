@@ -48,7 +48,7 @@ const memberSchema = optionalId;
 const positionSchema = optionalEnumField(Position);
 
 /**
- * 出場した選手フォームの入力を検証する。
+ * オーダーフォームの入力を検証する。
  * 選手が未選択の行は「その打順は未登録」として結果に含めない。
  */
 export const parseLineup = (formData: FormData): Result => {
@@ -147,7 +147,7 @@ export const parseLineup = (formData: FormData): Result => {
     return { success: false, fieldErrors };
   }
 
-  // 何も選ばれていなければ「出場した選手を登録しない」だけなので許可する
+  // 何も選ばれていなければ「オーダーを登録しない」だけなので許可する
   if (entries.length === 0) return { success: true, entries };
 
   const starterCount = entries.filter(

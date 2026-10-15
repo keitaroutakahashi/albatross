@@ -1,11 +1,12 @@
 import { ALL_SEASONS } from "@/app/_constants/stats";
 import { hitResults } from "@/app/_features/games/utils/at-bat-result";
-import { getMonthInJst } from "@/app/_utils/date/date";
+import { formatAsYYYYMMDDWithDot, getMonthInJst } from "@/app/_utils/date/date";
 import {
   type BattingPlateAppearance,
   type BattingSummary,
   summarizeBatting,
 } from "@/app/_utils/stats/batting-summary";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import {
   type PitchingSummary,
   summarizePitching,
@@ -86,6 +87,16 @@ export type PositionGamesRow = {
   games: number;
 };
 
+/** MVP を獲得した試合 */
+export type MvpGameRow = {
+  eventId: number;
+  /** 表示用に整形した開催日（Server Action で受け渡すため、文字列で持つ） */
+  date: string;
+  opponentName: string | null;
+  /** MVP に添えられたコメント */
+  comment: string | null;
+};
+
 export type MemberStatsResult = {
   /** 対象の年度（全年度のときは ALL_SEASONS） */
   season: string;
@@ -106,6 +117,8 @@ export type MemberStatsResult = {
   groundPitching: GroundPitchingRow[];
   monthlyPitching: MonthlyPitchingRow[];
   positionGames: PositionGamesRow[];
+  /** MVP を獲得した試合（新しい順） */
+  mvpGames: MvpGameRow[];
 };
 
 const MONTHS = Array.from({ length: 12 }, (_, i) => i + 1);
@@ -129,6 +142,21 @@ export const getMemberStats = async (
     },
   };
 
+  const mvps = await prisma.gameMvp.findMany({
+    where: { memberId, game: gameWhere },
+    select: {
+      comment: true,
+      game: {
+        select: {
+          eventId: true,
+          opponent: { select: { name: true } },
+          event: { select: { date: true } },
+        },
+      },
+    },
+    orderBy: { game: { event: { date: "desc" } } },
+  });
+
   const gameMembers = await prisma.gameMember.findMany({
     where: { memberId, game: gameWhere },
     include: {
@@ -136,12 +164,23 @@ export const getMemberStats = async (
       pitchingResult: true,
       game: {
         select: {
+          result: true,
           ground: { select: { id: true, name: true } },
           event: { select: { date: true } },
         },
       },
     },
   });
+
+  // 勝敗は責任投手かどうかと、その試合の結果から決まる
+  const pitchingOf = (gm: (typeof gameMembers)[number]) =>
+    gm.pitchingResult && {
+      ...gm.pitchingResult,
+      decision: resolvePitchingDecision(
+        gm.pitchingResult.isResponsible,
+        gm.game.result,
+      ),
+    };
 
   const plateAppearances = gameMembers.flatMap((gm) => gm.plateAppearances);
 
@@ -199,22 +238,21 @@ export const getMemberStats = async (
 
   // 登板のない役割は返さない
   const rolePitching: RolePitchingRow[] = pitchingRoles.flatMap((role) => {
-    const results = gameMembers.flatMap((gm) =>
-      gm.pitchingResult &&
-      (gm.pitchingResult.pitchingOrder === 1) === (role === "starter")
-        ? [gm.pitchingResult]
-        : [],
-    );
+    const results = gameMembers.flatMap((gm) => {
+      const result = pitchingOf(gm);
+      return result && (result.pitchingOrder === 1) === (role === "starter")
+        ? [result]
+        : [];
+    });
 
     return results.length > 0 ? [{ role, ...summarizePitching(results) }] : [];
   });
 
   const pitchingByGround = Map.groupBy(
-    gameMembers.flatMap((gm) =>
-      gm.pitchingResult
-        ? [{ ground: gm.game.ground, result: gm.pitchingResult }]
-        : [],
-    ),
+    gameMembers.flatMap((gm) => {
+      const result = pitchingOf(gm);
+      return result ? [{ ground: gm.game.ground, result }] : [];
+    }),
     ({ ground }) => ground?.id ?? null,
   );
 
@@ -228,16 +266,12 @@ export const getMemberStats = async (
 
   // 全年度のときは年をまたいで同じ月を合算する。登板のない月は返さない
   const pitchingByMonth = Map.groupBy(
-    gameMembers.flatMap((gm) =>
-      gm.pitchingResult
-        ? [
-            {
-              month: getMonthInJst(gm.game.event.date),
-              result: gm.pitchingResult,
-            },
-          ]
-        : [],
-    ),
+    gameMembers.flatMap((gm) => {
+      const result = pitchingOf(gm);
+      return result
+        ? [{ month: getMonthInJst(gm.game.event.date), result }]
+        : [];
+    }),
     ({ month }) => month,
   );
 
@@ -249,9 +283,10 @@ export const getMemberStats = async (
       : [];
   });
 
-  const pitchingResults = gameMembers.flatMap((gm) =>
-    gm.pitchingResult ? [gm.pitchingResult] : [],
-  );
+  const pitchingResults = gameMembers.flatMap((gm) => {
+    const result = pitchingOf(gm);
+    return result ? [result] : [];
+  });
 
   const gamesByPosition = Map.groupBy(
     gameMembers.filter((gm) => gm.position !== null),
@@ -327,6 +362,12 @@ export const getMemberStats = async (
     groundPitching,
     monthlyPitching,
     positionGames,
+    mvpGames: mvps.map(({ game, comment }) => ({
+      eventId: game.eventId,
+      date: formatAsYYYYMMDDWithDot(game.event.date),
+      opponentName: game.opponent?.name ?? null,
+      comment,
+    })),
   };
 };
 

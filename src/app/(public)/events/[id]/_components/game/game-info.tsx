@@ -1,13 +1,16 @@
+import { GoogleMapEmbed } from "@/app/_components/ui/google-map-embed";
 import { SectionGroup } from "@/app/_components/ui/section-group";
 import { SubSectionGroup } from "@/app/_components/ui/sub-section-group";
+import { YouTubeEmbed } from "@/app/_components/ui/youtube-embed";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
 import { getExtraBaseHitMembers } from "@/app/_features/games/utils/at-bat-result";
 import {
-  getMemberWithPitchingDecision,
   getPitchers,
+  getResponsiblePitcher,
 } from "@/app/_features/games/utils/pitching-result";
 import { getMembersByPosition } from "@/app/_features/members/utils/position";
 import { WeatherIcon } from "@/app/_features/weather/components/weather-icon/weather-icon";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 
 type TableRowProps = {
   label: string;
@@ -29,8 +32,10 @@ type Props = {
 
 export const GameInfo = ({ game }: Props) => {
   const pitchers = getPitchers(game.gameMembers);
-  const pitchingDecisionMember = getMemberWithPitchingDecision(
-    game.gameMembers,
+  const responsiblePitcher = getResponsiblePitcher(game.gameMembers);
+  const decision = resolvePitchingDecision(
+    responsiblePitcher !== undefined,
+    game.result,
   );
   const { doubles, triples, homeRuns } = getExtraBaseHitMembers(
     game.gameMembers,
@@ -39,15 +44,30 @@ export const GameInfo = ({ game }: Props) => {
 
   return (
     <SectionGroup title="試合情報">
+      {game.mvps.length > 0 && (
+        <SubSectionGroup title="MVP">
+          <ul className="border-t">
+            {game.mvps.map((mvp) => (
+              <li key={mvp.id} className="border-b p-3">
+                <p className="text-sm font-semibold">
+                  {mvp.participant.member.name}
+                </p>
+                {mvp.comment && (
+                  <p className="mt-1 whitespace-pre-wrap text-sm text-gray-700">
+                    {mvp.comment}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </SubSectionGroup>
+      )}
+
       <SubSectionGroup title="責任投手・長打">
         <div className="grid grid-cols-[auto_1fr] border-t">
           <TableRow
-            label={
-              pitchingDecisionMember?.pitchingResult?.decision === "win"
-                ? "勝利投手"
-                : "敗戦投手"
-            }
-            value={pitchingDecisionMember?.member.name || ""}
+            label={decision === "win" ? "勝利投手" : "敗戦投手"}
+            value={responsiblePitcher?.member.name || ""}
           />
           <TableRow
             label="二塁打"
@@ -92,6 +112,14 @@ export const GameInfo = ({ game }: Props) => {
               ( {game.ground?.address} )
             </p>
             <p className="text-xs mt-2 text-gray-700">{game.ground?.access}</p>
+            {game.ground.mapEmbedUrl && (
+              <div className="mt-3">
+                <GoogleMapEmbed
+                  url={game.ground.mapEmbedUrl}
+                  title={`${game.ground.name}の地図`}
+                />
+              </div>
+            )}
           </div>
         ) : (
           <p className="text-sm font-semibold">会場未定</p>
@@ -107,16 +135,7 @@ export const GameInfo = ({ game }: Props) => {
 
       {game.videoUrl && (
         <SubSectionGroup title="試合動画">
-          <iframe
-            className="w-full h-full @content:w-140 @content:h-78.75"
-            width="560"
-            height="315"
-            src={game.videoUrl}
-            title="YouTube video player"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerPolicy="strict-origin-when-cross-origin"
-            allowFullScreen
-          />
+          <YouTubeEmbed url={game.videoUrl} />
         </SubSectionGroup>
       )}
     </SectionGroup>

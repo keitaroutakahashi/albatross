@@ -1,14 +1,11 @@
 import {
   atBatResultFullLabel,
-  eventStatusLabel,
   gameTypeLabel,
   handLabel,
   memberCategoryLabel,
-  pitchingDecisionLabel,
   positionFullLabel,
   positionLabel,
   userRoleLabel,
-  weatherLabel,
 } from "@/app/_constants/labels";
 import { EVENT_TYPE_LABELS } from "@/app/_features/events/utils/event-type";
 
@@ -36,20 +33,33 @@ export const batHandOptions = toOptions(handLabel).map((o) => ({
 
 export const eventTypeOptions = toOptions(EVENT_TYPE_LABELS);
 
-export const eventStatusOptions = toOptions(eventStatusLabel);
-
 export const gameTypeOptions = toOptions(gameTypeLabel);
-
-export const weatherOptions = toOptions(weatherLabel);
 
 export const firstBattingOptions = [
   { value: "true", label: "先攻" },
   { value: "false", label: "後攻" },
 ];
 
-export const atBatResultOptions = toOptions(atBatResultFullLabel);
-
-export const pitchingDecisionOptions = toOptions(pitchingDecisionLabel);
+/**
+ * 打席結果を、選びやすいようにまとまりごとに分けた選択肢。
+ * すべての打席結果（AtBatResult）がどこか 1 つのまとまりに入る。
+ */
+export const atBatResultGroups: { label: string; options: Option[] }[] = [
+  { label: "安打", values: ["single", "double", "triple", "homeRun"] },
+  { label: "四死球", values: ["walk", "hitByPitch"] },
+  {
+    label: "アウト",
+    values: ["strikeout", "groundOut", "flyOut", "lineOut", "doublePlay"],
+  },
+  { label: "犠打・犠飛", values: ["sacrificeHit", "sacrificeFly"] },
+  { label: "その他の出塁", values: ["fieldersChoice", "error"] },
+].map(({ label, values }) => ({
+  label,
+  options: values.map((value) => ({
+    value,
+    label: atBatResultFullLabel[value as keyof typeof atBatResultFullLabel],
+  })),
+}));
 
 /** 途中交代時のアウト数（イニング間交代は未設定） */
 export const partialOutsOptions = [

@@ -1,78 +1,65 @@
 import { z } from "zod";
+import { toYouTubeEmbedUrl } from "@/app/_utils/youtube";
 import {
   enumField,
   jstDateTime,
   optionalBoolean,
   optionalEnumField,
   optionalId,
-  optionalInt,
   optionalNumber,
   optionalText,
-  optionalUrl,
   requiredId,
-  requiredInt,
 } from "@/app/(private)/admin/_schemas/fields";
-import { EventStatus, GameType, Weather } from "@/generated/prisma/enums";
+import { GameType, Weather } from "@/generated/prisma/enums";
 
-const eventBase = {
+/** いつ・どこで。試合・練習で共通 */
+export const eventScheduleSchema = z.object({
   date: jstDateTime,
-  status: enumField(EventStatus),
   seasonId: requiredId,
+  groundId: optionalId,
   note: optionalText(200),
-};
+});
 
-/** 試合の基本情報に含める、天候・戦評・動画・AI 講評 */
-const gameExtras = {
-  weather: optionalEnumField(Weather),
-  temperature: optionalNumber(-30, 50),
-  summary: optionalText(2000),
-  videoUrl: optionalUrl,
-  aiGoodPoints: optionalText(2000),
-  aiBadPoints: optionalText(2000),
-};
-
-/** 基本情報（日時・状態などの共通項目と、試合・練習それぞれの項目） */
-export const eventBasicSchema = z.discriminatedUnion(
-  "type",
-  [
-    z
-      .object({
-        ...eventBase,
-        type: z.literal("game"),
-        gameNumber: requiredInt(1, 9),
-        gameType: enumField(GameType),
-        isFirstBatting: optionalBoolean,
-        leagueId: optionalId,
-        groundId: optionalId,
-        opponentId: optionalId,
-        ...gameExtras,
-      })
-      .refine((v) => v.temperature === null || v.weather !== null, {
-        // 気温は天候テーブルに保存するため、天気がないと保存先がない
-        path: ["weather"],
-        message: "気温を入力する場合は天気も選択してください",
-      }),
-    z.object({
-      ...eventBase,
-      type: z.literal("practice"),
-      groundId: optionalId,
-    }),
-  ],
-  { error: "種別を選択してください" },
-);
-
-const score = optionalInt(0, 99);
+/** 対戦（試合のみ） */
+export const eventMatchupSchema = z.object({
+  opponentId: optionalId,
+  leagueId: optionalId,
+  gameType: enumField(GameType),
+  isFirstBatting: optionalBoolean,
+});
 
 /**
- * 試合結果の手入力項目（安打・失策）。
- * 得点・献上点・勝敗は「イニングごとの得点」の保存で設定するため、ここでは受け取らない。
+ * 試合動画の URL。YouTube の動画 URL（共有用の短縮 URL や視聴ページの URL でもよい）を、
+ * 枠の中に表示できる埋め込み用の URL に直して保存する。未入力は null として扱う。
  */
-export const eventResultSchema = z.object({
-  teamHits: score,
-  opponentHits: score,
-  teamErrors: score,
-  opponentErrors: score,
+const videoUrl = optionalText(500).transform((value, ctx) => {
+  if (value === null) return null;
+  const embedUrl = toYouTubeEmbedUrl(value);
+  if (embedUrl === null) {
+    ctx.addIssue({
+      code: "custom",
+      message: "YouTube の動画 URL を入力してください",
+    });
+    return z.NEVER;
+  }
+  return embedUrl;
 });
+
+/** 試合の振り返り（試合のみ）。天候・戦評・動画・AI 講評。MVP は枠ごとの入力のため、別に検証する（parseMvps） */
+export const eventReviewSchema = z
+  .object({
+    weather: optionalEnumField(Weather),
+    temperature: optionalNumber(-30, 50),
+    summary: optionalText(2000),
+    videoUrl,
+    aiGoodPoints: optionalText(2000),
+    aiBadPoints: optionalText(2000),
+  })
+  .refine((v) => v.temperature === null || v.weather !== null, {
+    // 気温は天候テーブルに保存するため、天気がないと保存先がない
+    path: ["weather"],
+    message: "気温を入力する場合は天気も選択してください",
+  });
 
 /**
  * 新規登録で入力する項目。状態は常に「開催予定」で登録するため入力させず、
@@ -85,7 +72,6 @@ export const eventCreateSchema = z.discriminatedUnion(
       type: z.literal("game"),
       date: jstDateTime,
       seasonId: requiredId,
-      gameNumber: requiredInt(1, 9),
       gameType: enumField(GameType),
     }),
     z.object({

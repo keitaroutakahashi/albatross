@@ -124,8 +124,3 @@ export const jstDateTime = z
   .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, "日時の形式が正しくありません")
   .transform(parseJstDateTimeLocal)
   .pipe(z.date("日時の形式が正しくありません"));
-
-/** 任意の URL。未入力は null として扱う */
-export const optionalUrl = optionalText(500).pipe(
-  z.url("URL の形式で入力してください").nullable(),
-);

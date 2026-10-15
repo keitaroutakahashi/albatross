@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pitchingDecisionLabel } from "@/app/_constants/labels";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
@@ -36,19 +37,27 @@ export default async function Page({
         <EmptyState message="投手の成績がまだ登録されていません" />
       ) : (
         <ul>
-          {rows.map((r) => (
-            <ListCard
-              key={r.id}
-              href={`/admin/events/${eventId}/pitching/${r.id}`}
-              title={`${r.pitchingOrder}. #${r.gameMember.member.uniformNumber} ${r.gameMember.member.name}`}
-              description={`${r.inningsPitched}${r.partialOuts ? ` ${r.partialOuts}/3` : ""}回 / 失点${r.runs} / 奪三振${r.strikeouts}`}
-              trailing={
-                r.decision ? (
-                  <Badge>{pitchingDecisionLabel[r.decision]}</Badge>
-                ) : undefined
-              }
-            />
-          ))}
+          {rows.map((r) => {
+            const decision = resolvePitchingDecision(
+              r.isResponsible,
+              game.result,
+            );
+            return (
+              <ListCard
+                key={r.id}
+                href={`/admin/events/${eventId}/pitching/${r.id}`}
+                title={`${r.pitchingOrder}. #${r.gameMember.member.uniformNumber} ${r.gameMember.member.name}`}
+                description={`${r.inningsPitched}${r.partialOuts ? ` ${r.partialOuts}/3` : ""}回 / 失点${r.runs} / 奪三振${r.strikeouts}`}
+                trailing={
+                  r.isResponsible ? (
+                    <Badge>
+                      {decision ? pitchingDecisionLabel[decision] : "責任投手"}
+                    </Badge>
+                  ) : undefined
+                }
+              />
+            );
+          })}
         </ul>
       )}
     </>
