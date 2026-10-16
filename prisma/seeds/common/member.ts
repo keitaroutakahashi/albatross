@@ -112,6 +112,28 @@ const memberData: Prisma.MemberCreateInput[] = [
     throwHand: "right",
     batHand: "left",
   },
+  {
+    name: "小林(岳)",
+    uniformNumber: "33",
+    position: "center",
+    subPositions: ["third"],
+    throwHand: "right",
+    batHand: "right",
+  },
+  {
+    name: "渡辺(涼)",
+    uniformNumber: "15",
+    position: "right",
+    throwHand: "right",
+    batHand: "right",
+  },
+  {
+    name: "丹",
+    uniformNumber: "44",
+    position: "shortstop",
+    throwHand: "right",
+    batHand: "right",
+  },
 ];
 
 export async function seedMembers(prisma: PrismaClient) {
