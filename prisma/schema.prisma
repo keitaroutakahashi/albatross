@@ -23,6 +23,7 @@ datasource db {
 enum UserRole {
   admin // 管理者（全機能）
   operator // 運営（イベントの登録・編集・削除）
+  general // 一般（管理画面は使えない）
 }
 
 // --- イベント関連 ---
@@ -129,6 +130,7 @@ model User {
   role      UserRole @default(operator) // 権限は小さい方を初期値にする
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  member    Member?
 }
 
 // シーズン（年度）
@@ -185,6 +187,8 @@ model Member {
   batHand       Hand
   category      MemberCategory @default(regular) // メンバー区分
   isActive      Boolean        @default(true)
+  userId        Int?           @unique // ログインアカウント。未登録の選手・試合に出ない運営は紐づかない
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 

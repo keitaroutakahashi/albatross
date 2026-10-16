@@ -117,4 +117,5 @@ export const pitchingDecisionLabel: Record<PitchingDecision, string> = {
 export const userRoleLabel: Record<UserRole, string> = {
   admin: "管理者",
   operator: "運営",
+  general: "一般",
 };

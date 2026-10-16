@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
   enumField,
+  optionalId,
   optionalText,
   requiredText,
 } from "@/app/(private)/admin/_schemas/fields";
@@ -12,4 +13,5 @@ export const userSchema = z.object({
   ),
   name: optionalText(50),
   role: enumField(UserRole),
+  memberId: optionalId,
 });

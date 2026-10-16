@@ -70,7 +70,10 @@ describe("userSchema", () => {
     });
   });
 
-  it("権限は管理者・運営のみ許可する", () => {
+  it("権限は管理者・運営・一般のみ許可する", () => {
+    expect(userSchema.parse({ ...valid, role: "general" })).toMatchObject({
+      role: "general",
+    });
     expect(userSchema.parse({ ...valid, role: "admin" })).toMatchObject({
       role: "admin",
     });

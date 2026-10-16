@@ -31,7 +31,13 @@ export const createUser = async (
   if (!parsed.success) return parsed.state;
 
   try {
-    await prisma.user.create({ data: parsed.data });
+    const { memberId, ...data } = parsed.data;
+    await prisma.user.create({
+      data: {
+        ...data,
+        ...(memberId && { member: { connect: { id: memberId } } }),
+      },
+    });
   } catch (error) {
     return toFailureState(error, formData, { uniqueField: "email" });
   }
@@ -51,12 +57,19 @@ export const updateUser = async (
 
   if (parsed.data.role !== "admin" && (await isLastAdmin(id))) {
     return toFieldErrorState(formData, {
-      role: "最後の管理者は運営に変更できません",
+      role: "最後の管理者は管理者以外に変更できません",
     });
   }
 
   try {
-    await prisma.user.update({ where: { id }, data: parsed.data });
+    const { memberId, ...data } = parsed.data;
+    await prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+        member: memberId ? { connect: { id: memberId } } : { disconnect: true },
+      },
+    });
   } catch (error) {
     return toFailureState(error, formData, { uniqueField: "email" });
   }

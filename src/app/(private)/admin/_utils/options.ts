@@ -72,4 +72,5 @@ export const partialOutsOptions = [
 export const userRoleOptions = [
   { value: "admin", label: `${userRoleLabel.admin}（すべての機能）` },
   { value: "operator", label: `${userRoleLabel.operator}（イベントのみ）` },
+  { value: "general", label: `${userRoleLabel.general}（管理画面は使えない）` },
 ];

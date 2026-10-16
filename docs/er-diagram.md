@@ -56,6 +56,7 @@ erDiagram
   Hand batHand
   MemberCategory category
   Boolean isActive
+  Int userId FK,UK "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -179,6 +180,7 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"Member" |o--o| "User" : user
 "Event" }o--|| "Season" : season
 "Practice" |o--|| "Event" : event
 "Practice" }o--o| "Ground" : ground
@@ -266,6 +268,7 @@ Properties as follows:
 - `batHand`:
 - `category`:
 - `isActive`:
+- `userId`:
 - `createdAt`:
 - `updatedAt`:
 

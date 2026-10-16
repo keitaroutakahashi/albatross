@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import {
   type AdminFeature,
   canAccess,
+  canEnterAdmin,
 } from "@/app/(private)/admin/_utils/permissions";
 import { UserRole } from "@/generated/prisma/enums";
 
@@ -23,6 +24,12 @@ export const getCurrentRole = async (): Promise<UserRole> => {
     (r) => r === process.env.ADMIN_DEV_ROLE,
   );
   return role ?? UserRole.admin;
+};
+
+/** 管理画面に入れるロールか確認する。入れなければ存在しないページとして扱う */
+export const requireAdminEntry = async (): Promise<void> => {
+  const role = await getCurrentRole();
+  if (!canEnterAdmin(role)) notFound();
 };
 
 /** 指定した機能を使えるロールか確認する。使えなければ存在しないページとして扱う */
