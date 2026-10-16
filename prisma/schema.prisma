@@ -202,7 +202,6 @@ model WebAuthnChallenge {
 model Season {
   id        Int      @id @default(autoincrement())
   season    Int      @unique
-  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   events    Event[]
@@ -299,8 +298,9 @@ model Practice {
   eventId Int   @unique
   event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
-  groundId Int?
-  ground   Ground? @relation(fields: [groundId], references: [id])
+  groundId    Int?
+  ground      Ground? @relation(fields: [groundId], references: [id])
+  groundCourt String? // 使用した面（例: A面）
 
   practiceMembers PracticeMember[]
 
@@ -342,8 +342,9 @@ model Game {
   // リレーション
   leagueId   Int?
   league     League?   @relation(fields: [leagueId], references: [id])
-  groundId   Int?
-  ground     Ground?   @relation(fields: [groundId], references: [id])
+  groundId    Int?
+  ground      Ground?   @relation(fields: [groundId], references: [id])
+  groundCourt String? // 使用した面（例: A面）
   opponentId Int?
   opponent   Opponent? @relation(fields: [opponentId], references: [id])
 

@@ -55,13 +55,31 @@ describe("getGameTotals", () => {
 });
 
 describe("describeSchedule", () => {
-  it("シーズンとグラウンドを並べ、備考があれば添える", () => {
+  it("シーズンとグラウンドを並べ、面・備考があれば添える", () => {
     expect(
-      describeSchedule({ season: 2026, groundName: "駒沢", note: null }),
-    ).toBe("2026年度 / @駒沢");
+      describeSchedule({
+        season: 2026,
+        groundName: "駒沢",
+        groundCourt: null,
+        note: null,
+      }),
+    ).toBe("2026年度シーズン / @駒沢");
     expect(
-      describeSchedule({ season: 2026, groundName: null, note: "雨天中止" }),
-    ).toBe("2026年度 / @グラウンド未定 / 雨天中止");
+      describeSchedule({
+        season: 2026,
+        groundName: "駒沢",
+        groundCourt: "A面",
+        note: null,
+      }),
+    ).toBe("2026年度シーズン / @駒沢 A面");
+    expect(
+      describeSchedule({
+        season: 2026,
+        groundName: null,
+        groundCourt: null,
+        note: "雨天中止",
+      }),
+    ).toBe("2026年度シーズン / @グラウンド未定 / 雨天中止");
   });
 });
 

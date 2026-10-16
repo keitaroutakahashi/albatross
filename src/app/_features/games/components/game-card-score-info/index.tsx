@@ -19,11 +19,13 @@ const getResultBadge = (result: GameWithRelations["result"]) => {
 
 export const GameCardScoreInfo = ({ game }: Props) => {
   const resultBadge = getResultBadge(game.result);
+  // チーム表示（GameCardBody）と左右の並びを揃える
+  const isFirstBatting = game.isFirstBatting ?? true;
 
   return (
     <div className="flex flex-col items-center justify-center gap-y-2 @content:gap-y-3">
       <p className="text-xs @content:text-sm font-bold text-center">
-        {game.ground?.name}
+        {[game.ground?.name, game.groundCourt].filter(Boolean).join(" ")}
       </p>
 
       {game.event.status !== "scheduled" && (
@@ -31,13 +33,13 @@ export const GameCardScoreInfo = ({ game }: Props) => {
           <div className="">
             {game.event.status !== "canceled" && (
               <span className="text-3xl font-bold">
-                {game.isFirstBatting ? game.teamScore : game.opponentScore}
+                {isFirstBatting ? game.teamScore : game.opponentScore}
               </span>
             )}
             <span className="text-2xl font-bold mx-2">-</span>
             {game.event.status !== "canceled" && (
               <span className="text-3xl font-bold">
-                {game.isFirstBatting ? game.opponentScore : game.teamScore}
+                {isFirstBatting ? game.opponentScore : game.teamScore}
               </span>
             )}
           </div>

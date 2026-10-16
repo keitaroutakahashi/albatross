@@ -22,6 +22,11 @@ export const PracticeInfo = ({ practice }: Props) => {
             >
               {ground.name}
             </a>
+            {practice.groundCourt && (
+              <span className="ml-2 text-sm font-semibold">
+                {practice.groundCourt}
+              </span>
+            )}
             <p className="text-xs text-gray-500 mt-1">( {ground.address} )</p>
             <p className="text-xs mt-2 text-gray-700">{ground.access}</p>
           </div>

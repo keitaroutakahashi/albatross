@@ -10,6 +10,7 @@ describe("eventScheduleSchema", () => {
     date: "2026-10-25T09:00",
     seasonId: "2",
     groundId: "",
+    groundCourt: "",
     note: "",
     cancelReason: "",
   };
@@ -19,22 +20,25 @@ describe("eventScheduleSchema", () => {
     expect(result).toMatchObject({
       seasonId: 2,
       groundId: null,
+      groundCourt: null,
       note: null,
       cancelReason: null,
     });
     expect(result.date.toISOString()).toBe("2026-10-25T00:00:00.000Z");
   });
 
-  it("グラウンド・備考・中止理由を受け取る", () => {
+  it("グラウンド・面・備考・中止理由を受け取る", () => {
     expect(
       eventScheduleSchema.parse({
         ...valid,
         groundId: "3",
+        groundCourt: "A面",
         note: "集合 8:30",
         cancelReason: "雨天中止",
       }),
     ).toMatchObject({
       groundId: 3,
+      groundCourt: "A面",
       note: "集合 8:30",
       cancelReason: "雨天中止",
     });

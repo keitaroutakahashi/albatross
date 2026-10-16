@@ -52,7 +52,6 @@ erDiagram
 "Season" {
   Int id PK
   Int season UK
-  String name "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -108,6 +107,7 @@ erDiagram
   Int id PK
   Int eventId FK,UK
   Int groundId FK "nullable"
+  String groundCourt "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -126,6 +126,7 @@ erDiagram
   Boolean isFirstBatting "nullable"
   Int leagueId FK "nullable"
   Int groundId FK "nullable"
+  String groundCourt "nullable"
   Int opponentId FK "nullable"
   Int teamScore "nullable"
   Int opponentScore "nullable"
@@ -300,7 +301,6 @@ Properties as follows:
 
 - `id`:
 - `season`:
-- `name`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -374,6 +374,7 @@ Properties as follows:
 - `id`:
 - `eventId`:
 - `groundId`:
+- `groundCourt`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -398,6 +399,7 @@ Properties as follows:
 - `isFirstBatting`:
 - `leagueId`:
 - `groundId`:
+- `groundCourt`:
 - `opponentId`:
 - `teamScore`:
 - `opponentScore`:

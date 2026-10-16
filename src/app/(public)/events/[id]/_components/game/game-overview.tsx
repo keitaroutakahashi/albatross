@@ -44,7 +44,7 @@ export const GameOverview = ({ game }: Props) => {
           </div>
 
           <p className="font-bold text-sm @content:text-base text-center">
-            {game.ground?.name}
+            {[game.ground?.name, game.groundCourt].filter(Boolean).join(" ")}
           </p>
         </div>
 

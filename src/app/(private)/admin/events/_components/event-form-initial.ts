@@ -11,6 +11,7 @@ export type EventFormInitial = {
   note: string;
   cancelReason: string;
   groundId: string;
+  groundCourt: string;
   gameType: string;
   isFirstBatting: string;
   leagueId: string;
@@ -46,6 +47,7 @@ export const toEventFormInitial = (event: EventDetail): EventFormInitial => {
     note: str(event.note),
     cancelReason: str(event.cancelReason),
     groundId: str(game?.groundId ?? event.practice?.groundId),
+    groundCourt: str(game?.groundCourt ?? event.practice?.groundCourt),
     gameType: game?.gameType ?? "undecided",
     isFirstBatting:
       game?.isFirstBatting == null ? "" : String(game.isFirstBatting),

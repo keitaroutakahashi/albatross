@@ -70,7 +70,7 @@ const NOT_FOUND: ActionState = { message: "データが見つかりません" };
 
 const eventHubPath = (id: number) => `/admin/events/${id}` as const;
 
-/** いつ・どこで（日時・シーズン・グラウンド・備考・中止理由）を更新する。試合・練習で共通 */
+/** いつ・どこで（日時・シーズン・グラウンド・面・備考・中止理由）を更新する。試合・練習で共通 */
 export const updateEventSchedule = async (
   id: number,
   _prev: ActionState,
@@ -79,7 +79,8 @@ export const updateEventSchedule = async (
   await requireAccess("events");
   const parsed = parseForm(eventScheduleSchema, formData);
   if (!parsed.success) return parsed.state;
-  const { date, seasonId, groundId, note, cancelReason } = parsed.data;
+  const { date, seasonId, groundId, groundCourt, note, cancelReason } =
+    parsed.data;
 
   try {
     const current = await prisma.event.findUnique({
@@ -97,8 +98,8 @@ export const updateEventSchedule = async (
           note,
           cancelReason,
           ...(current.type === "game"
-            ? { game: { update: { groundId } } }
-            : { practice: { update: { groundId } } }),
+            ? { game: { update: { groundId, groundCourt } } }
+            : { practice: { update: { groundId, groundCourt } } }),
         },
       });
 

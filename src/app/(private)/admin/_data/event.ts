@@ -1,3 +1,4 @@
+import { formatSeason } from "@/app/_utils/season";
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
 import type { EventType } from "@/generated/prisma/enums";
 import prisma from "@/lib/prisma";
@@ -58,7 +59,7 @@ export const getEventFormOptions = async () => {
   return {
     seasons: seasons.map((s) => ({
       value: String(s.id),
-      label: `${s.season}年度`,
+      label: formatSeason(s.season),
     })),
     leagues: leagues.map((l) => ({ value: String(l.id), label: l.name })),
     grounds: grounds.map((g) => ({ value: String(g.id), label: g.name })),

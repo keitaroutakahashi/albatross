@@ -113,6 +113,11 @@ export const GameInfo = ({ game }: Props) => {
             >
               {game.ground.name}
             </a>
+            {game.groundCourt && (
+              <span className="ml-2 text-sm font-semibold">
+                {game.groundCourt}
+              </span>
+            )}
             <p className="text-xs text-gray-500 mt-1">
               ( {game.ground?.address} )
             </p>

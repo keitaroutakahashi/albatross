@@ -12,29 +12,22 @@ const errorsOf = (result: { success: boolean; error?: { issues: Issues } }) =>
   );
 
 describe("seasonSchema", () => {
-  it("年度を数値に変換し、未入力の名称は null にする", () => {
-    expect(seasonSchema.parse({ season: "2026", name: "" })).toEqual({
+  it("年度を数値に変換する", () => {
+    expect(seasonSchema.parse({ season: "2026" })).toEqual({
       season: 2026,
-      name: null,
     });
   });
 
   it("未入力の年度は 0 ではなく必須エラーにする", () => {
-    expect(errorsOf(seasonSchema.safeParse({ season: "", name: "" }))).toEqual({
+    expect(errorsOf(seasonSchema.safeParse({ season: "" }))).toEqual({
       season: "必須です",
     });
   });
 
   it("数値以外・小数・範囲外はエラーにする", () => {
-    expect(seasonSchema.safeParse({ season: "abc", name: "" }).success).toBe(
-      false,
-    );
-    expect(seasonSchema.safeParse({ season: "2026.5", name: "" }).success).toBe(
-      false,
-    );
-    expect(seasonSchema.safeParse({ season: "1999", name: "" }).success).toBe(
-      false,
-    );
+    expect(seasonSchema.safeParse({ season: "abc" }).success).toBe(false);
+    expect(seasonSchema.safeParse({ season: "2026.5" }).success).toBe(false);
+    expect(seasonSchema.safeParse({ season: "1999" }).success).toBe(false);
   });
 });
 

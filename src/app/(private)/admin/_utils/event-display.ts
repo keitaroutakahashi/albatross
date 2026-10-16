@@ -1,4 +1,5 @@
 import { gameTypeLabel, weatherLabel } from "@/app/_constants/labels";
+import { formatSeason } from "@/app/_utils/season";
 import type { GameType, Weather } from "@/generated/prisma/enums";
 
 type ScoreSource = {
@@ -28,15 +29,18 @@ export const formatGameScore = (game: ScoreSource): string | null => {
   return totals ? `${totals.team}-${totals.opponent}` : null;
 };
 
-/** 「いつ・どこで」の現在の値。例: 2026年度 / @駒沢 / 雨天中止 */
+/** 「いつ・どこで」の現在の値。例: 2026年度シーズン / @駒沢 A面 / 雨天中止 */
 export const describeSchedule = (event: {
   season: number;
   groundName: string | null;
+  groundCourt: string | null;
   note: string | null;
 }): string =>
   [
-    `${event.season}年度`,
-    `@${event.groundName ?? "グラウンド未定"}`,
+    formatSeason(event.season),
+    event.groundName
+      ? `@${[event.groundName, event.groundCourt].filter(Boolean).join(" ")}`
+      : "@グラウンド未定",
     event.note,
   ]
     .filter((part) => part)

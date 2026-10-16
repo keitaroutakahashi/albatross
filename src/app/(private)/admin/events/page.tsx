@@ -8,6 +8,7 @@ import {
   formatJstDateTimeWithDay,
   isOnOrAfterJstDay,
 } from "@/app/_utils/date/date";
+import { formatSeason } from "@/app/_utils/season";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { FilterChips } from "@/app/(private)/admin/_components/filter-chips";
@@ -76,7 +77,7 @@ export default async function Page({
       />
       <FilterChips
         chips={seasons.map((s) => ({
-          label: `${s.season}年度`,
+          label: formatSeason(s.season),
           href: hrefOf(String(s.season), type),
           active: seasonKey === String(s.season),
         }))}

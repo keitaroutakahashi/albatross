@@ -17,6 +17,7 @@ type Props = {
     date: string;
     seasonId: string;
     groundId: string;
+    groundCourt: string;
     note: string;
     status: string;
     cancelReason: string;
@@ -51,6 +52,14 @@ export const EventScheduleForm = ({ action, options, initial }: Props) => {
             placeholder="未選択"
             options={options.grounds}
             defaultValue={initial.groundId}
+          />
+          <TextField
+            name="groundCourt"
+            label="面"
+            state={state}
+            hint="例: A面"
+            maxLength={50}
+            defaultValue={initial.groundCourt}
           />
           <TextField
             name="note"

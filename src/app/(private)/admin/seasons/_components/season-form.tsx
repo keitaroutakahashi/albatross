@@ -26,13 +26,6 @@ export const SeasonForm = ({ action, initial, deleteTarget }: Props) => {
             placeholder="2026"
             defaultValue={initial?.season.toString()}
           />
-          <TextField
-            name="name"
-            label="名称"
-            state={state}
-            maxLength={50}
-            defaultValue={initial?.name ?? ""}
-          />
         </>
       )}
     </FormShell>

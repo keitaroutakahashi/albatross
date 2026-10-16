@@ -17,7 +17,7 @@ const unset: BasicInfo = { done: false, text: "" };
 const set = (text: string): BasicInfo => ({ done: true, text });
 const noBasics = { schedule: unset, matchup: unset, review: unset };
 const allBasics = {
-  schedule: set("2026年度 / @駒沢"),
+  schedule: set("2026年度シーズン / @駒沢"),
   matchup: set("世田谷ウィングス"),
   review: set("晴れ 18℃"),
 };
@@ -73,7 +73,7 @@ describe("buildGameSteps", () => {
       "2人",
       "入力済み",
     ]);
-    expect(steps[0].description).toBe("2026年度 / @駒沢");
+    expect(steps[0].description).toBe("2026年度シーズン / @駒沢");
   });
 
   it("値の要約が空なら description は null にする", () => {
@@ -121,7 +121,7 @@ describe("buildPracticeSteps", () => {
 
   it("両方入力済みなら、案内する項目はない", () => {
     expect(
-      findNextStep(buildPracticeSteps(5, set("2026年度 / @駒沢"))),
+      findNextStep(buildPracticeSteps(5, set("2026年度シーズン / @駒沢"))),
     ).toBeUndefined();
   });
 });

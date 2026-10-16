@@ -5,7 +5,7 @@ import type { GroundModel } from "@/generated/prisma/models/Ground";
 
 type Props = {
   event: EventModel;
-  practice: { ground: GroundModel | null };
+  practice: { ground: GroundModel | null; groundCourt: string | null };
 };
 
 export const PracticeCard = ({ event, practice }: Props) => {
@@ -18,7 +18,11 @@ export const PracticeCard = ({ event, practice }: Props) => {
         <EventCardHeader date={event.date} label="練習" />
         <div className="flex flex-col items-center justify-center gap-y-2 p-3 @content:px-10 @content:flex-1">
           <p className="text-xs @content:text-sm font-bold text-center">
-            {practice.ground?.name ?? "会場未定"}
+            {practice.ground
+              ? [practice.ground.name, practice.groundCourt]
+                  .filter(Boolean)
+                  .join(" ")
+              : "会場未定"}
           </p>
           {event.status === "canceled" && (
             <>

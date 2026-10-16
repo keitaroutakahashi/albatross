@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { formatSeason } from "@/app/_utils/season";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
@@ -27,8 +28,7 @@ export default async function Page() {
             <ListCard
               key={r.id}
               href={`/admin/seasons/${r.id}`}
-              title={`${r.season}年度`}
-              description={r.name}
+              title={formatSeason(r.season)}
               trailing={<Badge tone="muted">{`${r._count.events}件`}</Badge>}
             />
           ))}

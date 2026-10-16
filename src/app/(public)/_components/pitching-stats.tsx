@@ -5,6 +5,7 @@ import {
   type PitchingLeaders,
 } from "@/app/_features/members/api/get-pitching-leaders";
 import { getCurrentSeason } from "@/app/_utils/date/date";
+import { formatSeason } from "@/app/_utils/season";
 import { formatInnings } from "@/app/_utils/stats/innings";
 
 const CATEGORIES = [
@@ -51,7 +52,7 @@ export const PitchingStats = async () => {
         PITCHING STATS
       </h2>
       <p className="mt-2 text-center text-xs text-gray-500">
-        {season} シーズン / 公式戦
+        {formatSeason(season)} / 公式戦
       </p>
 
       <div className="mt-8 md:mt-10 grid gap-8 md:grid-cols-2 md:gap-x-10">

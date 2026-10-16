@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/app/_components/shadcn/select";
 import { HintTooltip } from "@/app/_components/ui/hint-tooltip";
+import { formatSeason } from "@/app/_utils/season";
 import type { SeasonModel } from "@/generated/prisma/models/Season";
 
 /** 打者・投手成績ページで共通利用する指標カテゴリの定義 */
@@ -68,7 +69,7 @@ export const StatsFilterBar = ({
           <SelectContent>
             {seasons.map((s) => (
               <SelectItem key={s.id} value={String(s.season)}>
-                {s.season} シーズン
+                {formatSeason(s.season)}
               </SelectItem>
             ))}
           </SelectContent>

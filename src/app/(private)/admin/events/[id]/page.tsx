@@ -49,6 +49,9 @@ export default async function Page({
     text: describeSchedule({
       season: event.season.season,
       groundName: groundName ?? null,
+      groundCourt: game
+        ? game.groundCourt
+        : (event.practice?.groundCourt ?? null),
       note: event.note,
     }),
   };

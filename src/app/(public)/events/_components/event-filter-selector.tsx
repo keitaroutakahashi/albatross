@@ -12,6 +12,7 @@ import {
   EVENT_TYPE_LABELS,
   parseEventType,
 } from "@/app/_features/events/utils/event-type";
+import { formatSeason } from "@/app/_utils/season";
 import { EventType } from "@/generated/prisma/enums";
 import type { SeasonModel } from "@/generated/prisma/models/Season";
 
@@ -48,18 +49,17 @@ export function EventFilterSelector({ seasons, defaultSeason }: Props) {
           value={currentSeason}
           onValueChange={(season) => updateParams("season", season)}
         >
-          <SelectTrigger className="w-30" aria-label="年度">
+          <SelectTrigger className="w-45" aria-label="年度">
             <SelectValue placeholder="年度を選択" />
           </SelectTrigger>
           <SelectContent>
             {seasons.map((season) => (
               <SelectItem key={season.id} value={String(season.season)}>
-                {season.season}
+                {formatSeason(season.season)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
-        <span className="font-bold">年度</span>
       </div>
 
       <Select

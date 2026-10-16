@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { formatSeason } from "@/app/_utils/season";
 import { createEvent } from "@/app/(private)/admin/_actions/event";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import { getEventSeasons } from "@/app/(private)/admin/_data/event";
@@ -18,7 +19,7 @@ export default async function Page() {
         action={createEvent}
         seasons={seasons.map((s) => ({
           value: String(s.id),
-          label: `${s.season}年度`,
+          label: formatSeason(s.season),
         }))}
       />
     </>

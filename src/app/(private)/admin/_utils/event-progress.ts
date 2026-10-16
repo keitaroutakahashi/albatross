@@ -9,7 +9,7 @@ export type GameCounts = {
 /** 基本情報の項目（いつ・どこで / 対戦 / 試合の振り返り）の入力状況 */
 export type BasicInfo = {
   done: boolean;
-  /** 現在の値の要約（例: 2026年度 / @駒沢） */
+  /** 現在の値の要約（例: 2026年度シーズン / @駒沢） */
   text: string;
 };
 

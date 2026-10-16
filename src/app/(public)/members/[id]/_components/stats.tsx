@@ -18,6 +18,7 @@ import {
 import { SectionGroup } from "@/app/_components/ui/section-group";
 import { ALL_SEASONS } from "@/app/_constants/stats";
 import type { MemberStatsResult } from "@/app/_features/members/api/get-member-stats";
+import { formatSeason } from "@/app/_utils/season";
 import { AtBatNumberBatting } from "@/app/(public)/members/[id]/_components/at-bat-number-batting";
 import { BattingStats } from "@/app/(public)/members/[id]/_components/batting-stats";
 import { GroundBatting } from "@/app/(public)/members/[id]/_components/ground-batting";
@@ -70,7 +71,7 @@ export const Stats = ({ memberId, seasons, initialStats }: Props) => {
           <SelectItem value={ALL_SEASONS}>全年度</SelectItem>
           {seasons.map((s) => (
             <SelectItem key={s.id} value={String(s.season)}>
-              {s.season} シーズン
+              {formatSeason(s.season)}
             </SelectItem>
           ))}
         </SelectContent>

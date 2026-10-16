@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatSeason } from "@/app/_utils/season";
 import {
   deleteSeason,
   updateSeason,
@@ -29,7 +30,7 @@ export default async function Page({
         action={updateSeason.bind(null, id)}
         initial={item}
         deleteTarget={{
-          name: `${item.season}年度`,
+          name: formatSeason(item.season),
           action: deleteSeason.bind(null, id),
         }}
       />

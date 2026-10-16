@@ -7,7 +7,9 @@ type Props = {
 };
 
 export const GameCardBody = ({ game }: Props) => {
-  if (game.isFirstBatting === null) {
+  const opponentName = game.opponent?.name;
+
+  if (game.isFirstBatting === null && !opponentName) {
     return (
       <div className="grid grid-cols-3 gap-x-2 p-3 @content:px-10 @content:flex-1">
         <div />
@@ -16,19 +18,23 @@ export const GameCardBody = ({ game }: Props) => {
       </div>
     );
   }
+
+  // 先攻後攻が未定のときは、自チームを左に置く
+  const isFirstBatting = game.isFirstBatting ?? true;
+
   return (
     <div className="grid grid-cols-3 gap-x-2 p-3 @content:px-10 @content:flex-1">
       <GameCardTeamInfo
-        isHome={game.isFirstBatting}
-        teamName={game.isFirstBatting ? "Albatross" : game?.opponent?.name}
+        isHome={isFirstBatting}
+        teamName={isFirstBatting ? "Albatross" : opponentName}
         pitcher={""}
       />
 
       <GameCardScoreInfo game={game} />
 
       <GameCardTeamInfo
-        isHome={!game.isFirstBatting}
-        teamName={!game.isFirstBatting ? "Albatross" : game?.opponent?.name}
+        isHome={!isFirstBatting}
+        teamName={!isFirstBatting ? "Albatross" : opponentName}
         pitcher={""}
       />
     </div>

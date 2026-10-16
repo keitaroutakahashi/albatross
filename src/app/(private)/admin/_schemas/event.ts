@@ -17,6 +17,7 @@ export const eventScheduleSchema = z.object({
   date: jstDateTime,
   seasonId: requiredId,
   groundId: optionalId,
+  groundCourt: optionalText(50),
   note: optionalText(200),
   cancelReason: optionalText(200),
 });
