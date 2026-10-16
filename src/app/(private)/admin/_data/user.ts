@@ -10,7 +10,10 @@ export const getUser = async (id: number) => {
   await requireAccess("users");
   return prisma.user.findUnique({
     where: { id },
-    include: { member: { select: { id: true } } },
+    include: {
+      member: { select: { id: true } },
+      _count: { select: { passkeys: true } },
+    },
   });
 };
 

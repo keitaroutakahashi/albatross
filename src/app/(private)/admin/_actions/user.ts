@@ -11,6 +11,9 @@ import {
 } from "@/app/(private)/admin/_utils/action";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
+import { getWebAuthnConfig } from "@/lib/auth/config";
+import { AuthError } from "@/lib/auth/errors";
+import { issueInvitation } from "@/lib/auth/invitation";
 import prisma from "@/lib/prisma";
 
 /** 管理者が 0 人になると、誰も管理できなくなるため、最後の 1 人は外せない */
@@ -93,4 +96,30 @@ export const deleteUser = async (id: number): Promise<ActionState> => {
 
   revalidateAll();
   redirect("/admin/users");
+};
+
+/** パスキー登録用の招待リンクを発行する。再発行すると、以前のリンクと既存のログインは無効になる */
+export const issueUserInvitation = async (
+  id: number,
+): Promise<
+  { ok: true; url: string; expiresAt: string } | { ok: false; message: string }
+> => {
+  await requireAccess("users");
+
+  try {
+    const { token, expiresAt } = await issueInvitation(id);
+    return {
+      ok: true,
+      url: `${getWebAuthnConfig().origin}/invite/${token}`,
+      expiresAt: expiresAt.toISOString(),
+    };
+  } catch (error) {
+    if (error instanceof AuthError && error.code === "not_allowed") {
+      return {
+        ok: false,
+        message: "このユーザーには招待リンクを発行できません",
+      };
+    }
+    throw error;
+  }
 };

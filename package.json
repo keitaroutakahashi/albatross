@@ -20,6 +20,8 @@
     "db:migrate:production": "dotenv -e .env.production -- prisma migrate deploy",
     "db:seed:production": "SEED_ENV=production dotenv -e .env.production -- prisma db seed",
     "db:dump:production": "./scripts/dump-production.sh",
+    "auth:invite": "tsx scripts/auth-invite.ts",
+    "auth:invite:production": "NODE_ENV=production dotenv -e .env.production -- tsx scripts/auth-invite.ts",
     "generate:client": "prisma generate",
     "generate:next-type": "next typegen"
   },
@@ -28,6 +30,8 @@
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
     "@radix-ui/react-select": "2.3.8",
+    "@simplewebauthn/browser": "14.0.0",
+    "@simplewebauthn/server": "14.0.3",
     "@tailwindcss/postcss": "4.3.3",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

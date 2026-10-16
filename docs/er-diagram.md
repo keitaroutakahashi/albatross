@@ -16,6 +16,39 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"Passkey" {
+  String id PK
+  Int userId FK
+  Bytes publicKey
+  Int counter
+  String transports
+  Boolean backedUp
+  String name "nullable"
+  DateTime lastUsedAt "nullable"
+  DateTime createdAt
+}
+"Session" {
+  String id PK
+  Int userId FK
+  DateTime expiresAt
+  DateTime createdAt
+}
+"Invitation" {
+  Int id PK
+  String tokenHash UK
+  Int userId FK
+  DateTime expiresAt
+  DateTime usedAt "nullable"
+  DateTime createdAt
+}
+"WebAuthnChallenge" {
+  String id PK
+  String challenge
+  ChallengePurpose purpose
+  Int userId "nullable"
+  DateTime expiresAt
+  DateTime createdAt
+}
 "Season" {
   Int id PK
   Int season UK
@@ -180,6 +213,9 @@ erDiagram
   DateTime createdAt
   DateTime updatedAt
 }
+"Passkey" }o--|| "User" : user
+"Session" }o--|| "User" : user
+"Invitation" }o--|| "User" : user
 "Member" |o--o| "User" : user
 "Event" }o--|| "Season" : season
 "Practice" |o--|| "Event" : event
@@ -212,6 +248,51 @@ Properties as follows:
 - `role`:
 - `createdAt`:
 - `updatedAt`:
+
+### `Passkey`
+
+Properties as follows:
+
+- `id`:
+- `userId`:
+- `publicKey`:
+- `counter`:
+- `transports`:
+- `backedUp`:
+- `name`:
+- `lastUsedAt`:
+- `createdAt`:
+
+### `Session`
+
+Properties as follows:
+
+- `id`:
+- `userId`:
+- `expiresAt`:
+- `createdAt`:
+
+### `Invitation`
+
+Properties as follows:
+
+- `id`:
+- `tokenHash`:
+- `userId`:
+- `expiresAt`:
+- `usedAt`:
+- `createdAt`:
+
+### `WebAuthnChallenge`
+
+Properties as follows:
+
+- `id`:
+- `challenge`:
+- `purpose`:
+- `userId`:
+- `expiresAt`:
+- `createdAt`:
 
 ### `Season`
 

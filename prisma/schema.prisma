@@ -26,6 +26,12 @@ enum UserRole {
   general // 一般（管理画面は使えない）
 }
 
+// WebAuthn のチャレンジの用途
+enum ChallengePurpose {
+  registration // パスキー登録
+  authentication // パスキーでのログイン
+}
+
 // --- イベント関連 ---
 
 enum EventType {
@@ -131,6 +137,65 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   member    Member?
+
+  passkeys    Passkey[]
+  sessions    Session[]
+  invitations Invitation[]
+}
+
+// --- 認証 ---
+
+// パスキー（WebAuthn の資格情報）。1 ユーザーが複数持てる
+model Passkey {
+  id         String    @id // credential ID（base64url）
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicKey  Bytes
+  counter    Int       @default(0) // 同期パスキーは 0 のままのため、増加を必須としない
+  transports String[]
+  backedUp   Boolean // クラウド同期されているか
+  name       String? // 利用者が付ける端末名
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ログインセッション。Cookie のトークンはハッシュ化して保存する
+model Session {
+  id        String   @id // トークンの SHA-256
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// パスキー登録用の招待。初回登録と、端末を失くしたときの再登録に使う
+model Invitation {
+  id        Int       @id @default(autoincrement())
+  tokenHash String    @unique // トークンの SHA-256
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// WebAuthn のチャレンジ。サーバーレスで複数リクエストにまたがるため DB に保持し、使用後に削除する
+model WebAuthnChallenge {
+  id        String           @id // Cookie に載せるランダム値
+  challenge String
+  purpose   ChallengePurpose
+  userId    Int? // 登録時のみ
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  @@index([expiresAt])
 }
 
 // シーズン（年度）

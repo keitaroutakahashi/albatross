@@ -35,6 +35,11 @@ pnpm db:seed          # シードデータ投入
 pnpm db:reset         # DB リセット
 pnpm db:studio        # Prisma Studio 起動
 pnpm generate:client  # Prisma Client 生成
+
+# 認証（パスキー）
+pnpm auth:invite <email>                          # パスキー登録用の招待リンクを発行（開発）
+pnpm auth:invite <email> --create --role admin    # ユーザーを作成して発行（最初の管理者など）
+pnpm auth:invite:production <email>               # 本番 DB 向け（.env.production を使用）
 ```
 
 ## ディレクトリ構成
@@ -96,6 +101,13 @@ Tailwind CSS の `md`（768px）を基準にレスポンシブ対応を行う。
 - 打率・防御率・WHIP・OPS など、選手成績に関わる計算ロジックは `src/app/_utils/stats/` に置き、各 API・コンポーネントから呼び出す（同じ計算式を複数箇所に実装しない）
 - 規定打席・規定投球回などの資格判定も同様に `src/app/_utils/stats/` に置く
 - 投球回（アウト数）は少数第2位以下で丸め誤差が出るため、途中経過はアウト数（整数）で保持し、表示直前にフォーマットする
+
+## 認証
+
+- 管理画面（`/admin`）とアカウント画面（`/account`）はパスキーでログインする。ログインできるのは管理者・運営のみ
+- DB を作り直すとユーザーのパスキーも消えるため、`pnpm auth:invite` で招待リンクを発行して登録し直す
+- 環境変数 `WEBAUTHN_ORIGIN`（例: `https://example.com`）と `WEBAUTHN_RP_ID`（例: `example.com`）は本番で必須。RP ID を変えると登録済みのパスキーがすべて使えなくなる
+- 権限の確認は `proxy.ts` では行わない（Cookie の有無だけ見る）。各ページ・Server Action・データ取得関数で `requireAccess` などを必ず呼ぶ
 
 ## 注意事項
 
