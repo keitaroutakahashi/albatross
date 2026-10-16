@@ -1,8 +1,0 @@
--- AlterTable
-ALTER TABLE "Member" ADD COLUMN     "userId" INTEGER;
-
--- CreateIndex
-CREATE UNIQUE INDEX "Member_userId_key" ON "Member"("userId");
-
--- AddForeignKey
-ALTER TABLE "Member" ADD CONSTRAINT "Member_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
