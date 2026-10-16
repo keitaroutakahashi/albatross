@@ -127,7 +127,7 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
-  role      UserRole @default(operator) // 権限は小さい方を初期値にする
+  role      UserRole @default(general) // 権限は小さい方を初期値にする
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   member    Member?

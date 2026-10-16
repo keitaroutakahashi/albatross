@@ -43,7 +43,7 @@ export const UserForm = ({ action, initial, members, deleteTarget }: Props) => {
             state={state}
             required
             options={userRoleOptions}
-            defaultValue={initial?.role ?? "operator"}
+            defaultValue={initial?.role ?? "general"}
           />
           <SelectField
             name="memberId"

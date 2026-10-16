@@ -13,7 +13,7 @@ import { UserRole } from "@/generated/prisma/enums";
  *
  * TODO: 認証導入時にセッションから取得する実装へ置き換える。
  * それまでは誰でも操作できてしまうため、本番では存在しないページとして扱う。
- * 開発中は既定で管理者になる。運営の画面を確認するときは ADMIN_DEV_ROLE=operator を指定する。
+ * 開発中は既定で管理者になる。運営・一般の画面を確認するときは ADMIN_DEV_ROLE=operator / general を指定する。
  */
 export const getCurrentRole = async (): Promise<UserRole> => {
   if (process.env.NODE_ENV === "production") {
