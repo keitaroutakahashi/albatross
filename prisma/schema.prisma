@@ -17,18 +17,40 @@ datasource db {
 // Enums
 // ============================================================
 
+// --- ユーザー関連 ---
+
+// ユーザーの権限
+enum UserRole {
+  admin // 管理者（全機能）
+  operator // 運営（イベントの登録・編集・削除）
+  general // 一般（管理画面は使えない）
+}
+
+// WebAuthn のチャレンジの用途
+enum ChallengePurpose {
+  registration // パスキー登録
+  authentication // パスキーでのログイン
+}
+
+// --- イベント関連 ---
+
+enum EventType {
+  game // 試合
+  practice // 練習
+}
+
+enum EventStatus {
+  scheduled // 予定
+  completed // 終了
+  canceled // 中止
+}
+
 // --- 試合関連 ---
 
 enum GameType {
   official // 公式戦
   practice // 練習試合
   undecided // 未定
-}
-
-enum GameStatus {
-  scheduled // 予定
-  completed // 終了
-  canceled // 中止
 }
 
 enum GameResult {
@@ -83,20 +105,14 @@ enum AtBatResult {
   walk // 四球
   hitByPitch // 死球
   strikeout // 三振
-  groundOut // ゴロアウト
-  flyOut // フライアウト
-  lineOut // ライナーアウト
+  groundOut // ゴロ
+  flyOut // フライ
+  lineOut // ライナー
   sacrificeHit // 犠打
   sacrificeFly // 犠飛
   fieldersChoice // フィルダースチョイス
   doublePlay // 併殺打
-  error // エラー出塁
-}
-
-// 投手の勝敗
-enum PitchingDecision {
-  win // 勝ち投手
-  loss // 負け投手
+  error // エラー
 }
 
 // 天気
@@ -117,18 +133,78 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   name      String?
+  role      UserRole @default(general) // 権限は小さい方を初期値にする
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  member    Member?
+
+  passkeys    Passkey[]
+  sessions    Session[]
+  invitations Invitation[]
+}
+
+// --- 認証 ---
+
+// パスキー（WebAuthn の資格情報）。1 ユーザーが複数持てる
+model Passkey {
+  id         String    @id // credential ID（base64url）
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  publicKey  Bytes
+  counter    Int       @default(0) // 同期パスキーは 0 のままのため、増加を必須としない
+  transports String[]
+  backedUp   Boolean // クラウド同期されているか
+  name       String? // 利用者が付ける端末名
+  lastUsedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// ログインセッション。Cookie のトークンはハッシュ化して保存する
+model Session {
+  id        String   @id // トークンの SHA-256
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// パスキー登録用の招待。初回登録と、端末を失くしたときの再登録に使う
+model Invitation {
+  id        Int       @id @default(autoincrement())
+  tokenHash String    @unique // トークンの SHA-256
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// WebAuthn のチャレンジ。サーバーレスで複数リクエストにまたがるため DB に保持し、使用後に削除する
+model WebAuthnChallenge {
+  id        String           @id // Cookie に載せるランダム値
+  challenge String
+  purpose   ChallengePurpose
+  userId    Int? // 登録時のみ
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  @@index([expiresAt])
 }
 
 // シーズン（年度）
 model Season {
   id        Int      @id @default(autoincrement())
   season    Int      @unique
-  name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  games     Game[]
+  events    Event[]
 }
 
 // リーグ
@@ -142,14 +218,17 @@ model League {
 
 // グラウンド（球場）
 model Ground {
-  id        Int      @id @default(autoincrement())
-  name      String
-  address   String
-  access    String?
-  url       String // 公式HPのURL
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  games     Game[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  address     String
+  access      String?
+  url         String // 公式HPのURL
+  imagePath   String? // イベント詳細の背景画像のパス（例: /images/grounds/yoyogi.jpg）
+  mapEmbedUrl String? // Google マップの埋め込み用 URL（iframe の src のみ。タグは保存しない）
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  games       Game[]
+  practices   Practice[]
 }
 
 // 対戦相手チーム
@@ -172,41 +251,113 @@ model Member {
   batHand       Hand
   category      MemberCategory @default(regular) // メンバー区分
   isActive      Boolean        @default(true)
+  userId        Int?           @unique // ログインアカウント。未登録の選手・試合に出ない運営は紐づかない
+  user          User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  gameMembers GameMember[]
+  gameParticipants GameParticipant[]
+  gameMembers      GameMember[]
+  practiceMembers  PracticeMember[]
+}
+
+// --- イベント ---
+
+// チームイベント（試合・練習など共通の親）
+// 種別ごとの固有情報は type に対応する子テーブル（Game, Practice）が持つ
+model Event {
+  id Int @id @default(autoincrement())
+
+  type   EventType
+  date   DateTime
+  status EventStatus @default(scheduled)
+
+  // 備考（イベント詳細の「備考」セクションに表示する）
+  note String?
+
+  // 中止の理由（雨天中止など）。status が canceled のときだけ表示する
+  cancelReason String?
+
+  seasonId Int
+  season   Season @relation(fields: [seasonId], references: [id])
+
+  // type に対応する子テーブル
+  game     Game?
+  practice Practice?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([seasonId, date])
+}
+
+// 練習
+model Practice {
+  id Int @id @default(autoincrement())
+
+  eventId Int   @unique
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  groundId    Int?
+  ground      Ground? @relation(fields: [groundId], references: [id])
+  groundCourt String? // 使用した面（例: A面）
+
+  practiceMembers PracticeMember[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 練習参加メンバー
+model PracticeMember {
+  id         Int      @id @default(autoincrement())
+  practiceId Int
+  practice   Practice @relation(fields: [practiceId], references: [id], onDelete: Cascade)
+  memberId   Int
+  member     Member   @relation(fields: [memberId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([practiceId, memberId])
 }
 
 // --- 試合 ---
 
 // 試合
+// 日時・状態・シーズンなどの共通項目は Event が持つ
+// 試合番号（gameNumber）は、同日の試合を日時順に並べた順位。
+// DB 制約ではなく、登録・日時の変更・削除の処理で振り直す
 model Game {
   id Int @id @default(autoincrement())
 
-  // 日時・試合番号
-  date       DateTime
-  gameNumber Int      @default(1) // 同日の試合番号（ダブルヘッダー対応）
+  eventId Int   @unique
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  gameNumber Int @default(1) // 同日の試合番号（日時順。ダブルヘッダー対応）
 
   // 試合設定
-  gameType       GameType   @default(undecided) // 公式戦 or 練習試合
+  gameType       GameType @default(undecided) // 公式戦 or 練習試合
   isFirstBatting Boolean? // true: 先攻, false: 後攻, null: 未定
-  status         GameStatus @default(scheduled)
 
   // リレーション
-  seasonId   Int
-  season     Season    @relation(fields: [seasonId], references: [id])
   leagueId   Int?
   league     League?   @relation(fields: [leagueId], references: [id])
-  groundId   Int?
-  ground     Ground?   @relation(fields: [groundId], references: [id])
+  groundId    Int?
+  ground      Ground?   @relation(fields: [groundId], references: [id])
+  groundCourt String? // 使用した面（例: A面）
   opponentId Int?
   opponent   Opponent? @relation(fields: [opponentId], references: [id])
 
   // イニング
   innings Inning[]
 
-  // 参加メンバー
+  // 参加メンバー（この中から出場した選手を選ぶ）
+  participants GameParticipant[]
+
+  // MVP（表示順つき。参加メンバーの中から選ぶ）
+  mvps GameMvp[]
+
+  // 出場した選手
   gameMembers GameMember[]
 
   // 試合結果（キャッシュ）
@@ -233,13 +384,42 @@ model Game {
   // 試合動画
   videoUrl String? // 試合動画用のリンク
 
-  // （雨天中止など）
-  note String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
+// 試合参加メンバー
+// 試合に参加する選手。この中から出場した選手（GameMember）を選ぶ
+model GameParticipant {
+  id        Int      @id @default(autoincrement())
+  gameId    Int
+  game      Game     @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId  Int
+  member    Member   @relation(fields: [memberId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([date, gameNumber])
+  mvp GameMvp?
+
+  @@unique([gameId, memberId])
+}
+
+// 試合の MVP
+// 1 試合に複数人まで登録でき、order で表示順を持つ。MVP は参加メンバーの中からしか選べない
+model GameMvp {
+  id          Int             @id @default(autoincrement())
+  gameId      Int
+  game        Game            @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  memberId    Int
+  // 参加メンバーを外すときは MVP を先に外す必要がある（試合ごと削除するときは、Game の Cascade で一緒に消える）
+  participant GameParticipant @relation(fields: [gameId, memberId], references: [gameId, memberId], onDelete: NoAction)
+  order       Int // 表示順（1 から）
+  comment     String? // MVP に添えるコメント
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@unique([gameId, memberId])
+  @@unique([gameId, order])
 }
 
 // 試合日の天候
@@ -291,17 +471,18 @@ model PitchingResult {
   gameMemberId Int        @unique
   gameMember   GameMember @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
 
-  pitchingOrder   Int               @default(1) // 登板順（先発 = 1）
-  inningsPitched  Int               @default(0) // 投球回数（完了イニング数）
+  pitchingOrder   Int     @default(1) // 登板順（先発 = 1）
+  inningsPitched  Int     @default(0) // 投球回数（完了イニング数）
   partialOuts     Int? // イニング間交代時のアウト数（0, 1, 2, null）
-  earnedRuns      Int               @default(0) // 自責点
-  runs            Int               @default(0) // 失点
-  strikeouts      Int               @default(0) // 奪三振
-  walks           Int               @default(0) // 四球
-  hitByPitches    Int               @default(0) // 死球
-  hitsAllowed     Int               @default(0) // 被安打
-  homeRunsAllowed Int               @default(0) // 被本塁打
-  decision        PitchingDecision? // 勝敗（null = 該当なし）
+  earnedRuns      Int     @default(0) // 自責点
+  runs            Int     @default(0) // 失点
+  strikeouts      Int     @default(0) // 奪三振
+  walks           Int     @default(0) // 四球
+  hitByPitches    Int     @default(0) // 死球
+  hitsAllowed     Int     @default(0) // 被安打
+  homeRunsAllowed Int     @default(0) // 被本塁打
+  pitchCount      Int? // 球数（登板ごとの合計。未入力は null）
+  isResponsible   Boolean @default(false) // 責任投手か（勝ち投手・負け投手は試合結果から決まる）
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -309,16 +490,17 @@ model PitchingResult {
 
 // 打席結果
 model PlateAppearance {
-  id           Int         @id @default(autoincrement())
-  gameMemberId Int
-  gameMember   GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
-  inningNumber Int // 何回の打席か
-  atBatInGame  Int // 試合中の打席番号（1, 2, 3...）
-  result       AtBatResult // 打席結果
-  direction    Position? // 打球方向（四球・三振・死球は null）
-  rbi          Int         @default(0) // 打点
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  id                Int         @id @default(autoincrement())
+  gameMemberId      Int
+  gameMember        GameMember  @relation(fields: [gameMemberId], references: [id], onDelete: Cascade)
+  inningNumber      Int // 何回の打席か
+  atBatInGame       Int // 試合中の打席番号（1, 2, 3...）
+  result            AtBatResult // 打席結果
+  direction         Position? // 打球方向（四球・三振・死球は null）
+  rbi               Int         @default(0) // 打点
+  isScoringPosition Boolean     @default(false) // 得点圏（二塁または三塁に走者がいる状況）での打席か
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 
   @@unique([gameMemberId, atBatInGame])
 }

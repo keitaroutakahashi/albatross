@@ -12,13 +12,46 @@ erDiagram
   Int id PK
   String email UK
   String name "nullable"
+  UserRole role
   DateTime createdAt
   DateTime updatedAt
+}
+"Passkey" {
+  String id PK
+  Int userId FK
+  Bytes publicKey
+  Int counter
+  String transports
+  Boolean backedUp
+  String name "nullable"
+  DateTime lastUsedAt "nullable"
+  DateTime createdAt
+}
+"Session" {
+  String id PK
+  Int userId FK
+  DateTime expiresAt
+  DateTime createdAt
+}
+"Invitation" {
+  Int id PK
+  String tokenHash UK
+  Int userId FK
+  DateTime expiresAt
+  DateTime usedAt "nullable"
+  DateTime createdAt
+}
+"WebAuthnChallenge" {
+  String id PK
+  String challenge
+  ChallengePurpose purpose
+  Int userId "nullable"
+  DateTime expiresAt
+  DateTime createdAt
 }
 "Season" {
   Int id PK
   Int season UK
-  String name "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -34,6 +67,8 @@ erDiagram
   String address
   String access "nullable"
   String url
+  String imagePath "nullable"
+  String mapEmbedUrl "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -53,19 +88,45 @@ erDiagram
   Hand batHand
   MemberCategory category
   Boolean isActive
+  Int userId FK,UK "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
+"Event" {
+  Int id PK
+  EventType type
+  DateTime date
+  EventStatus status
+  String note "nullable"
+  String cancelReason "nullable"
+  Int seasonId FK
+  DateTime createdAt
+  DateTime updatedAt
+}
+"Practice" {
+  Int id PK
+  Int eventId FK,UK
+  Int groundId FK "nullable"
+  String groundCourt "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
+"PracticeMember" {
+  Int id PK
+  Int practiceId FK
+  Int memberId FK
   DateTime createdAt
   DateTime updatedAt
 }
 "Game" {
   Int id PK
-  DateTime date
+  Int eventId FK,UK
   Int gameNumber
   GameType gameType
   Boolean isFirstBatting "nullable"
-  GameStatus status
-  Int seasonId FK
   Int leagueId FK "nullable"
   Int groundId FK "nullable"
+  String groundCourt "nullable"
   Int opponentId FK "nullable"
   Int teamScore "nullable"
   Int opponentScore "nullable"
@@ -80,7 +141,22 @@ erDiagram
   String aiGoodPoints "nullable"
   String aiBadPoints "nullable"
   String videoUrl "nullable"
-  String note "nullable"
+  DateTime createdAt
+  DateTime updatedAt
+}
+"GameParticipant" {
+  Int id PK
+  Int gameId FK
+  Int memberId FK
+  DateTime createdAt
+  DateTime updatedAt
+}
+"GameMvp" {
+  Int id PK
+  Int gameId FK
+  Int memberId
+  Int order
+  String comment "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -121,7 +197,8 @@ erDiagram
   Int hitByPitches
   Int hitsAllowed
   Int homeRunsAllowed
-  PitchingDecision decision "nullable"
+  Int pitchCount "nullable"
+  Boolean isResponsible
   DateTime createdAt
   DateTime updatedAt
 }
@@ -133,13 +210,27 @@ erDiagram
   AtBatResult result
   Position direction "nullable"
   Int rbi
+  Boolean isScoringPosition
   DateTime createdAt
   DateTime updatedAt
 }
-"Game" }o--|| "Season" : season
+"Passkey" }o--|| "User" : user
+"Session" }o--|| "User" : user
+"Invitation" }o--|| "User" : user
+"Member" |o--o| "User" : user
+"Event" }o--|| "Season" : season
+"Practice" |o--|| "Event" : event
+"Practice" }o--o| "Ground" : ground
+"PracticeMember" }o--|| "Practice" : practice
+"PracticeMember" }o--|| "Member" : member
+"Game" |o--|| "Event" : event
 "Game" }o--o| "League" : league
 "Game" }o--o| "Ground" : ground
 "Game" }o--o| "Opponent" : opponent
+"GameParticipant" }o--|| "Game" : game
+"GameParticipant" }o--|| "Member" : member
+"GameMvp" }o--|| "Game" : game
+"GameMvp" }o--|| "GameParticipant" : participant
 "GameWeather" |o--|| "Game" : game
 "Inning" }o--|| "Game" : game
 "GameMember" }o--|| "Game" : game
@@ -155,8 +246,54 @@ Properties as follows:
 - `id`:
 - `email`:
 - `name`:
+- `role`:
 - `createdAt`:
 - `updatedAt`:
+
+### `Passkey`
+
+Properties as follows:
+
+- `id`:
+- `userId`:
+- `publicKey`:
+- `counter`:
+- `transports`:
+- `backedUp`:
+- `name`:
+- `lastUsedAt`:
+- `createdAt`:
+
+### `Session`
+
+Properties as follows:
+
+- `id`:
+- `userId`:
+- `expiresAt`:
+- `createdAt`:
+
+### `Invitation`
+
+Properties as follows:
+
+- `id`:
+- `tokenHash`:
+- `userId`:
+- `expiresAt`:
+- `usedAt`:
+- `createdAt`:
+
+### `WebAuthnChallenge`
+
+Properties as follows:
+
+- `id`:
+- `challenge`:
+- `purpose`:
+- `userId`:
+- `expiresAt`:
+- `createdAt`:
 
 ### `Season`
 
@@ -164,7 +301,6 @@ Properties as follows:
 
 - `id`:
 - `season`:
-- `name`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -186,6 +322,8 @@ Properties as follows:
 - `address`:
 - `access`:
 - `url`:
+- `imagePath`:
+- `mapEmbedUrl`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -211,6 +349,42 @@ Properties as follows:
 - `batHand`:
 - `category`:
 - `isActive`:
+- `userId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `Event`
+
+Properties as follows:
+
+- `id`:
+- `type`:
+- `date`:
+- `status`:
+- `note`:
+- `cancelReason`:
+- `seasonId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `Practice`
+
+Properties as follows:
+
+- `id`:
+- `eventId`:
+- `groundId`:
+- `groundCourt`:
+- `createdAt`:
+- `updatedAt`:
+
+### `PracticeMember`
+
+Properties as follows:
+
+- `id`:
+- `practiceId`:
+- `memberId`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -219,14 +393,13 @@ Properties as follows:
 Properties as follows:
 
 - `id`:
-- `date`:
+- `eventId`:
 - `gameNumber`:
 - `gameType`:
 - `isFirstBatting`:
-- `status`:
-- `seasonId`:
 - `leagueId`:
 - `groundId`:
+- `groundCourt`:
 - `opponentId`:
 - `teamScore`:
 - `opponentScore`:
@@ -241,7 +414,28 @@ Properties as follows:
 - `aiGoodPoints`:
 - `aiBadPoints`:
 - `videoUrl`:
-- `note`:
+- `createdAt`:
+- `updatedAt`:
+
+### `GameParticipant`
+
+Properties as follows:
+
+- `id`:
+- `gameId`:
+- `memberId`:
+- `createdAt`:
+- `updatedAt`:
+
+### `GameMvp`
+
+Properties as follows:
+
+- `id`:
+- `gameId`:
+- `memberId`:
+- `order`:
+- `comment`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -294,7 +488,8 @@ Properties as follows:
 - `hitByPitches`:
 - `hitsAllowed`:
 - `homeRunsAllowed`:
-- `decision`:
+- `pitchCount`:
+- `isResponsible`:
 - `createdAt`:
 - `updatedAt`:
 
@@ -309,5 +504,6 @@ Properties as follows:
 - `result`:
 - `direction`:
 - `rbi`:
+- `isScoringPosition`:
 - `createdAt`:
 - `updatedAt`:

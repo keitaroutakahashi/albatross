@@ -1,10 +1,10 @@
 import type {
   AtBatResult,
+  EventStatus,
   Ground,
   League,
   Member,
   Opponent,
-  PitchingDecision,
   Position,
   PrismaClient,
   Season,
@@ -26,6 +26,20 @@ export type SeedContext = {
   starterPositions: Position[];
 };
 
+// 試合（Game）の親となる Event を作成する
+export function createGameEvent(
+  prisma: PrismaClient,
+  data: {
+    date: Date;
+    status: EventStatus;
+    seasonId: number;
+    note?: string;
+    cancelReason?: string;
+  },
+) {
+  return prisma.event.create({ data: { type: "game", ...data } });
+}
+
 // GameMember 作成用データ
 export type GameMemberCreateData = {
   gameId: number;
@@ -43,6 +57,7 @@ export type PlateAppearanceData = {
   result: AtBatResult;
   direction: Position | null;
   rbi: number;
+  isScoringPosition?: boolean;
 };
 
 // PitchingResult 作成用データ
@@ -58,7 +73,8 @@ export type PitchingResultData = {
   hitByPitches: number;
   hitsAllowed: number;
   homeRunsAllowed: number;
-  decision: PitchingDecision | null;
+  pitchCount?: number | null;
+  isResponsible: boolean;
 };
 
 // 明示的な GameMember データ配列から順次作成する（試合1・6・7のような独自打順）

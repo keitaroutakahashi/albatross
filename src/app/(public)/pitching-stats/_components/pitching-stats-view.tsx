@@ -6,6 +6,7 @@ import { StatsFilterBar } from "@/app/_components/ui/stats-filter-bar";
 import { StatsRankingTable } from "@/app/_components/ui/stats-ranking-table";
 import type { PitchingStatsResult } from "@/app/_features/members/api/get-pitching-stats";
 import { rankMemberStats } from "@/app/_features/members/utils/ranking";
+import { formatSeason } from "@/app/_utils/season";
 import { PITCHING_CATEGORIES } from "@/app/(public)/pitching-stats/_components/categories";
 import type { SeasonModel } from "@/generated/prisma/models/Season";
 
@@ -84,7 +85,7 @@ export const PitchingStatsView = ({
         <div className="flex items-baseline justify-between border-b-2 border-primary pb-2">
           <h2 className="text-sm font-bold">{category.label}</h2>
           <p className="text-xs text-gray-500">
-            {stats.season} シーズン / 公式戦 全{stats.gameCount}試合
+            {formatSeason(stats.season)} / 公式戦 全{stats.gameCount}試合
           </p>
         </div>
 

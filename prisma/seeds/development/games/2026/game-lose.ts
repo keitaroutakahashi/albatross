@@ -1,5 +1,6 @@
 import type { PrismaClient } from "../../../../../src/generated/prisma/client.js";
 import {
+  createGameEvent,
   createGameMembersFromData,
   type GameMemberCreateData,
   type PitchingResultData,
@@ -11,14 +12,18 @@ import {
 export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
   const { season2026, tokyoLeague, grounds, opponents, members } = ctx;
 
+  const event = await createGameEvent(prisma, {
+    date: new Date("2026-06-13T19:00:00"),
+    status: "completed",
+    seasonId: season2026.id,
+  });
+
   const game = await prisma.game.create({
     data: {
-      date: new Date("2026-06-13T19:00:00"),
+      eventId: event.id,
       gameNumber: 1,
       gameType: "official",
       isFirstBatting: true,
-      status: "completed",
-      seasonId: season2026.id,
       leagueId: tokyoLeague.id,
       groundId: grounds[1].id,
       opponentId: opponents[2].id,
@@ -190,6 +195,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "double",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     // 4番 鈴木雪（左）: 遊ゴ, 投ゴ(1)
     {
@@ -207,6 +213,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "pitcher",
       rbi: 1,
+      isScoringPosition: true,
     },
     // 5番 高橋健（二）: 三ゴ, 三安
     {
@@ -284,6 +291,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "double",
       direction: "left",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[8].id,
@@ -318,6 +326,7 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       result: "groundOut",
       direction: "first",
       rbi: 1,
+      isScoringPosition: true,
     },
     {
       gameMemberId: gameMembers[10].id,
@@ -367,7 +376,8 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 1,
       hitsAllowed: 2,
       homeRunsAllowed: 0,
-      decision: "loss",
+      pitchCount: 30,
+      isResponsible: true,
     },
     {
       gameMemberId: gameMembers[1].id, // 小林勇気（投手、打順9番）
@@ -381,7 +391,8 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 0,
       hitsAllowed: 1,
       homeRunsAllowed: 0,
-      decision: null,
+      pitchCount: 35,
+      isResponsible: false,
     },
     {
       gameMemberId: gameMembers[2].id, // 小林勇気（投手、打順9番）
@@ -395,7 +406,8 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 0,
       hitsAllowed: 3,
       homeRunsAllowed: 0,
-      decision: null,
+      pitchCount: 33,
+      isResponsible: false,
     },
     {
       gameMemberId: gameMembers[3].id, // 小林勇気（投手、打順9番）
@@ -409,7 +421,8 @@ export async function seedGameLose(prisma: PrismaClient, ctx: SeedContext) {
       hitByPitches: 1,
       hitsAllowed: 0,
       homeRunsAllowed: 0,
-      decision: null,
+      pitchCount: 24,
+      isResponsible: false,
     },
   ];
   await prisma.pitchingResult.createMany({ data: pitchingResults });

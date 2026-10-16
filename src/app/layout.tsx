@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "@/app/globals.css";
 import clsx from "clsx";
-import { Footer } from "@/app/_components/ui/footer";
-import { Header } from "@/app/_components/ui/header";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -20,7 +18,8 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="ja">
+    // Google Tag Assistant などの拡張機能が、React の起動前に html へ属性を足すため警告を抑止する
+    <html lang="ja" suppressHydrationWarning>
       <body
         style={{
           fontFamily:
@@ -36,15 +35,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
           "break-normal",
         )}
       >
-        {/* Header は fixed のため、@container（レイアウト封じ込めが効き fixed の
-            基準要素になってしまう）の外に置く */}
-        <Header />
-        <div className="@container max-w-3xl mx-auto pt-(--size-header-height)">
-          <div className="min-h-[calc(100dvh-var(--size-header-height)-var(--size-footer-height))]">
-            {children}
-          </div>
-          <Footer />
-        </div>
+        {children}
       </body>
     </html>
   );

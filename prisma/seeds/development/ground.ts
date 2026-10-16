@@ -9,12 +9,14 @@ const groundData: Prisma.GroundCreateInput[] = [
     address: "東京都渋谷区代々木神園町2-1",
     access: "JR原宿駅から徒歩10分",
     url: "https://www.tokyo-park.or.jp/park/format/index028.html",
+    imagePath: "/images/grounds/example.jpg",
   },
   {
     name: "多摩川緑地野球場",
     address: "東京都大田区田園調布1丁目",
     access: "東急東横線多摩川駅から徒歩5分",
     url: "https://www.tokyo-park.or.jp/park/format/index029.html",
+    imagePath: "/images/grounds/example.jpg",
   },
   {
     name: "荒川河川敷グラウンド",

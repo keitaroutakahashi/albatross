@@ -102,8 +102,18 @@ const memberData: Prisma.MemberCreateInput[] = [
 
 export async function seedMembers(prisma: PrismaClient) {
   console.log("Seeding members...");
+  // user seed と同名の選手はアカウントに紐づける
+  const users = await prisma.user.findMany({
+    where: { name: { not: null } },
+    select: { id: true, name: true },
+  });
+  const userIdByName = new Map(users.map((u) => [u.name, u.id]));
+
   for (const m of memberData) {
-    await prisma.member.create({ data: m });
+    const userId = userIdByName.get(m.name);
+    await prisma.member.create({
+      data: { ...m, ...(userId && { user: { connect: { id: userId } } }) },
+    });
   }
   console.log(`Created ${memberData.length} members`);
 }

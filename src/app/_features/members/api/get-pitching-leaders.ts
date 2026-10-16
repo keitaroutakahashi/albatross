@@ -5,6 +5,7 @@ import {
 } from "@/app/_features/members/utils/ranking";
 import { calculateEra } from "@/app/_utils/stats/era";
 import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import { isQualifiedPitcher } from "@/app/_utils/stats/qualification";
 import prisma from "@/lib/prisma";
 
@@ -35,9 +36,8 @@ export const getPitchingLeaders = async (
   season: string | number,
 ): Promise<PitchingLeaders> => {
   const gameWhere = {
-    status: "completed",
     gameType: "official",
-    season: { season: Number(season) },
+    event: { status: "completed", season: { season: Number(season) } },
   } as const;
 
   const [gameCount, pitchingResults] = await Promise.all([
@@ -50,7 +50,9 @@ export const getPitchingLeaders = async (
         },
       },
       include: {
-        gameMember: { include: { member: true } },
+        gameMember: {
+          include: { member: true, game: { select: { result: true } } },
+        },
       },
     }),
   ]);
@@ -77,7 +79,11 @@ export const getPitchingLeaders = async (
     stats.earnedRuns += pitchingResult.earnedRuns;
     stats.strikeouts += pitchingResult.strikeouts;
 
-    if (pitchingResult.decision === "win") {
+    const decision = resolvePitchingDecision(
+      pitchingResult.isResponsible,
+      pitchingResult.gameMember.game.result,
+    );
+    if (decision === "win") {
       stats.wins += 1;
     }
 
