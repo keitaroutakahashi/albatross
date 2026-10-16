@@ -1,6 +1,7 @@
 {
   "$schema": "https://unpkg.com/knip@latest/schema.json",
   "ignoreDependencies": ["pg", "@types/pg"],
+  "ignoreBinaries": ["run"],
   "ignoreExportsUsedInFile": true,
   "ignore": ["src/app/_utils/sleep.ts", "src/app/_components/shadcn/**"]
 }

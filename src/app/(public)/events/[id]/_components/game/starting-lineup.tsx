@@ -29,7 +29,10 @@ export const StartingLineup = ({ game }: Props) => {
                   {positionLabel[member.position]}
                 </span>
               )}
-              <Link href="/" className="pl-4 underline underline-offset-2">
+              <Link
+                href={`/members/${member.memberId}`}
+                className="pl-4 underline underline-offset-2"
+              >
                 {member.member.name}
               </Link>
             </li>
