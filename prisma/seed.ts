@@ -1,12 +1,12 @@
 import "dotenv/config";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import { seedGrounds } from "./seeds/common/ground.js";
+import { seedMembers } from "./seeds/common/member.js";
 import { seedPractices } from "./seeds/development/events/practice.js";
 import { seedGames } from "./seeds/development/games/index.js";
 import { seedGameParticipants } from "./seeds/development/games/participant.js";
-import { seedGrounds } from "./seeds/development/ground.js";
 import { seedLeagues } from "./seeds/development/league.js";
-import { seedMembers } from "./seeds/development/member.js";
 import { seedOpponents } from "./seeds/development/opponent.js";
 import { seedSeasons } from "./seeds/development/season.js";
 import { seedUsers } from "./seeds/development/user.js";
@@ -19,7 +19,7 @@ const prisma = new PrismaClient({
   adapter,
 });
 
-// SEED_ENV=production のときは開発用データを投入しない
+// SEED_ENV=production のときは、本番と共通のデータ（グラウンド・選手）だけを投入する
 const isProduction = process.env.SEED_ENV === "production";
 
 async function main() {
@@ -27,13 +27,19 @@ async function main() {
     `Start seeding... (env: ${isProduction ? "production" : "development"})\n`,
   );
 
+  await seedGrounds(prisma);
+
   if (!isProduction) {
     await seedSeasons(prisma);
     await seedLeagues(prisma);
-    await seedGrounds(prisma);
     await seedUsers(prisma);
     await seedOpponents(prisma);
-    await seedMembers(prisma);
+  }
+
+  // 開発では user の seed で作ったアカウントに紐づけるため、seedUsers の後に実行する
+  await seedMembers(prisma);
+
+  if (!isProduction) {
     await seedGames(prisma);
     await seedGameParticipants(prisma);
     await seedPractices(prisma);
