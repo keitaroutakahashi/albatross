@@ -134,6 +134,14 @@ const memberData: Prisma.MemberCreateInput[] = [
     throwHand: "right",
     batHand: "right",
   },
+  {
+    name: "MORO",
+    uniformNumber: "18",
+    position: "pitcher",
+    subPositions: ["right", "catcher"],
+    throwHand: "right",
+    batHand: "right",
+  },
 ];
 
 export async function seedMembers(prisma: PrismaClient) {
