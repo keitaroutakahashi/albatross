@@ -22,6 +22,10 @@
     "db:dump:production": "./scripts/dump-production.sh",
     "auth:invite": "tsx scripts/auth-invite.ts",
     "auth:invite:production": "NODE_ENV=production dotenv -e .env.production -- tsx scripts/auth-invite.ts",
+    "game:fetch": "tsx scripts/fetch-ts-league.ts",
+    "game:parse": "tsx scripts/parse-ts-league.ts",
+    "game:import": "tsx scripts/import-ts-league.ts",
+    "game:import:production": "NODE_ENV=production dotenv run -q -f .env.production -- tsx scripts/import-ts-league.ts",
     "generate:client": "prisma generate",
     "generate:next-type": "next typegen"
   },

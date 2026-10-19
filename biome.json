@@ -45,7 +45,7 @@
   },
   "overrides": [
     {
-      "includes": ["prisma/**", "next-env.d.ts"],
+      "includes": ["prisma/**", "scripts/**", "next-env.d.ts"],
       "linter": {
         "rules": {
           "style": {

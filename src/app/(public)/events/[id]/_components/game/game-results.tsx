@@ -22,7 +22,13 @@ export const GameResults = ({ game }: Props) => {
     return null;
   }
 
-  const inningCount = game.innings.length;
+  // イニング得点が未入力・不足でも、打席があるイニングの成績は表示する
+  const inningCount = Math.max(
+    game.innings.length,
+    ...game.gameMembers.flatMap((gm) =>
+      gm.plateAppearances.map((pa) => pa.inningNumber),
+    ),
+  );
 
   return (
     <SectionGroup title="個人成績">
