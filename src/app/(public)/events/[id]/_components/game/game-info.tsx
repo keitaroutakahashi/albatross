@@ -32,7 +32,10 @@ type Props = {
 
 export const GameInfo = ({ game }: Props) => {
   const isScheduled = game.event.status === "scheduled";
-  const pitchers = getPitchers(game.gameMembers);
+  // 試合前は投手成績がないため、オーダーで投手の守備位置に入っている選手を表示する
+  const pitchers = isScheduled
+    ? getMembersByPosition(game.gameMembers, "pitcher")
+    : getPitchers(game.gameMembers);
   const responsiblePitcher = getResponsiblePitcher(game.gameMembers);
   const decision = resolvePitchingDecision(
     responsiblePitcher !== undefined,
@@ -71,7 +74,13 @@ export const GameInfo = ({ game }: Props) => {
       <SubSectionGroup title="責任投手・長打">
         <div className="grid grid-cols-[auto_1fr] border-t">
           <TableRow
-            label={decision === "win" ? "勝利投手" : "敗戦投手"}
+            label={
+              decision === "win"
+                ? "勝利投手"
+                : decision === "loss"
+                  ? "敗戦投手"
+                  : "責任投手"
+            }
             value={responsiblePitcher?.member.name || ""}
           />
           <TableRow
@@ -114,9 +123,7 @@ export const GameInfo = ({ game }: Props) => {
               {game.ground.name}
             </a>
             {game.groundCourt && (
-              <span className="ml-2 text-sm font-semibold">
-                {game.groundCourt}
-              </span>
+              <p className="mt-1 text-sm font-semibold">{game.groundCourt}</p>
             )}
             <p className="text-xs text-gray-500 mt-1">
               ( {game.ground?.address} )

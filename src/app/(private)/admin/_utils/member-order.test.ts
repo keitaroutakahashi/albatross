@@ -1,0 +1,65 @@
+import { sortMembersByUniformNumber } from "@/app/(private)/admin/_utils/member-order";
+
+const member = (uniformNumber: string, name: string, isActive = true) => ({
+  uniformNumber,
+  name,
+  isActive,
+});
+
+describe("sortMembersByUniformNumber", () => {
+  it("背番号を数値として小さい順に並べる", () => {
+    const sorted = sortMembersByUniformNumber([
+      member("10", "a"),
+      member("2", "b"),
+      member("100", "c"),
+      member("1", "d"),
+    ]);
+    expect(sorted.map((m) => m.uniformNumber)).toEqual(["1", "2", "10", "100"]);
+  });
+
+  it("現役メンバーを先に、非現役は後ろにそれぞれ背番号順で並べる", () => {
+    const sorted = sortMembersByUniformNumber([
+      member("1", "非現役の1番", false),
+      member("20", "現役の20番"),
+      member("3", "現役の3番"),
+      member("5", "非現役の5番", false),
+    ]);
+    expect(sorted.map((m) => m.name)).toEqual([
+      "現役の3番",
+      "現役の20番",
+      "非現役の1番",
+      "非現役の5番",
+    ]);
+  });
+
+  it("数値が同じ背番号は、0 が多い方を先にする", () => {
+    const sorted = sortMembersByUniformNumber([
+      member("10", "a"),
+      member("2", "b"),
+      member("1", "c"),
+      member("01", "d"),
+      member("001", "e"),
+    ]);
+    expect(sorted.map((m) => m.uniformNumber)).toEqual([
+      "001",
+      "01",
+      "1",
+      "2",
+      "10",
+    ]);
+  });
+
+  it("背番号が完全に同じときは名前順にする", () => {
+    const sorted = sortMembersByUniformNumber([
+      member("5", "ぼ"),
+      member("5", "あ"),
+    ]);
+    expect(sorted.map((m) => m.name)).toEqual(["あ", "ぼ"]);
+  });
+
+  it("元の配列は変更しない", () => {
+    const input = [member("2", "b"), member("1", "a")];
+    sortMembersByUniformNumber(input);
+    expect(input.map((m) => m.uniformNumber)).toEqual(["2", "1"]);
+  });
+});

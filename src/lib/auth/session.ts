@@ -4,6 +4,14 @@ import prisma from "@/lib/prisma";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** ログイン中のユーザーとして画面・処理に渡す項目（開発用の認証バイパスも同じ形で返す） */
+export const SESSION_USER_SELECT = {
+  id: true,
+  email: true,
+  name: true,
+  role: true,
+} as const;
+
 /** 期間は固定（延長しない）。期限が来てもパスキーで再ログインするだけなので負担が小さい */
 export const SESSION_TTL_MS = 30 * DAY_MS;
 
@@ -22,7 +30,7 @@ export const getSessionUser = async (token: string) => {
   const session = await prisma.session.findUnique({
     where: { id },
     include: {
-      user: { select: { id: true, email: true, name: true, role: true } },
+      user: { select: SESSION_USER_SELECT },
     },
   });
   if (!session) return null;

@@ -1,0 +1,18 @@
+type Sortable = { isActive: boolean; uniformNumber: string; name: string };
+
+/**
+ * 現役メンバーを先に、その中で背番号の小さい順に並べる。
+ * 背番号は文字列のため、数値として比べる（文字列順だと 10 が 2 より前に来る）。
+ * 数値が同じ背番号（001・01・1 など）は、0 が多い（文字数が多い）方を先にし、
+ * それも同じなら名前順にする。
+ */
+export const sortMembersByUniformNumber = <T extends Sortable>(
+  members: readonly T[],
+): T[] =>
+  [...members].sort(
+    (a, b) =>
+      Number(b.isActive) - Number(a.isActive) ||
+      a.uniformNumber.localeCompare(b.uniformNumber, "ja", { numeric: true }) ||
+      b.uniformNumber.length - a.uniformNumber.length ||
+      a.name.localeCompare(b.name, "ja"),
+  );

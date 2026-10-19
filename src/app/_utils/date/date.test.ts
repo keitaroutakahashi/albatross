@@ -1,5 +1,9 @@
 import {
+  formatAsDayName,
+  formatAsFullDate,
+  formatAsTime24,
   formatJstDateTimeWithDay,
+  getDayOfWeek,
   getJstDayRange,
   getMonthInJst,
   isOnOrAfterJstDay,
@@ -82,5 +86,36 @@ describe("isOnOrAfterJstDay", () => {
     expect(isOnOrAfterJstDay(new Date("2026-10-25T15:30:00Z"), date)).toBe(
       true,
     );
+  });
+});
+
+describe("イベント日時の表示は日本時間", () => {
+  // テストは TZ=Asia/Tokyo で動く（tests/vitest.setup.ts）ため、UTC で動く本番サーバー（Vercel）相当にする
+  const originalTz = process.env.TZ;
+  beforeAll(() => {
+    process.env.TZ = "UTC";
+  });
+  afterAll(() => {
+    process.env.TZ = originalTz;
+  });
+
+  // 2026-10-17 13:00 JST。サーバーが UTC でも 04:00 や前日にならない
+  const date = new Date("2026-10-17T04:00:00Z");
+
+  it("時刻を日本時間で返す", () => {
+    expect(formatAsTime24(date)).toBe("13:00");
+  });
+
+  it("日本時間で日付をまたぐ UTC の時刻は、翌日の日付と曜日を返す", () => {
+    // 2026-10-18 (日) 00:30 JST
+    const early = new Date("2026-10-17T15:30:00Z");
+    expect(formatAsFullDate(early)).toBe("2026年10月18日");
+    expect(formatAsDayName(early)).toBe("日");
+    expect(getDayOfWeek(early)).toBe(0);
+  });
+
+  it("曜日を日本時間で返す", () => {
+    expect(formatAsDayName(date)).toBe("土");
+    expect(getDayOfWeek(date)).toBe(6);
   });
 });

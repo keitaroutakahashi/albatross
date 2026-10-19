@@ -2,57 +2,52 @@ import { format } from "@formkit/tempo";
 
 const localeJa = "ja";
 const localeEn = "en";
+const JST = "Asia/Tokyo";
 
-export const formatAsMDWithColon = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "M.D", localeJa);
-};
+/**
+ * 日本時間で整形する。tz を指定しないとサーバーのタイムゾーン（Vercel では UTC）で整形され、
+ * 13:00 の試合が 04:00 と表示されたり、日付が 1 日前になったりする
+ */
+const formatInJst = (
+  dateString: string | Date,
+  pattern: string,
+  locale: string,
+) => format({ date: new Date(dateString), format: pattern, locale, tz: JST });
 
-export const formatToShortDayNameEn = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "ddd", localeEn);
-};
+export const formatAsMDWithColon = (dateString: string | Date) =>
+  formatInJst(dateString, "M.D", localeJa);
 
-/** 曜日のインデックスを返す（0: 日曜, 6: 土曜） */
-export const getDayOfWeek = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return date.getDay();
-};
+export const formatToShortDayNameEn = (dateString: string | Date) =>
+  formatInJst(dateString, "ddd", localeEn);
 
-export const formatAsYYYY = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "YYYY", localeJa);
-};
+const DAY_NAMES_EN = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+/** 日本時間での曜日のインデックスを返す（0: 日曜, 6: 土曜） */
+export const getDayOfWeek = (dateString: string | Date) =>
+  DAY_NAMES_EN.indexOf(formatToShortDayNameEn(dateString));
+
+export const formatAsYYYY = (dateString: string | Date) =>
+  formatInJst(dateString, "YYYY", localeJa);
 
 /** "04.06" のように月日をフォーマットする */
-export const formatAsMMDDWithDot = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "MM.DD", localeJa);
-};
+export const formatAsMMDDWithDot = (dateString: string | Date) =>
+  formatInJst(dateString, "MM.DD", localeJa);
 
 /** "2025.04.06" のように日付をフォーマットする */
-export const formatAsYYYYMMDDWithDot = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "YYYY.MM.DD", localeJa);
-};
+export const formatAsYYYYMMDDWithDot = (dateString: string | Date) =>
+  formatInJst(dateString, "YYYY.MM.DD", localeJa);
 
 /** "2025年4月6日" のように日付をフォーマットする */
-export const formatAsFullDate = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "YYYY年M月D日", localeJa);
-};
+export const formatAsFullDate = (dateString: string | Date) =>
+  formatInJst(dateString, "YYYY年M月D日", localeJa);
 
 /** "日" のように曜日を返す */
-export const formatAsDayName = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "d", localeJa);
-};
+export const formatAsDayName = (dateString: string | Date) =>
+  formatInJst(dateString, "d", localeJa);
 
 /** "14:30" のように24時間表記で時刻を返す */
-export const formatAsTime24 = (dateString: string | Date) => {
-  const date = new Date(dateString);
-  return format(date, "HH:mm", localeJa);
-};
+export const formatAsTime24 = (dateString: string | Date) =>
+  formatInJst(dateString, "HH:mm", localeJa);
 
 export const getCurrentSeason = () => {
   const now = new Date();
