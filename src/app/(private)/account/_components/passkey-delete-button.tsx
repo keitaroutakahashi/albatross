@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
 import { deletePasskey } from "@/app/_actions/auth";
 import { Button } from "@/app/_components/shadcn/button";
+import { Spinner } from "@/app/_components/ui/spinner";
 
 type Props = { id: string; label: string };
 
@@ -29,7 +30,7 @@ export const PasskeyDeleteButton = ({ id, label }: Props) => {
         disabled={isPending}
         onClick={handleClick}
       >
-        <Trash2 />
+        {isPending ? <Spinner /> : <Trash2 />}
         削除
       </Button>
       {message && (

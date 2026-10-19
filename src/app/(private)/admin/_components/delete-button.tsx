@@ -13,6 +13,8 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/app/_components/shadcn/drawer";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
+import { Spinner } from "@/app/_components/ui/spinner";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 
 type Props = {
@@ -27,6 +29,7 @@ export const DeleteButton = ({ targetName, warning, action }: Props) => {
   const [open, setOpen] = useState(false);
   const [message, setMessage] = useState<string>();
   const [isPending, startTransition] = useTransition();
+  useNavigationProgressWhile(isPending);
 
   const handleDelete = () => {
     startTransition(async () => {
@@ -71,6 +74,7 @@ export const DeleteButton = ({ targetName, warning, action }: Props) => {
             disabled={isPending}
             onClick={handleDelete}
           >
+            {isPending && <Spinner />}
             {isPending ? "削除中…" : "削除する"}
           </Button>
           <DrawerClose asChild>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { Spinner } from "@/app/_components/ui/spinner";
 import { eventStatusLabel } from "@/app/_constants/labels";
 import { updateEventStatus } from "@/app/(private)/admin/_actions/event";
 import type { EventStatus } from "@/generated/prisma/enums";
@@ -58,7 +59,10 @@ export const EventStatusControl = ({ eventId, status }: Props) => {
                 : "bg-background text-muted-foreground hover:bg-accent",
             )}
           >
-            {eventStatusLabel[value]}
+            <span className="inline-flex items-center justify-center gap-1.5">
+              {pending && current === value && <Spinner className="size-4" />}
+              {eventStatusLabel[value]}
+            </span>
           </button>
         ))}
       </div>

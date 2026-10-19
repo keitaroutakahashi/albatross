@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "@/app/globals.css";
 import clsx from "clsx";
+import { Suspense } from "react";
+import { NavigationProgress } from "@/app/_components/ui/navigation-progress";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -35,6 +37,10 @@ export default function Layout({ children }: LayoutProps<"/">) {
           "break-normal",
         )}
       >
+        {/* useSearchParams を使うため、静的なページの生成を妨げないよう Suspense で囲む */}
+        <Suspense fallback={null}>
+          <NavigationProgress />
+        </Suspense>
         {children}
       </body>
     </html>

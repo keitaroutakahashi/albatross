@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { fetchPitchingStats } from "@/app/_actions/fetch-pitching-stats";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import { StatsFilterBar } from "@/app/_components/ui/stats-filter-bar";
 import { StatsRankingTable } from "@/app/_components/ui/stats-ranking-table";
 import type { PitchingStatsResult } from "@/app/_features/members/api/get-pitching-stats";
@@ -32,6 +33,7 @@ export const PitchingStatsView = ({
   const [qualifiedOnly, setQualifiedOnly] = useState(true);
   const [stats, setStats] = useState(initialStats);
   const [isPending, startTransition] = useTransition();
+  useNavigationProgressWhile(isPending);
 
   const category =
     PITCHING_CATEGORIES.find((c) => c.key === categoryKey) ??

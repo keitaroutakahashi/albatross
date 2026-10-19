@@ -3,13 +3,18 @@
 import { startAuthentication } from "@simplewebauthn/browser";
 import { Fingerprint } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTransition } from "react";
 import { beginLogin, completeLogin } from "@/app/_actions/auth";
 import { Button } from "@/app/_components/shadcn/button";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import { usePasskeyCeremony } from "@/app/_features/auth/hooks/use-passkey-ceremony";
 
 export const LoginButton = () => {
   const router = useRouter();
   const { pending, error, run } = usePasskeyCeremony();
+  // ログイン後に管理画面へ切り替わるまでの待ち時間
+  const [navigating, startNavigation] = useTransition();
+  useNavigationProgressWhile(navigating);
 
   const handleClick = async () => {
     const ok = await run(async () => {
@@ -20,7 +25,7 @@ export const LoginButton = () => {
       });
       return completeLogin(begin.challengeId, response);
     });
-    if (ok) router.replace("/admin");
+    if (ok) startNavigation(() => router.replace("/admin"));
   };
 
   return (
@@ -36,7 +41,7 @@ export const LoginButton = () => {
       <Button
         size="lg"
         className="h-11"
-        disabled={pending}
+        disabled={pending || navigating}
         onClick={handleClick}
       >
         <Fingerprint />
