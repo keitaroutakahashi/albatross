@@ -1,6 +1,7 @@
 import { SectionGroup } from "@/app/_components/ui/section-group";
 import { SubSectionGroup } from "@/app/_components/ui/sub-section-group";
 import type { GameDetail } from "@/app/_features/games/api/get-games";
+import { ScoringPositionLegend } from "@/app/(public)/events/[id]/_components/game/at-bat-result-badge";
 import { GamePitchers } from "@/app/(public)/events/[id]/_components/game/game-pitchers";
 import { ResultsTableHeader } from "@/app/(public)/events/[id]/_components/game/results-table-header";
 import { ResultsTableRow } from "@/app/(public)/events/[id]/_components/game/results-table-row";
@@ -21,6 +22,16 @@ export const GameResults = ({ game }: Props) => {
   if (starters.length === 0) {
     return null;
   }
+
+  // 終了した試合は、投手成績がなければ項目ごと表示しない
+  const showPitchers =
+    game.event.status !== "completed" ||
+    game.gameMembers.some((gm) => gm.pitchingResult != null);
+
+  // 得点圏の打席がある試合だけ、凡例を出す
+  const hasScoringPosition = game.gameMembers.some((gm) =>
+    gm.plateAppearances.some((pa) => pa.isScoringPosition),
+  );
 
   // イニング得点が未入力・不足でも、打席があるイニングの成績は表示する
   const inningCount = Math.max(
@@ -48,11 +59,14 @@ export const GameResults = ({ game }: Props) => {
               </tbody>
             </table>
           </div>
+          {hasScoringPosition && <ScoringPositionLegend />}
         </SubSectionGroup>
 
-        <SubSectionGroup title="投手成績">
-          <GamePitchers game={game} />
-        </SubSectionGroup>
+        {showPitchers && (
+          <SubSectionGroup title="投手成績">
+            <GamePitchers game={game} />
+          </SubSectionGroup>
+        )}
       </div>
     </SectionGroup>
   );

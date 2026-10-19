@@ -9,8 +9,10 @@ import { Schedule } from "@/app/(public)/_components/schedule";
 export default function Page() {
   return (
     <div className="">
-      {/* Hero と NextGameBar を合わせてファーストビューの縦幅いっぱいにする */}
-      <div className="flex flex-col h-[calc(100dvh-var(--size-header-height))]">
+      {/* Hero と NextGameBar を合わせてファーストビューの縦幅いっぱいにする。
+          dvh だとスマホのスクロールでアドレスバーが出入りするたびに高さが変わり、
+          object-cover の画像が拡大・縮小して見えるため、高さが変わらない svh を使う */}
+      <div className="flex flex-col h-[calc(100svh-var(--size-header-height))]">
         <Hero />
         <NextGameBar />
       </div>

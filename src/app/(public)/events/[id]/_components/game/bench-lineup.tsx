@@ -11,6 +11,11 @@ export const BenchLineup = ({ game }: Props) => {
     (gm) => gm.memberType === "bench",
   );
 
+  // 終了した試合は、情報があるものだけを表示する
+  if (game.event.status === "completed" && benchMembers.length === 0) {
+    return null;
+  }
+
   return (
     <SectionGroup title="ベンチ入りメンバー">
       <div className="bg-gray-50 p-4 rounded">

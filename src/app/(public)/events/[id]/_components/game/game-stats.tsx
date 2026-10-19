@@ -12,6 +12,7 @@ import {
   calculateOnBasePercentage,
   calculateSluggingPercentage,
 } from "@/app/_utils/stats/batting";
+import { summarizeBatting } from "@/app/_utils/stats/batting-summary";
 import { formatEraFromStats } from "@/app/_utils/stats/era";
 import { formatRate } from "@/app/_utils/stats/rate";
 
@@ -24,6 +25,8 @@ type TeamBattingStats = {
   avg: string;
   slg: string;
   obp: string;
+  /** 得点圏打率。得点圏の打数が 0 のときは "-" */
+  risp: string;
   pa: number;
   ab: number;
   h: number;
@@ -75,6 +78,7 @@ const calcTeamBattingStats = (
     avg: formatRate(average, ".000"),
     slg: formatRate(sluggingPercentage, ".000"),
     obp: formatRate(onBasePercentage, ".000"),
+    risp: formatRate(summarizeBatting(allPAs).scoringPositionAverage),
     pa: allPAs.length,
     ab,
     h,
@@ -166,6 +170,7 @@ const battingColumns: ColumnDef<TeamBattingStats>[] = [
   { key: "avg", header: "打率", cell: (row) => row.avg },
   { key: "slg", header: "長打率", cell: (row) => row.slg },
   { key: "obp", header: "出塁率", cell: (row) => row.obp },
+  { key: "risp", header: "得点圏打率", cell: (row) => row.risp },
   { key: "pa", header: "打席", cell: (row) => row.pa },
   { key: "ab", header: "打数", cell: (row) => row.ab },
   { key: "h", header: "安", cell: (row) => row.h },
@@ -192,25 +197,37 @@ export const GameStats = ({ game }: Props) => {
     return null;
   }
 
-  const stats = calcTeamBattingStats(members);
-  const pitchingStats = calcTeamPitchingStats(members);
+  // 終了した試合は、打席・投手成績のあるものだけを表示する
+  const hideEmpty = game.event.status === "completed";
+  const showBatting =
+    !hideEmpty || members.some((gm) => gm.plateAppearances.length > 0);
+  const showPitching =
+    !hideEmpty || members.some((gm) => gm.pitchingResult != null);
+
+  if (!showBatting && !showPitching) {
+    return null;
+  }
 
   return (
     <SectionGroup title="チーム成績">
-      <SubSectionGroup title="打者成績">
-        <DataTable
-          columns={battingColumns}
-          data={[stats]}
-          keyExtractor={() => "team"}
-        />
-      </SubSectionGroup>
-      <SubSectionGroup title="投手成績">
-        <DataTable
-          columns={pitchingColumns}
-          data={[pitchingStats]}
-          keyExtractor={() => "team"}
-        />
-      </SubSectionGroup>
+      {showBatting && (
+        <SubSectionGroup title="打者成績">
+          <DataTable
+            columns={battingColumns}
+            data={[calcTeamBattingStats(members)]}
+            keyExtractor={() => "team"}
+          />
+        </SubSectionGroup>
+      )}
+      {showPitching && (
+        <SubSectionGroup title="投手成績">
+          <DataTable
+            columns={pitchingColumns}
+            data={[calcTeamPitchingStats(members)]}
+            keyExtractor={() => "team"}
+          />
+        </SubSectionGroup>
+      )}
     </SectionGroup>
   );
 };

@@ -9,7 +9,7 @@ type Props = {
     teamScore: number | null;
     opponentScore: number | null;
   }[];
-  isScheduled: boolean;
+  isUnplayed: boolean;
   showForfeitedRuns: boolean;
 };
 
@@ -22,12 +22,11 @@ const addForfeitedRuns = (
 export const ScoreBoardBody = ({
   game,
   innings,
-  isScheduled,
+  isUnplayed,
   showForfeitedRuns,
 }: Props) => {
-  // 予定試合は集計値が入っていても表示しない
-  const hideIfScheduled = (score: number | null) =>
-    isScheduled ? null : score;
+  // 予定・中止の試合は集計値が入っていても表示しない（「-」になる）
+  const hideIfUnplayed = (score: number | null) => (isUnplayed ? null : score);
 
   return (
     <tbody>
@@ -49,7 +48,7 @@ export const ScoreBoardBody = ({
         <ScoreBoardCell
           isBold
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting
               ? addForfeitedRuns(game.teamScore, game.teamForfeitedRuns)
               : addForfeitedRuns(
@@ -60,13 +59,13 @@ export const ScoreBoardBody = ({
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting ? game.teamHits : game.opponentHits,
           )}
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting ? game.teamErrors : game.opponentErrors,
           )}
         />
@@ -101,7 +100,7 @@ export const ScoreBoardBody = ({
         <ScoreBoardCell
           isBold
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting
               ? addForfeitedRuns(game.opponentScore, game.opponentForfeitedRuns)
               : addForfeitedRuns(game.teamScore, game.teamForfeitedRuns),
@@ -109,13 +108,13 @@ export const ScoreBoardBody = ({
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting ? game.opponentHits : game.teamHits,
           )}
         />
         <ScoreBoardCell
           bgColor="bg-gray-100"
-          score={hideIfScheduled(
+          score={hideIfUnplayed(
             game.isFirstBatting ? game.opponentErrors : game.teamErrors,
           )}
         />
