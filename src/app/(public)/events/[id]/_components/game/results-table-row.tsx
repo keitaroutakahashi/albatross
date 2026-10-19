@@ -25,7 +25,12 @@ export const ResultsTableRow = ({ gameMember, inningCount }: Props) => {
   // イニング別の打席結果マップ（同一イニング複数打席対応）
   const inningResultMap = new Map<
     number,
-    { text: string; colorClass: string; rbi: number }[]
+    {
+      text: string;
+      colorClass: string;
+      rbi: number;
+      isScoringPosition: boolean;
+    }[]
   >();
   for (const pa of pas) {
     const results = inningResultMap.get(pa.inningNumber) ?? [];
@@ -33,6 +38,7 @@ export const ResultsTableRow = ({ gameMember, inningCount }: Props) => {
       text: formatAtBatResult(pa.result, pa.direction),
       colorClass: getResultColorClass(pa.result),
       rbi: pa.rbi,
+      isScoringPosition: pa.isScoringPosition,
     });
     inningResultMap.set(pa.inningNumber, results);
   }
@@ -73,6 +79,7 @@ export const ResultsTableRow = ({ gameMember, inningCount }: Props) => {
                     text={r.text}
                     colorClass={r.colorClass}
                     rbi={r.rbi}
+                    isScoringPosition={r.isScoringPosition}
                   />
                 ))
               : ""}

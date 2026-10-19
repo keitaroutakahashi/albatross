@@ -30,11 +30,15 @@ type Props = {
   game: GameDetail;
 };
 
+type Row = { label: string; value: string };
+
 export const GameInfo = ({ game }: Props) => {
   const isScheduled = game.event.status === "scheduled";
-  // 試合前は投手成績がないため、オーダーで投手の守備位置に入っている選手を表示する
+  // 終了した試合は、情報があるものだけを表示する。予定・中止の試合は、枠を空のまま表示する
+  const hideEmpty = game.event.status === "completed";
   const pitchers = isScheduled
-    ? getMembersByPosition(game.gameMembers, "pitcher")
+    ? // 試合前は投手成績がないため、オーダーで投手の守備位置に入っている選手を表示する
+      getMembersByPosition(game.gameMembers, "pitcher")
     : getPitchers(game.gameMembers);
   const responsiblePitcher = getResponsiblePitcher(game.gameMembers);
   const decision = resolvePitchingDecision(
@@ -46,13 +50,52 @@ export const GameInfo = ({ game }: Props) => {
   );
   const catchers = getMembersByPosition(game.gameMembers, "catcher");
 
+  const names = (members: GameDetail["gameMembers"]) =>
+    members.map((gm) => gm.member.name).join("、");
+  const visibleRows = (rows: Row[]) =>
+    hideEmpty ? rows.filter((row) => row.value !== "") : rows;
+
+  const responsibleRows = visibleRows([
+    {
+      label:
+        decision === "win"
+          ? "勝利投手"
+          : decision === "loss"
+            ? "敗戦投手"
+            : "責任投手",
+      value: responsiblePitcher?.member.name || "",
+    },
+    { label: "二塁打", value: names(doubles) },
+    { label: "三塁打", value: names(triples) },
+    { label: "本塁打", value: names(homeRuns) },
+  ]);
+  const batteryRows = visibleRows([
+    { label: "投手", value: names(pitchers) },
+    { label: "捕手", value: names(catchers) },
+  ]);
+
+  const showMvp = isScheduled || game.mvps.length > 0;
+  const showGround = !hideEmpty || game.ground !== null;
+  const showWeather = !hideEmpty || game.gameWeather !== null;
+  const showVideo = !!game.videoUrl;
+
+  if (
+    hideEmpty &&
+    !showMvp &&
+    responsibleRows.length === 0 &&
+    batteryRows.length === 0 &&
+    !showGround &&
+    !showWeather &&
+    !showVideo
+  ) {
+    return null;
+  }
+
   return (
     <SectionGroup title="試合情報">
-      {isScheduled ? (
-        <SubSectionGroup title="MVP" />
-      ) : (
-        game.mvps.length > 0 && (
-          <SubSectionGroup title="MVP">
+      {showMvp && (
+        <SubSectionGroup title="MVP">
+          {!isScheduled && (
             <ul className="border-t">
               {game.mvps.map((mvp) => (
                 <li key={mvp.id} className="border-b p-3">
@@ -67,94 +110,82 @@ export const GameInfo = ({ game }: Props) => {
                 </li>
               ))}
             </ul>
-          </SubSectionGroup>
-        )
+          )}
+        </SubSectionGroup>
       )}
 
-      <SubSectionGroup title="責任投手・長打">
-        <div className="grid grid-cols-[auto_1fr] border-t">
-          <TableRow
-            label={
-              decision === "win"
-                ? "勝利投手"
-                : decision === "loss"
-                  ? "敗戦投手"
-                  : "責任投手"
-            }
-            value={responsiblePitcher?.member.name || ""}
-          />
-          <TableRow
-            label="二塁打"
-            value={doubles.map((gm) => gm.member.name).join("、")}
-          />
-          <TableRow
-            label="三塁打"
-            value={triples.map((gm) => gm.member.name).join("、")}
-          />
-          <TableRow
-            label="本塁打"
-            value={homeRuns.map((gm) => gm.member.name).join("、")}
-          />
-        </div>
-      </SubSectionGroup>
-
-      <SubSectionGroup title="バッテリー">
-        <div className="grid grid-cols-[auto_1fr] border-t">
-          <TableRow
-            label="投手"
-            value={pitchers.map((gm) => gm.member.name).join("、")}
-          />
-          <TableRow
-            label="捕手"
-            value={catchers.map((gm) => gm.member.name).join("、")}
-          />
-        </div>
-      </SubSectionGroup>
-
-      <SubSectionGroup title="グラウンド">
-        {game.ground ? (
-          <div>
-            <a
-              href={game.ground.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm font-semibold underline underline-offset-2 hover:opacity-70"
-            >
-              {game.ground.name}
-            </a>
-            {game.groundCourt && (
-              <p className="mt-1 text-sm font-semibold">{game.groundCourt}</p>
-            )}
-            <p className="text-xs text-gray-500 mt-1">
-              ( {game.ground?.address} )
-            </p>
-            <p className="text-xs mt-2 text-gray-700">{game.ground?.access}</p>
-            {game.ground.mapEmbedUrl && (
-              <div className="mt-3">
-                <GoogleMapEmbed
-                  url={game.ground.mapEmbedUrl}
-                  title={`${game.ground.name}の地図`}
-                />
-              </div>
-            )}
+      {responsibleRows.length > 0 && (
+        <SubSectionGroup title="責任投手・長打">
+          <div className="grid grid-cols-[auto_1fr] border-t">
+            {responsibleRows.map((row) => (
+              <TableRow key={row.label} label={row.label} value={row.value} />
+            ))}
           </div>
-        ) : (
-          <p className="text-sm font-semibold">会場未定</p>
-        )}
-      </SubSectionGroup>
+        </SubSectionGroup>
+      )}
 
-      <SubSectionGroup title="天候">
-        {!isScheduled && (
-          <>
-            <WeatherIcon weather={game.gameWeather?.weather} />
-            <p className="text-sm mt-2 text-gray-500">
-              {game.gameWeather?.temperature}℃
-            </p>
-          </>
-        )}
-      </SubSectionGroup>
+      {batteryRows.length > 0 && (
+        <SubSectionGroup title="バッテリー">
+          <div className="grid grid-cols-[auto_1fr] border-t">
+            {batteryRows.map((row) => (
+              <TableRow key={row.label} label={row.label} value={row.value} />
+            ))}
+          </div>
+        </SubSectionGroup>
+      )}
 
-      {game.videoUrl && (
+      {showGround && (
+        <SubSectionGroup title="グラウンド">
+          {game.ground ? (
+            <div>
+              <a
+                href={game.ground.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-sm font-semibold underline underline-offset-2 hover:opacity-70"
+              >
+                {game.ground.name}
+              </a>
+              {game.groundCourt && (
+                <p className="mt-1 text-sm font-semibold">{game.groundCourt}</p>
+              )}
+              <p className="text-xs text-gray-500 mt-1">
+                ( {game.ground?.address} )
+              </p>
+              <p className="text-xs mt-2 text-gray-700">
+                {game.ground?.access}
+              </p>
+              {game.ground.mapEmbedUrl && (
+                <div className="mt-3">
+                  <GoogleMapEmbed
+                    url={game.ground.mapEmbedUrl}
+                    title={`${game.ground.name}の地図`}
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm font-semibold">会場未定</p>
+          )}
+        </SubSectionGroup>
+      )}
+
+      {showWeather && (
+        <SubSectionGroup title="天候">
+          {!isScheduled && (
+            <>
+              <WeatherIcon weather={game.gameWeather?.weather} />
+              {game.gameWeather?.temperature != null && (
+                <p className="text-sm mt-2 text-gray-500">
+                  {game.gameWeather.temperature}℃
+                </p>
+              )}
+            </>
+          )}
+        </SubSectionGroup>
+      )}
+
+      {showVideo && game.videoUrl && (
         <SubSectionGroup title="試合動画">
           <YouTubeEmbed url={game.videoUrl} />
         </SubSectionGroup>

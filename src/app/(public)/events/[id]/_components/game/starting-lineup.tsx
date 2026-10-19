@@ -12,6 +12,11 @@ export const StartingLineup = ({ game }: Props) => {
     (gm) => gm.memberType === "starting",
   );
 
+  // 終了した試合は、情報があるものだけを表示する
+  if (game.event.status === "completed" && startingMembers.length === 0) {
+    return null;
+  }
+
   return (
     <SectionGroup title="スターティングメンバー">
       <div className="bg-gray-50 p-4 rounded">
@@ -35,6 +40,9 @@ export const StartingLineup = ({ game }: Props) => {
               >
                 {member.member.name}
               </Link>
+              <span className="pl-2 text-xs @content:text-sm text-gray-500">
+                #{member.member.uniformNumber}
+              </span>
             </li>
           ))}
         </ul>
