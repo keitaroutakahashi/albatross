@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { fetchBattingStats } from "@/app/_actions/fetch-batting-stats";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import { StatsFilterBar } from "@/app/_components/ui/stats-filter-bar";
 import { StatsRankingTable } from "@/app/_components/ui/stats-ranking-table";
 import type { BattingStatsResult } from "@/app/_features/members/api/get-batting-stats";
@@ -33,6 +34,7 @@ export const BattingStatsView = ({
   const [qualifiedOnly, setQualifiedOnly] = useState(true);
   const [stats, setStats] = useState(initialStats);
   const [isPending, startTransition] = useTransition();
+  useNavigationProgressWhile(isPending);
 
   const category =
     BATTING_CATEGORIES.find((c) => c.key === categoryKey) ??

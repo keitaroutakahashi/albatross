@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import {
   Select,
   SelectContent,
@@ -8,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/_components/shadcn/select";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import {
   EVENT_TYPE_LABELS,
   parseEventType,
@@ -27,6 +29,8 @@ const ALL_TYPES = "all";
 export function EventFilterSelector({ seasons, defaultSeason }: Props) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
+  useNavigationProgressWhile(isPending);
 
   const currentSeason = searchParams.get("season") ?? String(defaultSeason);
   const currentType =
@@ -39,7 +43,9 @@ export function EventFilterSelector({ seasons, defaultSeason }: Props) {
     } else {
       params.set(key, value);
     }
-    router.push(`/events?${params.toString()}`);
+    startTransition(() => {
+      router.push(`/events?${params.toString()}`);
+    });
   };
 
   return (

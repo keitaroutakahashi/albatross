@@ -1,9 +1,9 @@
-import { Cloud, LogOut, Smartphone } from "lucide-react";
+import { Cloud, Smartphone } from "lucide-react";
 import type { Metadata } from "next";
 import { logout } from "@/app/_actions/auth";
-import { Button } from "@/app/_components/shadcn/button";
 import { userRoleLabel } from "@/app/_constants/labels";
 import { PasskeyRegisterForm } from "@/app/_features/auth/components/passkey-register-form";
+import { LogoutButton } from "@/app/(private)/account/_components/logout-button";
 import { PasskeyDeleteButton } from "@/app/(private)/account/_components/passkey-delete-button";
 import { requireUser } from "@/lib/auth/current-user";
 import prisma from "@/lib/prisma";
@@ -84,10 +84,7 @@ export default async function Page() {
       </section>
 
       <form action={logout}>
-        <Button type="submit" variant="outline" size="lg" className="w-full">
-          <LogOut />
-          ログアウト
-        </Button>
+        <LogoutButton />
       </form>
     </>
   );

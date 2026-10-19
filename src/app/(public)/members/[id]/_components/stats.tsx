@@ -15,6 +15,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/app/_components/shadcn/tabs";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import { SectionGroup } from "@/app/_components/ui/section-group";
 import { ALL_SEASONS } from "@/app/_constants/stats";
 import type { MemberStatsResult } from "@/app/_features/members/api/get-member-stats";
@@ -49,6 +50,7 @@ export const Stats = ({ memberId, seasons, initialStats }: Props) => {
   const [season, setSeason] = useState(initialStats.season);
   const [stats, setStats] = useState(initialStats);
   const [isPending, startTransition] = useTransition();
+  useNavigationProgressWhile(isPending);
 
   const handleSeasonChange = (nextSeason: string) => {
     setSeason(nextSeason);

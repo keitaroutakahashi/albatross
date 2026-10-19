@@ -3,7 +3,7 @@
 import { startRegistration } from "@simplewebauthn/browser";
 import { Fingerprint } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   beginAddPasskey,
   beginInvitationRegistration,
@@ -13,6 +13,7 @@ import {
 import { Button } from "@/app/_components/shadcn/button";
 import { Input } from "@/app/_components/shadcn/input";
 import { Label } from "@/app/_components/shadcn/label";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
 import { usePasskeyCeremony } from "@/app/_features/auth/hooks/use-passkey-ceremony";
 
 type Props =
@@ -35,6 +36,9 @@ const guessDeviceName = (): string => {
 export const PasskeyRegisterForm = (props: Props) => {
   const router = useRouter();
   const { pending, error, run } = usePasskeyCeremony();
+  // 招待からの登録後に管理画面へ切り替わるまでの待ち時間
+  const [navigating, startNavigation] = useTransition();
+  useNavigationProgressWhile(navigating);
   const [name, setName] = useState("");
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -67,8 +71,9 @@ export const PasskeyRegisterForm = (props: Props) => {
     });
     if (!ok) return;
 
-    if (props.mode === "invitation") router.replace("/admin");
-    else setName("");
+    if (props.mode === "invitation") {
+      startNavigation(() => router.replace("/admin"));
+    } else setName("");
   };
 
   return (
@@ -91,7 +96,12 @@ export const PasskeyRegisterForm = (props: Props) => {
           onChange={(e) => setName(e.target.value)}
         />
       </div>
-      <Button type="submit" size="lg" className="h-11" disabled={pending}>
+      <Button
+        type="submit"
+        size="lg"
+        className="h-11"
+        disabled={pending || navigating}
+      >
         <Fingerprint />
         {pending ? "登録中…" : "パスキーを登録する"}
       </Button>

@@ -3,6 +3,8 @@
 import type { ReactNode } from "react";
 import { useActionState } from "react";
 import { Button } from "@/app/_components/shadcn/button";
+import { useNavigationProgressWhile } from "@/app/_components/ui/navigation-progress/use-navigation-progress-while";
+import { Spinner } from "@/app/_components/ui/spinner";
 import { DeleteButton } from "@/app/(private)/admin/_components/delete-button";
 import {
   type ActionState,
@@ -33,6 +35,8 @@ export const FormShell = ({
     action,
     initialActionState,
   );
+  // 保存後のリダイレクトで画面が切り替わるまでの待ち時間も、進捗バーで示す
+  useNavigationProgressWhile(isPending);
 
   return (
     <div className="flex flex-col gap-8 p-4">
@@ -65,6 +69,7 @@ export const FormShell = ({
             disabled={isPending}
             className="h-11 w-full"
           >
+            {isPending && <Spinner />}
             {isPending ? submitLabel.pending : submitLabel.idle}
           </Button>
         </div>

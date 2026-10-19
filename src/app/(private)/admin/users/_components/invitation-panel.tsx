@@ -4,6 +4,7 @@ import { Check, Copy, Link as LinkIcon } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Button } from "@/app/_components/shadcn/button";
 import { Input } from "@/app/_components/shadcn/input";
+import { Spinner } from "@/app/_components/ui/spinner";
 
 type IssueResult =
   | { ok: true; url: string; expiresAt: string }
@@ -75,7 +76,7 @@ export const InvitationPanel = ({ canSignIn, passkeyCount, issue }: Props) => {
           disabled={isPending}
           onClick={handleIssue}
         >
-          <LinkIcon />
+          {isPending ? <Spinner /> : <LinkIcon />}
           {registered ? "招待リンクを再発行" : "招待リンクを発行"}
         </Button>
       </div>
