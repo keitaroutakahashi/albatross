@@ -107,6 +107,7 @@ Tailwind CSS の `md`（768px）を基準にレスポンシブ対応を行う。
 - 管理画面（`/admin`）とアカウント画面（`/account`）はパスキーでログインする。ログインできるのは管理者・運営のみ
 - DB を作り直すとユーザーのパスキーも消えるため、`pnpm auth:invite` で招待リンクを発行して登録し直す
 - 環境変数 `WEBAUTHN_ORIGIN`（例: `https://example.com`）と `WEBAUTHN_RP_ID`（例: `example.com`）は本番で必須。RP ID を変えると登録済みのパスキーがすべて使えなくなる
+- ローカル開発でパスキー登録を省くときは、`.env.local` に `AUTH_DISABLED_FOR_DEV=true` を書く。`pnpm dev` でだけ有効で、最初の管理者（無ければ開発用の管理者）としてログイン済みになる。本番では、この環境変数を設定しても無視して認証が有効のまま（`src/lib/auth/dev-bypass.ts`）。認証まわりの動作確認をするときは外す
 - 権限の確認は `proxy.ts` では行わない（Cookie の有無だけ見る）。各ページ・Server Action・データ取得関数で `requireAccess` などを必ず呼ぶ
 
 ## 注意事項

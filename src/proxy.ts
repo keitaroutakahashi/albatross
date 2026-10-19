@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie-name";
+import { isDevAuthBypass } from "@/lib/auth/dev-bypass";
 
 /**
  * セッション Cookie の有無だけを見て、未ログインの人をログイン画面へ送る。
@@ -7,7 +8,9 @@ import { SESSION_COOKIE_NAME } from "@/lib/auth/cookie-name";
  * 権限の確認は、各ページ・Server Action・データ取得関数で必ず行うこと。
  */
 export function proxy(request: NextRequest) {
-  if (request.cookies.has(SESSION_COOKIE_NAME)) return NextResponse.next();
+  if (request.cookies.has(SESSION_COOKIE_NAME) || isDevAuthBypass()) {
+    return NextResponse.next();
+  }
   return NextResponse.redirect(new URL("/login", request.url));
 }
 
