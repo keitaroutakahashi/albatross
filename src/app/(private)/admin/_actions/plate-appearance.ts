@@ -1,7 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { parseAtBats } from "@/app/(private)/admin/_schemas/plate-appearance";
+import {
+  parseAtBats,
+  parseStolenBases,
+  STOLEN_BASES_FIELD,
+} from "@/app/(private)/admin/_schemas/plate-appearance";
 import {
   revalidateAll,
   toFailureState,
@@ -16,6 +20,7 @@ import prisma from "@/lib/prisma";
 /**
  * 1 人分の打席を、送信された内容に置き換える。
  * 打席番号は行の位置で決まり、フォームから外した（空にした）打席は削除する。
+ * 盗塁数（その試合の合計）も、同じ画面で保存する。
  * 試合の安打（自）・失策（相手）も、同じトランザクションで再計算する。
  */
 export const savePlateAppearances = async (
@@ -27,7 +32,13 @@ export const savePlateAppearances = async (
   await requireAccess("events");
 
   const parsed = parseAtBats(formData);
-  if (!parsed.success) return toFieldErrorState(formData, parsed.fieldErrors);
+  const stolen = parseStolenBases(formData);
+  if (!parsed.success || !stolen.success) {
+    return toFieldErrorState(formData, {
+      ...(parsed.success ? {} : parsed.fieldErrors),
+      ...(stolen.success ? {} : { [STOLEN_BASES_FIELD]: stolen.message }),
+    });
+  }
 
   try {
     const gameId = await findGameId(eventId);
@@ -54,6 +65,10 @@ export const savePlateAppearances = async (
           update: entry,
         });
       }
+      await tx.gameMember.update({
+        where: { id: gameMemberId },
+        data: { stolenBases: stolen.stolenBases },
+      });
       await syncBattingTotals(tx, gameId);
     });
   } catch (error) {

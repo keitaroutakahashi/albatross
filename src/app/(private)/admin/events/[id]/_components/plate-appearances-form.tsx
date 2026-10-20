@@ -11,8 +11,10 @@ import {
   AT_BATS_ERROR_KEY,
   atBatFieldName,
   MAX_AT_BATS,
+  MAX_STOLEN_BASES,
   NO_DIRECTION_RESULTS,
   NO_RBI_RESULTS,
+  STOLEN_BASES_FIELD,
 } from "@/app/(private)/admin/_schemas/plate-appearance";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import {
@@ -35,6 +37,8 @@ type Props = {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   /** 1 打席目から順の行。未登録の打席は空の値 */
   initialRows: AtBatRowInitial[];
+  /** この試合の盗塁数（合計） */
+  initialStolenBases: number;
 };
 
 const toArray = (value: string | string[] | undefined): string[] =>
@@ -212,7 +216,11 @@ const AtBatRow = ({ index, state, initial }: RowProps) => {
 };
 
 /** 1 人分の打席を並べて入力する。打席番号は行の位置で決まる */
-export const PlateAppearancesForm = ({ action, initialRows }: Props) => {
+export const PlateAppearancesForm = ({
+  action,
+  initialRows,
+  initialStolenBases,
+}: Props) => {
   const [count, setCount] = useState(
     Math.max(MIN_AT_BAT_ROWS, initialRows.length),
   );
@@ -221,6 +229,29 @@ export const PlateAppearancesForm = ({ action, initialRows }: Props) => {
     <FormShell action={action}>
       {(state) => (
         <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <Labeled label="盗塁数（この試合の合計）">
+              <Input
+                name={STOLEN_BASES_FIELD}
+                aria-label="盗塁数"
+                type="number"
+                inputMode="numeric"
+                min={0}
+                max={MAX_STOLEN_BASES}
+                defaultValue={
+                  state.values
+                    ? (toArray(state.values[STOLEN_BASES_FIELD])[0] ?? "0")
+                    : String(initialStolenBases)
+                }
+                className="h-11 w-28"
+              />
+            </Labeled>
+            {state.fieldErrors?.[STOLEN_BASES_FIELD] && (
+              <p role="alert" className="text-xs text-destructive">
+                {state.fieldErrors[STOLEN_BASES_FIELD]}
+              </p>
+            )}
+          </div>
           <ol className="flex flex-col gap-3">
             {Array.from({ length: count }, (_, i) => (
               <AtBatRow

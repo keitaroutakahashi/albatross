@@ -1,4 +1,7 @@
-import { parseAtBats } from "@/app/(private)/admin/_schemas/plate-appearance";
+import {
+  parseAtBats,
+  parseStolenBases,
+} from "@/app/(private)/admin/_schemas/plate-appearance";
 
 /** 同名の入力欄が複数ある FormData を作る */
 const toFormData = (fields: Record<string, string[]>) => {
@@ -187,5 +190,31 @@ describe("parseAtBats", () => {
       }),
     );
     expect(result.success).toBe(false);
+  });
+});
+
+describe("parseStolenBases", () => {
+  const withValue = (value?: string) => {
+    const formData = new FormData();
+    if (value !== undefined) formData.append("stolenBases", value);
+    return parseStolenBases(formData);
+  };
+
+  it("整数を数値に変換する", () => {
+    expect(withValue("3")).toEqual({ success: true, stolenBases: 3 });
+    expect(withValue("0")).toEqual({ success: true, stolenBases: 0 });
+    expect(withValue("99")).toEqual({ success: true, stolenBases: 99 });
+  });
+
+  it("未入力・空白は 0 として扱う", () => {
+    expect(withValue()).toEqual({ success: true, stolenBases: 0 });
+    expect(withValue("")).toEqual({ success: true, stolenBases: 0 });
+    expect(withValue("  ")).toEqual({ success: true, stolenBases: 0 });
+  });
+
+  it("負の数・小数・数値でない値・上限超えはエラーにする", () => {
+    for (const value of ["-1", "1.5", "abc", "100"]) {
+      expect(withValue(value).success).toBe(false);
+    }
   });
 });

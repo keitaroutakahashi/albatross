@@ -6,6 +6,10 @@ import {
 } from "@/app/(private)/admin/_schemas/fields";
 import { AtBatResult, Position } from "@/generated/prisma/enums";
 
+/** 盗塁数（試合合計）の入力欄の名前と上限 */
+export const STOLEN_BASES_FIELD = "stolenBases";
+export const MAX_STOLEN_BASES = 99;
+
 export const MAX_AT_BATS = 20;
 
 /** 打球方向がない打席結果。入力欄を出さず、保存もしない（これ以外の結果は打球方向が必須） */
@@ -136,4 +140,22 @@ export const parseAtBats = (formData: FormData): Result => {
   return Object.keys(fieldErrors).length > 0
     ? { success: false, fieldErrors }
     : { success: true, entries };
+};
+
+type StolenBasesResult =
+  | { success: true; stolenBases: number }
+  | { success: false; message: string };
+
+/** 盗塁数（その試合の合計）を検証する。未入力は 0 として扱う */
+export const parseStolenBases = (formData: FormData): StolenBasesResult => {
+  const raw = formData.get(STOLEN_BASES_FIELD);
+  const value = typeof raw === "string" && raw.trim() !== "" ? raw : "0";
+  const parsed = requiredInt(0, MAX_STOLEN_BASES).safeParse(value);
+  return parsed.success
+    ? { success: true, stolenBases: parsed.data }
+    : {
+        success: false,
+        message:
+          parsed.error.issues[0]?.message ?? "正しい数を入力してください",
+      };
 };

@@ -2,8 +2,8 @@ import { clsx } from "clsx";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
-  getUpcomingEvents,
-  type UpcomingEvent,
+  getRecentCompletedEvents,
+  type RecentEvent,
 } from "@/app/_features/events/api/get-events";
 import {
   formatAsDayName,
@@ -12,11 +12,11 @@ import {
   getDayOfWeek,
 } from "@/app/_utils/date/date";
 
-/** トップページに表示する今後の予定の件数 */
+/** トップページに表示する、終了したイベントの件数 */
 const DISPLAY_COUNT = 3;
 
 // イベント種別ごとの表示内容
-const getEventInfo = (event: UpcomingEvent) => {
+const getEventInfo = (event: RecentEvent) => {
   if (event.game) {
     return {
       href: `/events/${event.id}` as const,
@@ -39,13 +39,14 @@ const getEventInfo = (event: UpcomingEvent) => {
 };
 
 /**
- * トップページの今後の予定セクション。
- * 試合・練習を開催日が近い順に 3 件表示し、末尾にイベント一覧への導線を置く。
+ * トップページのイベントセクション。
+ * 終了した試合・練習を開催日が新しい順に 3 件、常に表示し、末尾にイベント一覧への導線を置く。
+ * 次の試合は NextGameBar が表示するため、ここには今後の予定を出さない。
  */
 export const Schedule = async () => {
-  const events = await getUpcomingEvents(DISPLAY_COUNT);
+  const events = await getRecentCompletedEvents(DISPLAY_COUNT);
 
-  // 開催予定が無い場合は非表示にする
+  // 終了したイベントが 1 件も無い場合は非表示にする
   if (events.length === 0) {
     return null;
   }
@@ -53,7 +54,7 @@ export const Schedule = async () => {
   return (
     <section className="px-5 py-12 md:py-16">
       <h2 className="text-center font-(family-name:--font-roboto) text-2xl md:text-4xl font-bold tracking-widest">
-        SCHEDULE
+        EVENT
       </h2>
 
       <ul className="mt-8 md:mt-10 border-t border-gray-200">
