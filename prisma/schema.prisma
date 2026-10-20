@@ -244,7 +244,7 @@ model Opponent {
 model Member {
   id            Int            @id @default(autoincrement())
   name          String
-  uniformNumber String // 背番号
+  uniformNumber String? // 背番号。助っ人は未設定でもよい
   position      Position
   subPositions  Position[]
   throwHand     Hand

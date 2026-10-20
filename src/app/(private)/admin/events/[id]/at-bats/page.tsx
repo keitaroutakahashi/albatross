@@ -67,7 +67,7 @@ export default async function Page({
                     <span className="flex items-center gap-2">
                       <span className="min-w-0 truncate">
                         {gm.battingOrder !== null && `${gm.battingOrder}. `}#
-                        {gm.member.uniformNumber} {gm.member.name}
+                        {gm.member.uniformNumber ?? ""} {gm.member.name}
                       </span>
                       {gm.position && (
                         <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-xs font-medium text-muted-foreground">

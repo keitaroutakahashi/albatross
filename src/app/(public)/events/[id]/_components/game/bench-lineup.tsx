@@ -28,12 +28,16 @@ export const BenchLineup = ({ game }: Props) => {
               <span className="font-bold text-primary">
                 {member.member.uniformNumber}
               </span>
-              <Link
-                href={`/members/${member.memberId}`}
-                className="pl-4 underline underline-offset-2"
-              >
-                {member.member.name}
-              </Link>
+              {member.member.category === "guest" ? (
+                <span className="pl-4">{member.member.name}</span>
+              ) : (
+                <Link
+                  href={`/members/${member.memberId}`}
+                  className="pl-4 underline underline-offset-2"
+                >
+                  {member.member.name}
+                </Link>
+              )}
             </li>
           ))}
         </ul>

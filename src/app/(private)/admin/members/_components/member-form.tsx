@@ -39,10 +39,10 @@ export const MemberForm = ({ action, initial, deleteTarget }: Props) => {
             name="uniformNumber"
             label="背番号"
             state={state}
-            required
+            hint="助っ人は未入力でも登録できます"
             inputMode="numeric"
             maxLength={3}
-            defaultValue={initial?.uniformNumber}
+            defaultValue={initial?.uniformNumber ?? undefined}
           />
           <SelectField
             name="position"

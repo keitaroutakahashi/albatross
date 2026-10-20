@@ -76,7 +76,7 @@ export default async function Page({
         action={saveLineup.bind(null, eventId)}
         members={members.map((m) => ({
           value: String(m.id),
-          label: `${m.name} #${m.uniformNumber}`,
+          label: m.uniformNumber ? `${m.name} #${m.uniformNumber}` : m.name,
         }))}
         initialStarters={initialStarters}
         initialBench={gameMembers

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import {
   deletePitchingResult,
   updatePitchingResult,
@@ -51,7 +52,7 @@ export default async function Page({
           )
           .map((gm) => ({
             value: String(gm.id),
-            label: `#${gm.member.uniformNumber} ${gm.member.name}`,
+            label: formatMemberLabel(gm.member),
           }))}
         initial={{
           gameMemberId: String(result.gameMemberId),

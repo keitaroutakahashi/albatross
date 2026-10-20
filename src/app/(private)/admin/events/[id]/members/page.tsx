@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import { saveEventMembers } from "@/app/(private)/admin/_actions/event-member";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import { getEventParticipation } from "@/app/(private)/admin/_data/game";
@@ -26,7 +27,7 @@ export default async function Page({
         action={saveEventMembers.bind(null, eventId)}
         options={participation.members.map((m) => ({
           value: String(m.id),
-          label: `#${m.uniformNumber} ${m.name}`,
+          label: formatMemberLabel(m),
         }))}
         selected={participation.selectedMemberIds.map(String)}
       />

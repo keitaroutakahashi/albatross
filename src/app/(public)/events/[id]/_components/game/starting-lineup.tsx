@@ -34,15 +34,21 @@ export const StartingLineup = ({ game }: Props) => {
                   {positionLabel[member.position]}
                 </span>
               )}
-              <Link
-                href={`/members/${member.memberId}`}
-                className="pl-4 underline underline-offset-2"
-              >
-                {member.member.name}
-              </Link>
-              <span className="pl-2 text-xs @content:text-sm text-gray-500">
-                #{member.member.uniformNumber}
-              </span>
+              {member.member.category === "guest" ? (
+                <span className="pl-4">{member.member.name}</span>
+              ) : (
+                <Link
+                  href={`/members/${member.memberId}`}
+                  className="pl-4 underline underline-offset-2"
+                >
+                  {member.member.name}
+                </Link>
+              )}
+              {member.member.uniformNumber && (
+                <span className="pl-2 text-xs @content:text-sm text-gray-500">
+                  #{member.member.uniformNumber}
+                </span>
+              )}
             </li>
           ))}
         </ul>

@@ -110,6 +110,18 @@ describe("memberSchema", () => {
     ).toEqual({ subPositions: "メインポジションと重複しています" });
   });
 
+  it("正規メンバーは背番号が必須", () => {
+    expect(
+      errorsOf(memberSchema.safeParse({ ...valid, uniformNumber: "" })),
+    ).toEqual({ uniformNumber: "必須です" });
+  });
+
+  it("助っ人は背番号が未入力でも null として登録できる", () => {
+    expect(
+      memberSchema.parse({ ...valid, category: "guest", uniformNumber: "" }),
+    ).toMatchObject({ category: "guest", uniformNumber: null });
+  });
+
   it("不正な列挙値はエラーにする", () => {
     expect(
       errorsOf(memberSchema.safeParse({ ...valid, position: "unknown" })),
