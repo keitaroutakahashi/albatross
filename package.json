@@ -26,6 +26,10 @@
     "game:parse": "tsx scripts/parse-ts-league.ts",
     "game:import": "tsx scripts/import-ts-league.ts",
     "game:import:production": "NODE_ENV=production dotenv run -q -f .env.production -- tsx scripts/import-ts-league.ts",
+    "review:data": "tsx scripts/collect-game-review-data.ts",
+    "review:data:production": "NODE_ENV=production dotenv run -q -f .env.production -- tsx scripts/collect-game-review-data.ts",
+    "review:save": "tsx scripts/save-game-review.ts",
+    "review:save:production": "NODE_ENV=production dotenv run -q -f .env.production -- tsx scripts/save-game-review.ts",
     "generate:client": "prisma generate",
     "generate:next-type": "next typegen"
   },

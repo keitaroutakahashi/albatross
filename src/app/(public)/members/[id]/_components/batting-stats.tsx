@@ -35,7 +35,7 @@ const columns: ColumnDef<Row>[] = [
   { key: "ops", header: "OPS", cell: (r) => formatRate(r.ops) },
   {
     key: "risp",
-    header: "得点圏打率",
+    header: "得点圏",
     cell: (r) => formatRate(r.scoringPositionAverage),
   },
 ];
