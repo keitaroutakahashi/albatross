@@ -5,7 +5,8 @@ type Props = {
   count: number;
   /** これ以下には減らせない（「最後を削除」を押せなくする） */
   min?: number;
-  max: number;
+  /** これ以上には増やせない（「追加」を押せなくする）。省略すると増やし放題 */
+  max?: number;
   noun: string;
   onChange: (next: number) => void;
 };
@@ -23,7 +24,7 @@ export const AddRemoveButtons = ({
       type="button"
       variant="outline"
       className="h-11 flex-1"
-      disabled={count >= max}
+      disabled={max !== undefined && count >= max}
       onClick={() => onChange(count + 1)}
     >
       <Plus />

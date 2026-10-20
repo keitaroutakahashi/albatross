@@ -1,9 +1,4 @@
-import {
-  MAX_MVPS,
-  MVP_COMMENT_MAX,
-  MVPS_ERROR_KEY,
-  parseMvps,
-} from "@/app/(private)/admin/_schemas/mvp";
+import { MVP_COMMENT_MAX, parseMvps } from "@/app/(private)/admin/_schemas/mvp";
 
 /** 枠ごとの [選手, コメント] から、フォームの入力を作る */
 const formOf = (slots: [string, string][]) => {
@@ -84,17 +79,6 @@ describe("parseMvps", () => {
       fieldErrors: {
         "mvpComment-0": `${MVP_COMMENT_MAX}文字以内で入力してください`,
       },
-    });
-  });
-
-  it("枠が多すぎれば、全体のエラーを返す", () => {
-    const slots = Array.from(
-      { length: MAX_MVPS + 1 },
-      (_, i): [string, string] => [String(i + 1), ""],
-    );
-    expect(parseMvps(formOf(slots))).toEqual({
-      success: false,
-      fieldErrors: { [MVPS_ERROR_KEY]: "MVP が多すぎます" },
     });
   });
 });
