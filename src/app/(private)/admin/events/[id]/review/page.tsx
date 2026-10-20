@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import { updateEventReview } from "@/app/(private)/admin/_actions/event";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import { getEvent } from "@/app/(private)/admin/_data/event";
@@ -32,7 +33,7 @@ export default async function Page({
         eventId={id}
         mvpCandidates={candidates.map((c) => ({
           value: String(c.memberId),
-          label: `#${c.uniformNumber} ${c.name}`,
+          label: formatMemberLabel(c),
         }))}
         initial={{
           ...initial,

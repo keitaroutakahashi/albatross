@@ -14,7 +14,7 @@ export const Profile = async ({ id }: Props) => {
     {
       id: "uniformNumber",
       title: "背番号",
-      description: member.uniformNumber,
+      description: member.uniformNumber ?? "",
     },
     {
       id: "position",

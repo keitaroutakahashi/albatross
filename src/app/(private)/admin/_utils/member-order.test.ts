@@ -1,6 +1,10 @@
 import { sortMembersByUniformNumber } from "@/app/(private)/admin/_utils/member-order";
 
-const member = (uniformNumber: string, name: string, isActive = true) => ({
+const member = (
+  uniformNumber: string | null,
+  name: string,
+  isActive = true,
+) => ({
   uniformNumber,
   name,
   isActive,
@@ -55,6 +59,16 @@ describe("sortMembersByUniformNumber", () => {
       member("5", "あ"),
     ]);
     expect(sorted.map((m) => m.name)).toEqual(["あ", "ぼ"]);
+  });
+
+  it("背番号の無いメンバー（助っ人）は、現役の中の最後に並べる", () => {
+    const sorted = sortMembersByUniformNumber([
+      member(null, "助"),
+      member("2", "b"),
+      member("1", "a"),
+      member("3", "c", false),
+    ]);
+    expect(sorted.map((m) => m.name)).toEqual(["a", "b", "助", "c"]);
   });
 
   it("元の配列は変更しない", () => {

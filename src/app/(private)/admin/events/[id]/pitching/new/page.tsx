@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import { createPitchingResult } from "@/app/(private)/admin/_actions/pitching-result";
 import { PageHeader } from "@/app/(private)/admin/_components/page-header";
 import {
@@ -55,7 +56,7 @@ export default async function Page({
           .filter((gm) => gm.pitchingResult === null)
           .map((gm) => ({
             value: String(gm.id),
-            label: `#${gm.member.uniformNumber} ${gm.member.name}`,
+            label: formatMemberLabel(gm.member),
           }))}
       />
     </>

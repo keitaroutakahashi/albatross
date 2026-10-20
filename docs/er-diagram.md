@@ -81,7 +81,7 @@ erDiagram
 "Member" {
   Int id PK
   String name
-  String uniformNumber
+  String uniformNumber "nullable"
   Position position
   Position subPositions
   Hand throwHand

@@ -1,0 +1,1 @@
+ALTER TABLE "Member" ALTER COLUMN "uniformNumber" DROP NOT NULL;

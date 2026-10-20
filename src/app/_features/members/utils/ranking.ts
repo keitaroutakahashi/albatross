@@ -5,7 +5,7 @@ const DISPLAY_RANK = 3;
 export type MemberStatsBase = {
   memberId: number;
   name: string;
-  uniformNumber: string;
+  uniformNumber: string | null;
 };
 
 export type MemberRanking = MemberStatsBase & {
@@ -30,7 +30,9 @@ export const rankMemberStats = <T extends MemberStatsBase>(
         ? getValue(a) - getValue(b)
         : getValue(b) - getValue(a)) ||
       // 同値のときは背番号順にして表示順を安定させる
-      a.uniformNumber.localeCompare(b.uniformNumber, "ja", { numeric: true }),
+      (a.uniformNumber ?? "").localeCompare(b.uniformNumber ?? "", "ja", {
+        numeric: true,
+      }),
   );
 
   const ranking: MemberRanking[] = [];

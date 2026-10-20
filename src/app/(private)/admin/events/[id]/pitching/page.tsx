@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { pitchingDecisionLabel } from "@/app/_constants/labels";
 import { resolvePitchingDecision } from "@/app/_utils/stats/pitching-decision";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
@@ -46,7 +47,7 @@ export default async function Page({
               <ListCard
                 key={r.id}
                 href={`/admin/events/${eventId}/pitching/${r.id}`}
-                title={`${r.pitchingOrder}. #${r.gameMember.member.uniformNumber} ${r.gameMember.member.name}`}
+                title={`${r.pitchingOrder}. ${formatMemberLabel(r.gameMember.member)}`}
                 description={`${r.inningsPitched}${r.partialOuts ? ` ${r.partialOuts}/3` : ""}回 / 失点${r.runs} / 奪三振${r.strikeouts}`}
                 trailing={
                   r.isResponsible ? (

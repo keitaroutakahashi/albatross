@@ -4,6 +4,7 @@ import {
   memberCategoryLabel,
   positionFullLabel,
 } from "@/app/_constants/labels";
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import { Badge } from "@/app/(private)/admin/_components/badge";
 import { EmptyState } from "@/app/(private)/admin/_components/empty-state";
 import { ListCard } from "@/app/(private)/admin/_components/list-card";
@@ -32,7 +33,7 @@ export default async function Page() {
             <ListCard
               key={r.id}
               href={`/admin/members/${r.id}`}
-              title={`#${r.uniformNumber} ${r.name}`}
+              title={formatMemberLabel(r)}
               description={`${positionFullLabel[r.position]} / ${handLabel[r.throwHand]}投${handLabel[r.batHand]}打`}
               trailing={
                 r.isActive ? (

@@ -54,7 +54,7 @@ export default async function Page({
 
   const { member } = gameMember;
   const profile = [
-    `#${member.uniformNumber}`,
+    member.uniformNumber && `#${member.uniformNumber}`,
     gameMember.battingOrder !== null && `${gameMember.battingOrder}番`,
     gameMember.position && positionFullLabel[gameMember.position],
     gameMember.memberType === "bench" && "ベンチ",

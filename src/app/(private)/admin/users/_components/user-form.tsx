@@ -1,5 +1,6 @@
 "use client";
 
+import { formatMemberLabel } from "@/app/_utils/uniform-number";
 import {
   SelectField,
   TextField,
@@ -12,7 +13,7 @@ import type { UserModel } from "@/generated/prisma/models/User";
 type Props = {
   action: (prev: ActionState, formData: FormData) => Promise<ActionState>;
   initial?: UserModel & { member: { id: number } | null };
-  members: { id: number; name: string; uniformNumber: string }[];
+  members: { id: number; name: string; uniformNumber: string | null }[];
   deleteTarget?: { name: string; action: () => Promise<ActionState> };
 };
 
@@ -53,7 +54,7 @@ export const UserForm = ({ action, initial, members, deleteTarget }: Props) => {
             placeholder="紐づけない"
             options={members.map((m) => ({
               value: String(m.id),
-              label: `#${m.uniformNumber} ${m.name}`,
+              label: formatMemberLabel(m),
             }))}
             defaultValue={initial?.member ? String(initial.member.id) : ""}
           />
