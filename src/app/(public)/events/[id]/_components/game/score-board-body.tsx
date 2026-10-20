@@ -41,7 +41,7 @@ export const ScoreBoardBody = ({
             isBold
             key={inning.id}
             score={
-              game.isFirstBatting ? inning.opponentScore : inning.teamScore
+              game.isFirstBatting ? inning.teamScore : inning.opponentScore
             }
           />
         ))}

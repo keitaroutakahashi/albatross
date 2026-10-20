@@ -58,10 +58,12 @@ const POSITIONS: Record<string, Position> = {
 const SUFFIX_RESULTS: Record<string, AtBatResult> = {
   ゴ: "groundOut",
   飛: "flyOut",
+  直: "lineOut",
   安: "single",
   "2": "double",
   本: "homeRun",
   失: "error",
+  犠飛: "sacrificeFly",
 };
 
 const HIT_RESULTS: readonly AtBatResult[] = [
@@ -82,16 +84,17 @@ const toResult = (
   if (normalized === "三振") return { result: "strikeout", direction: null };
   if (normalized === "四球") return { result: "walk", direction: null };
   if (normalized === "死球") return { result: "hitByPitch", direction: null };
-  const [fielder, suffix] = [...normalized];
+  const [fielder, ...rest] = [...normalized];
+  const suffix = rest.join("");
   const direction = fielder ? POSITIONS[fielder] : undefined;
   const result = suffix ? SUFFIX_RESULTS[suffix] : undefined;
-  if (normalized.length !== 2 || !direction || !result) return null;
+  if (!direction || !result) return null;
   return { result, direction };
 };
 
-/** "2回0/3" → 完了イニング 2、端数なし(null)。"1回2/3" → 1 と 2 */
+/** "2回0/3" → 完了イニング 2、端数なし(null)。"1回2/3" → 1 と 2。末尾の「[投手制限]」は無視する */
 const toInnings = (text: string) => {
-  const m = text.match(/^(\d+)回(\d)\/3$/);
+  const m = text.replace(/\[投手制限\]$/, "").match(/^(\d+)回(\d)\/3$/);
   if (!m) return null;
   const outs = Number(m[2]);
   return {
