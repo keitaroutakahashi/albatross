@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import clsx from "clsx";
 import { Suspense } from "react";
 import { NavigationProgress } from "@/app/_components/ui/navigation-progress";
+import { ScrollToTop } from "@/app/_components/ui/scroll-to-top";
 
 const roboto = Roboto({
   variable: "--font-roboto",
@@ -41,6 +42,7 @@ export default function Layout({ children }: LayoutProps<"/">) {
         <Suspense fallback={null}>
           <NavigationProgress />
         </Suspense>
+        <ScrollToTop />
         {children}
       </body>
     </html>

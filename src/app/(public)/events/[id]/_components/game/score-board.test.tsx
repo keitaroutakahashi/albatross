@@ -65,4 +65,17 @@ describe("ScoreBoard", () => {
     expect(bodyCells()).toContain("9");
     expect(bodyCells()).not.toEqual(bodyCells().map(() => "-"));
   });
+
+  it("先攻の行に自チーム、後攻の行に相手のイニング得点を表示する", () => {
+    const innings = [
+      { id: 1, inningNumber: 1, teamScore: 2, opponentScore: 0 },
+      { id: 2, inningNumber: 2, teamScore: 1, opponentScore: 7 },
+    ] as unknown as GameDetail["innings"];
+    render(<ScoreBoard game={gameOf("completed", innings)} />);
+
+    // 1 チームあたり、1・2 回の得点 + R・H・E の 5 列
+    const cells = bodyCells();
+    expect(cells.slice(0, 2)).toEqual(["2", "1"]);
+    expect(cells.slice(5, 7)).toEqual(["0", "7"]);
+  });
 });
