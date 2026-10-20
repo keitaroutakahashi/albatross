@@ -35,19 +35,17 @@ export const getEvents = async ({
   });
 };
 
-export type UpcomingEvent = Awaited<
-  ReturnType<typeof getUpcomingEvents>
+export type RecentEvent = Awaited<
+  ReturnType<typeof getRecentCompletedEvents>
 >[number];
 
-// 今後開催されるイベント（試合・練習）を開催日が近い順に取得
-export const getUpcomingEvents = async (limit: number) => {
+// 終了したイベント（試合・練習）を、開催日が新しい順に取得（トップページ用）
+export const getRecentCompletedEvents = async (limit: number) => {
   return prisma.event.findMany({
-    where: {
-      status: "scheduled",
-      date: { gte: new Date() },
-    },
+    where: { status: "completed" },
     include: eventInclude,
-    orderBy: { date: "asc" },
+    // 同じ日時のイベントは、後から登録したものを先にする
+    orderBy: [{ date: "desc" }, { id: "desc" }],
     take: limit,
   });
 };

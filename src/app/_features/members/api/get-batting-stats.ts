@@ -50,6 +50,8 @@ export type BattingStatRow = MemberStatsBase & {
 export type BattingStatsResult = {
   /** 対象シーズン */
   season: number;
+  /** 絞り込んだリーグの ID。絞り込んでいない（すべてのリーグ）ときは null */
+  leagueId: number | null;
   /** 対象となった公式戦の試合数 */
   gameCount: number;
   /** 選手ごとの打撃成績 */
@@ -63,15 +65,18 @@ type MemberAccumulator = MemberStatsBase & {
 };
 
 /**
- * 指定シーズンの選手ごとの打撃成績を取得する。
+ * 指定シーズンの選手ごとの打撃成績を取得する。leagueId を指定すると、そのリーグの試合だけに絞る。
+ * 規定打席の基準になる試合数（gameCount）も、絞り込んだ試合の数になる。
  * 集計対象は「終了した公式戦」かつ「現役の正規メンバー」（getBattingLeaders と同一条件）。
  * 打席数が 0 の選手は結果から除外する。
  */
 export const getBattingStats = async (
   season: string | number,
+  leagueId?: number,
 ): Promise<BattingStatsResult> => {
   const gameWhere = {
     gameType: "official",
+    ...(leagueId !== undefined && { leagueId }),
     event: { status: "completed", season: { season: Number(season) } },
   } as const;
 
@@ -121,5 +126,10 @@ export const getBattingStats = async (
       };
     });
 
-  return { season: Number(season), gameCount, rows };
+  return {
+    season: Number(season),
+    leagueId: leagueId ?? null,
+    gameCount,
+    rows,
+  };
 };

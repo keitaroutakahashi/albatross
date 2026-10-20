@@ -72,6 +72,7 @@ export default async function Page({
       <PlateAppearancesForm
         action={savePlateAppearances.bind(null, eventId, gameMemberId)}
         initialRows={initialRows}
+        initialStolenBases={gameMember.stolenBases}
       />
     </>
   );

@@ -9,7 +9,9 @@ import {
   SelectValue,
 } from "@/app/_components/shadcn/select";
 import { HintTooltip } from "@/app/_components/ui/hint-tooltip";
+import { ALL_LEAGUES } from "@/app/_features/leagues/utils/league-filter";
 import { formatSeason } from "@/app/_utils/season";
+import type { LeagueModel } from "@/generated/prisma/models/League";
 import type { SeasonModel } from "@/generated/prisma/models/Season";
 
 /** 打者・投手成績ページで共通利用する指標カテゴリの定義 */
@@ -22,6 +24,11 @@ type Props = {
   seasons: SeasonModel[];
   season: string;
   onSeasonChange: (season: string) => void;
+  /** リーグで絞り込むための一覧。空のときはリーグのセレクトを出さない */
+  leagues: LeagueModel[];
+  /** 選択中のリーグ。すべてのときは ALL_LEAGUES */
+  league: string;
+  onLeagueChange: (league: string) => void;
   categories: readonly StatsCategory[];
   categoryKey: string;
   onCategoryChange: (key: string) => void;
@@ -39,12 +46,15 @@ type Props = {
 
 /**
  * 打者・投手成績ページ共通のフィルタバー。
- * 年度・指標の Select と、規定打席（規定投球回）チェックボックスを並べる。
+ * 年度・リーグ・指標の Select と、規定打席（規定投球回）チェックボックスを並べる。
  */
 export const StatsFilterBar = ({
   seasons,
   season,
   onSeasonChange,
+  leagues,
+  league,
+  onLeagueChange,
   categories,
   categoryKey,
   onCategoryChange,
@@ -57,7 +67,7 @@ export const StatsFilterBar = ({
 }: Props) => {
   return (
     <div className="flex flex-col gap-y-3">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
         <Select
           value={season}
           onValueChange={onSeasonChange}
@@ -74,6 +84,26 @@ export const StatsFilterBar = ({
             ))}
           </SelectContent>
         </Select>
+
+        {leagues.length > 0 && (
+          <Select
+            value={league}
+            onValueChange={onLeagueChange}
+            disabled={disabled}
+          >
+            <SelectTrigger className="w-full" aria-label="リーグ">
+              <SelectValue placeholder="リーグを選択" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL_LEAGUES}>すべてのリーグ</SelectItem>
+              {leagues.map((l) => (
+                <SelectItem key={l.id} value={String(l.id)}>
+                  {l.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
 
         <Select
           value={categoryKey}

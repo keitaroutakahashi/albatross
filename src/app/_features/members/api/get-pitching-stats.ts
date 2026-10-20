@@ -41,6 +41,8 @@ export type PitchingStatRow = MemberStatsBase & {
 export type PitchingStatsResult = {
   /** 対象シーズン */
   season: number;
+  /** 絞り込んだリーグの ID。絞り込んでいない（すべてのリーグ）ときは null */
+  leagueId: number | null;
   /** 対象となった公式戦の試合数 */
   gameCount: number;
   /** 投手ごとの投球成績 */
@@ -52,15 +54,18 @@ type MemberAccumulator = MemberStatsBase & {
 };
 
 /**
- * 指定シーズンの選手ごとの投球成績を取得する。
+ * 指定シーズンの選手ごとの投球成績を取得する。leagueId を指定すると、そのリーグの試合だけに絞る。
+ * 規定投球回の基準になる試合数（gameCount）も、絞り込んだ試合の数になる。
  * 集計対象は「終了した公式戦」かつ「現役の正規メンバー」（getPitchingLeaders と同一条件）。
  * 登板記録が 0 の選手は結果から除外する。
  */
 export const getPitchingStats = async (
   season: string | number,
+  leagueId?: number,
 ): Promise<PitchingStatsResult> => {
   const gameWhere = {
     gameType: "official",
+    ...(leagueId !== undefined && { leagueId }),
     event: { status: "completed", season: { season: Number(season) } },
   } as const;
 
@@ -116,5 +121,10 @@ export const getPitchingStats = async (
     },
   );
 
-  return { season: Number(season), gameCount, rows };
+  return {
+    season: Number(season),
+    leagueId: leagueId ?? null,
+    gameCount,
+    rows,
+  };
 };
