@@ -48,6 +48,13 @@ const columns = (gameResult: GameDetail["result"]): ColumnDef<PitcherRow>[] => [
     headerClassName: "w-16",
   },
   {
+    key: "pitchCount",
+    header: "球数",
+    // 球数は任意入力のため、未入力は「-」にする
+    cell: (row) => row.pitchingResult?.pitchCount ?? "-",
+    headerClassName: "w-12",
+  },
+  {
     key: "hits",
     header: "安",
     cell: (row) => row.pitchingResult?.hitsAllowed ?? "",

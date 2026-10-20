@@ -262,6 +262,79 @@ describe("終了した試合は、情報があるものだけ表示する", () =
     });
   });
 
+  describe("球数", () => {
+    const pitchingResult = (
+      pitchCount: number | null,
+      inningsPitched: number,
+      partialOuts: number | null = null,
+    ) => ({
+      pitchingOrder: 1,
+      inningsPitched,
+      partialOuts,
+      pitchCount,
+      earnedRuns: 0,
+      runs: 0,
+      strikeouts: 0,
+      walks: 0,
+      hitByPitches: 0,
+      hitsAllowed: 0,
+      homeRunsAllowed: 0,
+      isResponsible: false,
+    });
+    const pitcherGame = (...results: ReturnType<typeof pitchingResult>[]) =>
+      gameOf("completed", {
+        gameMembers: results.map((pr) => member({ pitchingResult: pr })),
+      });
+
+    /** 見出しの列と同じ位置のセルの値を、指定した見出しの表から取り出す */
+    const cellsOf = (firstHeader: string, header: string) => {
+      const table = screen
+        .getAllByRole("table")
+        .find((t) => t.querySelector("th")?.textContent === firstHeader);
+      const headers = [...(table?.querySelectorAll("th") ?? [])].map(
+        (th) => th.textContent,
+      );
+      const index = headers.indexOf(header);
+      return [...(table?.querySelectorAll("tbody tr") ?? [])].map(
+        (row) => row.querySelectorAll("td")[index]?.textContent,
+      );
+    };
+
+    it("各投手の欄に球数を表示し、未入力は「-」にする", () => {
+      render(
+        <GameResults
+          game={pitcherGame(pitchingResult(45, 3), pitchingResult(null, 1))}
+        />,
+      );
+      expect(cellsOf("投手名", "球数")).toEqual(["45", "-"]);
+    });
+
+    it("チーム成績に、1 イニングあたりの平均球数を表示する", () => {
+      // 3 回 45 球 + 2 回 30 球 = 5 回 75 球 → 15.0 球/回
+      render(
+        <GameStats
+          game={pitcherGame(pitchingResult(45, 3), pitchingResult(30, 2))}
+        />,
+      );
+      expect(cellsOf("防御率", "球/回")).toEqual(["15.0"]);
+    });
+
+    it("球数が未入力の投手は、平均の計算から除く", () => {
+      // 球数なしの 2 回を含めると 30÷3 = 10.0 になってしまう
+      render(
+        <GameStats
+          game={pitcherGame(pitchingResult(30, 1), pitchingResult(null, 2))}
+        />,
+      );
+      expect(cellsOf("防御率", "球/回")).toEqual(["30.0"]);
+    });
+
+    it("球数の入力が 1 つもなければ「-」を表示する", () => {
+      render(<GameStats game={pitcherGame(pitchingResult(null, 3))} />);
+      expect(cellsOf("防御率", "球/回")).toEqual(["-"]);
+    });
+  });
+
   describe("試合情報", () => {
     it("何も情報がなければ表示しない", () => {
       const { container } = render(<GameInfo game={gameOf("completed")} />);

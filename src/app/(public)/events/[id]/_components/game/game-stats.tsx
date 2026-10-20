@@ -14,6 +14,10 @@ import {
 } from "@/app/_utils/stats/batting";
 import { summarizeBatting } from "@/app/_utils/stats/batting-summary";
 import { formatEraFromStats } from "@/app/_utils/stats/era";
+import {
+  calculatePitchCountPerInning,
+  formatPitchCountPerInning,
+} from "@/app/_utils/stats/pitch-count";
 import { formatRate } from "@/app/_utils/stats/rate";
 
 type Props = {
@@ -98,6 +102,8 @@ const calcTeamBattingStats = (
 /** チーム投手集計 */
 type TeamPitchingStats = {
   era: string;
+  /** 1 イニングあたりの平均球数。球数の入力がなければ "-" */
+  pitchCountPerInning: string;
   hitsAllowed: number;
   homeRunsAllowed: number;
   strikeouts: number;
@@ -141,6 +147,9 @@ const calcTeamPitchingStats = (
 
   return {
     era: formatEraFromStats({ earnedRuns, inningsPitched, partialOuts }),
+    pitchCountPerInning: formatPitchCountPerInning(
+      calculatePitchCountPerInning(pitchers),
+    ),
     hitsAllowed,
     homeRunsAllowed,
     strikeouts,
@@ -153,6 +162,11 @@ const calcTeamPitchingStats = (
 
 const pitchingColumns: ColumnDef<TeamPitchingStats>[] = [
   { key: "era", header: "防御率", cell: (row) => row.era },
+  {
+    key: "pitchCountPerInning",
+    header: "球/回",
+    cell: (row) => row.pitchCountPerInning,
+  },
   { key: "hitsAllowed", header: "安", cell: (row) => row.hitsAllowed },
   {
     key: "homeRunsAllowed",
@@ -170,7 +184,7 @@ const battingColumns: ColumnDef<TeamBattingStats>[] = [
   { key: "avg", header: "打率", cell: (row) => row.avg },
   { key: "slg", header: "長打率", cell: (row) => row.slg },
   { key: "obp", header: "出塁率", cell: (row) => row.obp },
-  { key: "risp", header: "得点圏打率", cell: (row) => row.risp },
+  { key: "risp", header: "得点圏", cell: (row) => row.risp },
   { key: "pa", header: "打席", cell: (row) => row.pa },
   { key: "ab", header: "打数", cell: (row) => row.ab },
   { key: "h", header: "安", cell: (row) => row.h },
@@ -226,6 +240,9 @@ export const GameStats = ({ game }: Props) => {
             data={[calcTeamPitchingStats(members)]}
             keyExtractor={() => "team"}
           />
+          <p className="mt-2 text-xs text-gray-500">
+            球/回: 1イニングあたりの平均球数
+          </p>
         </SubSectionGroup>
       )}
     </SectionGroup>

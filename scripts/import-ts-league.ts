@@ -17,6 +17,7 @@ import { config } from "dotenv";
 import type { Member } from "@/generated/prisma/client";
 import type { AtBatResult, GameType, Position } from "@/generated/prisma/enums";
 import type { ParsedGame } from "./ts-league/types";
+import { fetchGameWeather, parseCoordinates } from "./ts-league/weather";
 
 // lib/prisma.ts は読み込み時に DATABASE_URL を参照するため、先に環境変数を読み込む
 config({ path: ".env.local" });
@@ -117,6 +118,9 @@ const check = (what: string, actual: number, expected: number) => {
   }
 };
 const teamForfeitedRuns = parsed.teamForfeitedRuns ?? 0;
+// 自チームの失策は、相手の打撃成績にある「○失」の数を使う（相手の打撃成績がないページはチーム成績の値）
+const teamErrors =
+  parsed.teamErrorsFromOpponentBatting ?? parsed.teamTotals.errors;
 check(
   "チームの得点（イニング合計と献上点）",
   sum(innings.team) + teamForfeitedRuns,
@@ -335,6 +339,7 @@ const candidates = await prisma.game.findMany({
   },
   include: {
     event: true,
+    gameWeather: true,
     participants: true,
     gameMembers: {
       include: {
@@ -421,6 +426,33 @@ for (const { member } of benchPitchers) {
   warnings.push(
     `${member.name}: 打順に入っていないため、ベンチとして追加して投手成績を付ける`,
   );
+}
+
+// --- 天気と気温（グラウンドの位置と試合の日時から求める。既にあれば触らない） ---
+let weatherPlan: Awaited<ReturnType<typeof fetchGameWeather>> | null = null;
+if (!game?.gameWeather) {
+  const coordinates = ground ? parseCoordinates(ground.mapEmbedUrl) : null;
+  if (!ground) {
+    // グラウンドが決まらないときは、すでにエラーにしている
+  } else if (!coordinates) {
+    warnings.push(
+      `${ground.name}: 地図の URL から位置を読めないため、天気を設定しない`,
+    );
+  } else if (!parsed.time) {
+    warnings.push("開始時刻が元ページにないため、天気を設定しない");
+  } else {
+    try {
+      weatherPlan = await fetchGameWeather({
+        ...coordinates,
+        date: parsed.date,
+        time: parsed.time,
+      });
+    } catch (e) {
+      warnings.push(
+        `天気を取得できなかったため、設定しない（${e instanceof Error ? e.message : e}）`,
+      );
+    }
+  }
 }
 
 // --- 書き込む内容 ---
@@ -533,11 +565,24 @@ if (benchPitchers.length > 0) {
     `ベンチに追加: ${benchPitchers.map((x) => x.member.name).join("、")}`,
   );
 }
-console.log("== 試合 ==", score, `teamErrors: ${parsed.teamTotals.errors}`);
+console.log(
+  "== 試合 ==",
+  score,
+  `teamErrors: ${teamErrors}`,
+  parsed.teamErrorsFromOpponentBatting === null
+    ? "（相手の打撃成績なし。チーム成績の値）"
+    : `（相手の打撃成績の「失」。チーム成績の値は ${parsed.teamTotals.errors}）`,
+);
 // 管理画面の試合の振り返り（eventReviewSchema）と同じ上限
 if (parsed.summary && parsed.summary.length > 2000) {
   errors.push(`戦評が 2000 字を超えています（${parsed.summary.length} 字）`);
 }
+console.log(
+  "== 天気 ==",
+  game?.gameWeather
+    ? `登録済み（${game.gameWeather.weather} ${game.gameWeather.temperature ?? "-"}℃）。変更しない`
+    : (weatherPlan ?? "（設定しない）"),
+);
 console.log("== 戦評 ==", parsed.summary ?? "（なし。書き込まない）");
 console.table(
   innings.team.map((t, i) => ({
@@ -602,7 +647,7 @@ const gameId = await prisma.$transaction(async (tx) => {
         ...score,
         teamForfeitedRuns,
         opponentForfeitedRuns: 0,
-        teamErrors: parsed.teamTotals.errors,
+        teamErrors,
         isFirstBatting: parsed.isFirstBatting,
         ...(parsed.summary ? { summary: parsed.summary } : {}),
       },
@@ -628,7 +673,7 @@ const gameId = await prisma.$transaction(async (tx) => {
             ...score,
             teamForfeitedRuns,
             opponentForfeitedRuns: 0,
-            teamErrors: parsed.teamTotals.errors,
+            teamErrors,
             isFirstBatting: parsed.isFirstBatting,
             ...(parsed.summary ? { summary: parsed.summary } : {}),
           },
@@ -639,6 +684,10 @@ const gameId = await prisma.$transaction(async (tx) => {
     id = (created.game as { id: number }).id;
     // 試合番号は、管理画面の登録と同じく同日の試合を日時順に振り直す
     await renumberGamesOfDay(tx, startsAt);
+  }
+
+  if (weatherPlan) {
+    await tx.gameWeather.create({ data: { gameId: id, ...weatherPlan } });
   }
 
   await tx.gameParticipant.createMany({

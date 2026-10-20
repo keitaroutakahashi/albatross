@@ -76,6 +76,8 @@ export type ParsedGame = {
       hitByPitches: number;
     };
   };
+  /** 相手の打撃成績にある「○失」の数。自チームの失策数として使う。相手の打撃成績がないページでは null */
+  teamErrorsFromOpponentBatting: number | null;
   batting: ParsedBatter[];
   pitching: ParsedPitcher[];
   /** 自チームの「試合後のコメント」。ないときは null */

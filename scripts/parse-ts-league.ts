@@ -30,7 +30,12 @@ const text = (el: Element | null | undefined) =>
   (el?.textContent ?? "").replace(/\s+/g, "");
 
 const toInt = (value: string, what: string): number => {
-  const n = Number(value);
+  // 元ページは全角数字（例: ４）で書かれていることがある
+  const n = Number(
+    value.replace(/[０-９]/g, (d) =>
+      String.fromCharCode(d.charCodeAt(0) - 0xfee0),
+    ),
+  );
   if (value === "" || !Number.isInteger(n)) {
     throw new Error(`${what} が数値ではありません: "${value}"`);
   }
@@ -181,6 +186,28 @@ const batting: ParsedBatter[] = rowsOf(battingTable)
     };
   });
 
+/**
+ * 相手チームの打撃成績に出てくる「○失」（相手の打者が自チームの失策で出塁した打席）の数。
+ * 自チームの失策数として使う。相手の打撃成績が載っていないページでは null。
+ * 相手の行は先頭が「代打」のこともあるため、打順の数字ではなく列数で見分ける
+ */
+// 相手の打撃成績は、自チームと同じ表の続きに入っている（間にチーム見出しの行がある）
+const opponentRows = rowsOf(battingTable).filter(
+  (row) =>
+    !hasTeamLink(row) &&
+    row.querySelector("th") === null &&
+    row.querySelector("td a") !== null &&
+    row.cells.length === 13 + MAX_INNINGS,
+);
+const teamErrorsFromOpponentBatting =
+  opponentRows.length === 0
+    ? null
+    : opponentRows
+        .flatMap((row) => cellsOf(row).slice(13))
+        .filter((cell) =>
+          /^[一二三遊左中右投捕ニ]失(\(\d+\))?$/.test(text(cell)),
+        ).length;
+
 /** 投手成績。列は 登板順・チーム・写真・選手名・経験・防御率・イニング・自責点・失点・奪三振・与四球・与死球・被安打・被本塁打・暴投・ボーク・勝敗 */
 const pitching: ParsedPitcher[] = findTables("登板順")
   .flatMap((t) => rowsOf(t).slice(1))
@@ -261,6 +288,7 @@ const game: ParsedGame = {
       hitByPitches: totalOfColumn(pitchingTotals, "与死球"),
     },
   },
+  teamErrorsFromOpponentBatting,
   batting,
   pitching,
   comment,
