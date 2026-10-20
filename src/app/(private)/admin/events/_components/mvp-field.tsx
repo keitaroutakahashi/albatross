@@ -5,7 +5,6 @@ import { Textarea } from "@/app/_components/shadcn/textarea";
 import { AddRemoveButtons } from "@/app/(private)/admin/_components/add-remove-buttons";
 import { nativeControlClass } from "@/app/(private)/admin/_components/form-fields";
 import {
-  MAX_MVPS,
   MVP_COMMENT_MAX,
   MVP_FIELDS,
   MVPS_ERROR_KEY,
@@ -110,7 +109,7 @@ export const MvpField = ({ state, candidates, initial }: Props) => {
       <AddRemoveButtons
         count={count}
         min={1}
-        max={MAX_MVPS}
+        max={candidates.length}
         noun="MVP"
         onChange={setCount}
       />

@@ -3,8 +3,6 @@ import {
   optionalText,
 } from "@/app/(private)/admin/_schemas/fields";
 
-export const MAX_MVPS = 5;
-
 /** MVP に添えるコメントの上限文字数 */
 export const MVP_COMMENT_MAX = 500;
 
@@ -45,12 +43,6 @@ const commentSchema = optionalText(MVP_COMMENT_MAX);
 export const parseMvps = (formData: FormData): Result => {
   const members = strings(formData, MVP_FIELDS.member);
   const comments = strings(formData, MVP_FIELDS.comment);
-  if (members.length > MAX_MVPS) {
-    return {
-      success: false,
-      fieldErrors: { [MVPS_ERROR_KEY]: "MVP が多すぎます" },
-    };
-  }
 
   const fieldErrors: Record<string, string> = {};
   const entries: MvpEntry[] = [];

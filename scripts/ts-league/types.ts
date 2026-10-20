@@ -51,6 +51,8 @@ export type ParsedGame = {
   leagueText: string;
   opponent: string;
   isFirstBatting: boolean;
+  /** 自チームの献上点。元ページの「+3」のようにイニングの外で加算される得点で、パーサは読まないため JSON に手で書く */
+  teamForfeitedRuns?: number;
   innings: {
     team: number[];
     opponent: number[];

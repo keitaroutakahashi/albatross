@@ -99,6 +99,9 @@ const toInnings = (text: string) => {
   };
 };
 
+/** 勝敗の列がこの値の投手を責任投手にする */
+const RESPONSIBLE_DECISIONS = ["勝", "負"];
+
 const sum = (values: number[]) => values.reduce((a, b) => a + b, 0);
 
 // --- 元データの整合性（ここでの警告は、取り込む前にユーザーへ確認する） ---
@@ -113,7 +116,12 @@ const check = (what: string, actual: number, expected: number) => {
     warnings.push(`${what}: 個人の合計 ${actual} / チーム・表の値 ${expected}`);
   }
 };
-check("チームの得点（イニング合計）", sum(innings.team), innings.teamTotal);
+const teamForfeitedRuns = parsed.teamForfeitedRuns ?? 0;
+check(
+  "チームの得点（イニング合計と献上点）",
+  sum(innings.team) + teamForfeitedRuns,
+  innings.teamTotal,
+);
 check(
   "相手の得点（イニング合計）",
   sum(innings.opponent),
@@ -182,9 +190,9 @@ check(
 for (const { p, ip } of pitchers) {
   if (!ip) errors.push(`${p.name}: 投球回を読めません: ${p.inningsText}`);
   if (p.earnedRuns > p.runs) warnings.push(`${p.name}: 自責点が失点より多い`);
-  if (p.decision !== "") {
+  if (p.decision !== "" && !RESPONSIBLE_DECISIONS.includes(p.decision)) {
     warnings.push(
-      `${p.name}: 勝敗の列に "${p.decision}" がある。責任投手の扱いを確認すること`,
+      `${p.name}: 勝敗の列に未対応の値 "${p.decision}" がある。責任投手の扱いを確認すること`,
     );
   }
 }
@@ -419,7 +427,7 @@ for (const { member } of benchPitchers) {
 const score = calcGameScore({
   teamInnings: innings.team,
   opponentInnings: innings.opponent,
-  teamForfeitedRuns: 0,
+  teamForfeitedRuns,
   opponentForfeitedRuns: 0,
 });
 
@@ -592,7 +600,7 @@ const gameId = await prisma.$transaction(async (tx) => {
         groundId: game.groundId ?? ground?.id,
         groundCourt: game.groundCourt ?? groundCourt,
         ...score,
-        teamForfeitedRuns: 0,
+        teamForfeitedRuns,
         opponentForfeitedRuns: 0,
         teamErrors: parsed.teamTotals.errors,
         isFirstBatting: parsed.isFirstBatting,
@@ -618,7 +626,7 @@ const gameId = await prisma.$transaction(async (tx) => {
             groundCourt,
             opponentId: opponent.id,
             ...score,
-            teamForfeitedRuns: 0,
+            teamForfeitedRuns,
             opponentForfeitedRuns: 0,
             teamErrors: parsed.teamTotals.errors,
             isFirstBatting: parsed.isFirstBatting,
@@ -703,7 +711,7 @@ const gameId = await prisma.$transaction(async (tx) => {
       hitsAllowed: p.hitsAllowed,
       homeRunsAllowed: p.homeRunsAllowed,
       pitchCount: null,
-      isResponsible: false,
+      isResponsible: RESPONSIBLE_DECISIONS.includes(p.decision),
     })),
   });
   await syncPitchingTotals(tx, id);
