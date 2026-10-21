@@ -47,13 +47,24 @@ const videoUrl = optionalText(500).transform((value, ctx) => {
   return embedUrl;
 });
 
-/** 試合の振り返り（試合のみ）。天候・戦評・動画・AI 講評。MVP は枠ごとの入力のため、別に検証する（parseMvps） */
+/** 外部サイトへのリンク。リンクとして出力するため、http(s) 以外は受け付けない */
+const externalUrl = optionalText(500).pipe(
+  z
+    .url({
+      protocol: /^https?$/,
+      error: "http:// または https:// で始まる URL を入力してください",
+    })
+    .nullable(),
+);
+
+/** 試合の振り返り（試合のみ）。天候・戦評・動画・外部リンク・AI 講評。MVP は枠ごとの入力のため、別に検証する（parseMvps） */
 export const eventReviewSchema = z
   .object({
     weather: optionalEnumField(Weather),
     temperature: optionalNumber(-30, 50),
     summary: optionalText(2000),
     videoUrl,
+    externalUrl,
     aiGoodPoints: optionalText(2000),
     aiBadPoints: optionalText(2000),
   })

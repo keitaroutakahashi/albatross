@@ -122,6 +122,7 @@ describe("describeReview", () => {
     temperature: null,
     summary: null,
     videoUrl: null,
+    externalUrl: null,
     aiGoodPoints: null,
     aiBadPoints: null,
     mvpCount: 0,

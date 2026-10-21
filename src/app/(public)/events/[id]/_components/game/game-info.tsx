@@ -78,6 +78,7 @@ export const GameInfo = ({ game }: Props) => {
   const showGround = !hideEmpty || game.ground !== null;
   const showWeather = !hideEmpty || game.gameWeather !== null;
   const showVideo = !!game.videoUrl;
+  const showExternalLink = !!game.externalUrl;
 
   if (
     hideEmpty &&
@@ -86,7 +87,8 @@ export const GameInfo = ({ game }: Props) => {
     batteryRows.length === 0 &&
     !showGround &&
     !showWeather &&
-    !showVideo
+    !showVideo &&
+    !showExternalLink
   ) {
     return null;
   }
@@ -188,6 +190,19 @@ export const GameInfo = ({ game }: Props) => {
       {showVideo && game.videoUrl && (
         <SubSectionGroup title="試合動画">
           <YouTubeEmbed url={game.videoUrl} />
+        </SubSectionGroup>
+      )}
+
+      {game.externalUrl && (
+        <SubSectionGroup title="外部リンク">
+          <a
+            href={game.externalUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="break-all text-sm font-semibold underline underline-offset-2 hover:opacity-70"
+          >
+            {new URL(game.externalUrl).hostname}
+          </a>
         </SubSectionGroup>
       )}
     </SectionGroup>

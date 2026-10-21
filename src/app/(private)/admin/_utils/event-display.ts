@@ -69,6 +69,7 @@ export const describeReview = (game: {
   temperature: number | null;
   summary: string | null;
   videoUrl: string | null;
+  externalUrl: string | null;
   aiGoodPoints: string | null;
   aiBadPoints: string | null;
   mvpCount: number;
@@ -79,6 +80,7 @@ export const describeReview = (game: {
       : null,
     game.summary ? "戦評あり" : null,
     game.videoUrl ? "動画あり" : null,
+    game.externalUrl ? "外部リンクあり" : null,
     game.mvpCount > 0 ? `MVP ${game.mvpCount}人` : null,
     game.aiGoodPoints || game.aiBadPoints ? "AI 講評あり" : null,
   ]

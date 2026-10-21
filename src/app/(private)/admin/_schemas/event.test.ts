@@ -102,6 +102,7 @@ describe("eventReviewSchema", () => {
     temperature: "",
     summary: "",
     videoUrl: "",
+    externalUrl: "",
     aiGoodPoints: "",
     aiBadPoints: "",
   };
@@ -112,6 +113,7 @@ describe("eventReviewSchema", () => {
       temperature: null,
       summary: null,
       videoUrl: null,
+      externalUrl: null,
       aiGoodPoints: null,
       aiBadPoints: null,
     });
@@ -160,6 +162,22 @@ describe("eventReviewSchema", () => {
       expect(result.error?.issues[0]).toMatchObject({
         path: ["videoUrl"],
         message: "YouTube の動画 URL を入力してください",
+      });
+    }
+  });
+
+  it("外部サイトの URL は http(s) のみ受け付ける", () => {
+    expect(
+      eventReviewSchema.parse({
+        ...valid,
+        externalUrl: "https://example.com/games/1",
+      }),
+    ).toMatchObject({ externalUrl: "https://example.com/games/1" });
+
+    for (const externalUrl of ["foo", "javascript:alert(1)", "ftp://a.com/b"]) {
+      const result = eventReviewSchema.safeParse({ ...valid, externalUrl });
+      expect(result.error?.issues[0]).toMatchObject({
+        path: ["externalUrl"],
       });
     }
   });
