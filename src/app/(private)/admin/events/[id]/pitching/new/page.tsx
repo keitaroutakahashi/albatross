@@ -9,6 +9,7 @@ import {
   getNextPitchingOrder,
 } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
+import { sortMembersForSelect } from "@/app/(private)/admin/_utils/member-order";
 import { LineupRequiredNotice } from "@/app/(private)/admin/events/[id]/_components/lineup-required-notice";
 import { PitchingResultForm } from "@/app/(private)/admin/events/[id]/_components/pitching-result-form";
 
@@ -52,12 +53,14 @@ export default async function Page({
         defaultPitchingOrder={String(nextPitchingOrder)}
         gameResult={game.result}
         // 投手の成績は 1 人 1 件のため、登録済みの選手は選べない
-        gameMembers={gameMembers
-          .filter((gm) => gm.pitchingResult === null)
-          .map((gm) => ({
-            value: String(gm.id),
-            label: formatMemberLabel(gm.member),
-          }))}
+        gameMembers={sortMembersForSelect(
+          gameMembers
+            .filter((gm) => gm.pitchingResult === null)
+            .map((gm) => ({ ...gm.member, gameMemberId: gm.id })),
+        ).map((m) => ({
+          value: String(m.gameMemberId),
+          label: formatMemberLabel(m),
+        }))}
       />
     </>
   );

@@ -66,6 +66,7 @@ const gameOf = (status: EventStatus, overrides: Record<string, unknown> = {}) =>
     groundCourt: null,
     gameWeather: null,
     videoUrl: null,
+    externalUrl: null,
     summary: null,
     aiGoodPoints: null,
     aiBadPoints: null,

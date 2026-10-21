@@ -28,6 +28,7 @@ export type EventFormInitial = {
   temperature: string;
   summary: string;
   videoUrl: string;
+  externalUrl: string;
   aiGoodPoints: string;
   aiBadPoints: string;
 };
@@ -65,6 +66,7 @@ export const toEventFormInitial = (event: EventDetail): EventFormInitial => {
     temperature: str(game?.gameWeather?.temperature),
     summary: str(game?.summary),
     videoUrl: str(game?.videoUrl),
+    externalUrl: str(game?.externalUrl),
     aiGoodPoints: str(game?.aiGoodPoints),
     aiBadPoints: str(game?.aiBadPoints),
   };

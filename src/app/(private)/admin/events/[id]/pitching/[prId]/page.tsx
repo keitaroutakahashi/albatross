@@ -12,6 +12,7 @@ import {
   getPitchingResult,
 } from "@/app/(private)/admin/_data/game";
 import { parseId } from "@/app/(private)/admin/_utils/id";
+import { sortMembersForSelect } from "@/app/(private)/admin/_utils/member-order";
 import { PitchingResultForm } from "@/app/(private)/admin/events/[id]/_components/pitching-result-form";
 
 export const metadata: Metadata = {
@@ -46,14 +47,17 @@ export default async function Page({
         action={updatePitchingResult.bind(null, eventId, pitchingResultId)}
         gameResult={game.result}
         // 投手の成績は 1 人 1 件のため、他の投手の登録済み選手は選べない
-        gameMembers={gameMembers
-          .filter(
-            (gm) => gm.pitchingResult === null || gm.id === result.gameMemberId,
-          )
-          .map((gm) => ({
-            value: String(gm.id),
-            label: formatMemberLabel(gm.member),
-          }))}
+        gameMembers={sortMembersForSelect(
+          gameMembers
+            .filter(
+              (gm) =>
+                gm.pitchingResult === null || gm.id === result.gameMemberId,
+            )
+            .map((gm) => ({ ...gm.member, gameMemberId: gm.id })),
+        ).map((m) => ({
+          value: String(m.gameMemberId),
+          label: formatMemberLabel(m),
+        }))}
         initial={{
           gameMemberId: String(result.gameMemberId),
           pitchingOrder: String(result.pitchingOrder),

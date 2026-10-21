@@ -23,6 +23,7 @@ type Props = {
     temperature: string;
     summary: string;
     videoUrl: string;
+    externalUrl: string;
     aiGoodPoints: string;
     aiBadPoints: string;
     /** 保存済みの MVP（表示順） */
@@ -39,7 +40,7 @@ const weatherSegments = [
   { value: "snowy", label: weatherLabel.snowy, icon: Snowflake },
 ];
 
-/** 試合の振り返り（試合のみ）。天候・戦評・動画・MVP・AI 講評 */
+/** 試合の振り返り（試合のみ）。天候・戦評・動画・外部リンク・MVP・AI 講評 */
 export const EventReviewForm = ({
   action,
   eventId,
@@ -90,6 +91,18 @@ export const EventReviewForm = ({
               placeholder="https://"
               hint="YouTube の動画 URL（共有で出る URL でも可）"
               defaultValue={initial.videoUrl}
+            />
+          </FormSection>
+
+          <FormSection title="外部リンク">
+            <TextField
+              name="externalUrl"
+              label="外部サイト URL"
+              state={state}
+              type="url"
+              placeholder="https://"
+              hint="大会公式サイトの試合結果ページなど"
+              defaultValue={initial.externalUrl}
             />
           </FormSection>
 

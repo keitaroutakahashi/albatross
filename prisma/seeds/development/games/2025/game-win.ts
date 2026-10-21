@@ -36,6 +36,7 @@ export async function seedGameWin(prisma: PrismaClient, ctx: SeedContext) {
       teamForfeitedRuns: 1,
       result: "win",
       videoUrl: "https://www.youtube.com/embed/Zf2lra7LTcI?si=v2QMsZIEnygJVmGW",
+      externalUrl: "https://example.com/games/results/1",
       aiGoodPoints:
         "最大の勝因は2回の集中打です。打者一巡で一挙6得点を奪い、序盤で試合の主導権を握りました。\n\nチーム13安打と打線が途切れずつながり、特に3番佐藤の3安打猛打賞、4番鈴木の2安打2打点が効果的でした。\n\n守備は無失策と堅実で、先発・渡辺が5奪三振で5回を投げ切り完投勝利。攻守がかみ合った理想的な試合運びで、5回コールド勝ちを呼び込みました。",
       aiBadPoints:

@@ -1,4 +1,7 @@
-import { sortMembersByUniformNumber } from "@/app/(private)/admin/_utils/member-order";
+import {
+  sortMembersByUniformNumber,
+  sortMembersForSelect,
+} from "@/app/(private)/admin/_utils/member-order";
 
 const member = (
   uniformNumber: string | null,
@@ -74,6 +77,38 @@ describe("sortMembersByUniformNumber", () => {
   it("元の配列は変更しない", () => {
     const input = [member("2", "b"), member("1", "a")];
     sortMembersByUniformNumber(input);
+    expect(input.map((m) => m.uniformNumber)).toEqual(["2", "1"]);
+  });
+});
+
+describe("sortMembersForSelect", () => {
+  it("背番号の無いメンバーは、非現役より後ろの一番最後に並べる", () => {
+    const sorted = sortMembersForSelect([
+      member(null, "現役の助っ人"),
+      member("3", "非現役の3番", false),
+      member("10", "現役の10番"),
+      member("2", "現役の2番"),
+    ]);
+    expect(sorted.map((m) => m.name)).toEqual([
+      "現役の2番",
+      "現役の10番",
+      "非現役の3番",
+      "現役の助っ人",
+    ]);
+  });
+
+  it("背番号の無いメンバー同士は、現役を先に名前順にする", () => {
+    const sorted = sortMembersForSelect([
+      member(null, "あ", false),
+      member(null, "ぼ"),
+      member(null, "い"),
+    ]);
+    expect(sorted.map((m) => m.name)).toEqual(["い", "ぼ", "あ"]);
+  });
+
+  it("元の配列は変更しない", () => {
+    const input = [member("2", "b"), member("1", "a")];
+    sortMembersForSelect(input);
     expect(input.map((m) => m.uniformNumber)).toEqual(["2", "1"]);
   });
 });

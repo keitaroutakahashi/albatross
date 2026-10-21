@@ -384,6 +384,9 @@ model Game {
   // 試合動画
   videoUrl String? // 試合動画用のリンク
 
+  // 外部サイトへのリンク（例: 大会公式サイトの試合結果ページ）
+  externalUrl String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

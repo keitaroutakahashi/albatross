@@ -141,6 +141,7 @@ erDiagram
   String aiGoodPoints "nullable"
   String aiBadPoints "nullable"
   String videoUrl "nullable"
+  String externalUrl "nullable"
   DateTime createdAt
   DateTime updatedAt
 }
@@ -414,6 +415,7 @@ Properties as follows:
 - `aiGoodPoints`:
 - `aiBadPoints`:
 - `videoUrl`:
+- `externalUrl`:
 - `createdAt`:
 - `updatedAt`:
 
