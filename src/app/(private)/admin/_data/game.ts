@@ -1,4 +1,5 @@
 import { requireAccess } from "@/app/(private)/admin/_utils/auth";
+import { sortMembersForSelect } from "@/app/(private)/admin/_utils/member-order";
 import prisma from "@/lib/prisma";
 
 /** イベント配下の試合データ。イベントが試合でなければ null */
@@ -32,10 +33,9 @@ export const getEventParticipation = async (eventId: number) => {
   ).map((m) => m.memberId);
   const members = await prisma.member.findMany({
     where: { OR: [{ isActive: true }, { id: { in: selectedMemberIds } }] },
-    orderBy: { name: "asc" },
   });
 
-  return { selectedMemberIds, members };
+  return { selectedMemberIds, members: sortMembersForSelect(members) };
 };
 
 export const getInnings = async (gameId: number) => {
@@ -63,12 +63,14 @@ export const getLineupCandidates = async (gameId: number) => {
     prisma.gameParticipant.findMany({
       where: { gameId },
       include: { member: true },
-      orderBy: { member: { name: "asc" } },
     }),
     prisma.gameMember.findMany({ where: { gameId } }),
   ]);
 
-  return { members: participants.map((p) => p.member), gameMembers };
+  return {
+    members: sortMembersForSelect(participants.map((p) => p.member)),
+    gameMembers,
+  };
 };
 
 /** 打席入力の入口。オーダーの選手を、スタメン（打順順）→ ベンチの順に、打席結果つきで取得する */
@@ -162,17 +164,18 @@ export const getMvpEditorData = async (gameId: number) => {
     prisma.gameParticipant.findMany({
       where: { gameId },
       include: { member: true },
-      orderBy: { member: { name: "asc" } },
     }),
     prisma.gameMvp.findMany({ where: { gameId }, orderBy: { order: "asc" } }),
   ]);
 
   return {
-    candidates: participants.map((p) => ({
-      memberId: p.memberId,
-      name: p.member.name,
-      uniformNumber: p.member.uniformNumber,
-    })),
+    candidates: sortMembersForSelect(participants.map((p) => p.member)).map(
+      (m) => ({
+        memberId: m.id,
+        name: m.name,
+        uniformNumber: m.uniformNumber,
+      }),
+    ),
     mvps,
   };
 };
