@@ -100,7 +100,7 @@ export const BattingStatsView = ({
         qualifiedOnly={qualifiedOnly}
         onQualifiedChange={setQualifiedOnly}
         qualifiedLabel="規定打席"
-        qualifiedHint="規定打席: 10 打席以上、またはシーズンの試合数以上の打席に立っていること"
+        qualifiedHint="規定打席: 20 打席以上、またはシーズンの試合数 × 1.5 以上の打席に立っていること"
         qualifiedDisabled={!category.isRate}
         disabled={isPending}
       />

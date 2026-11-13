@@ -404,6 +404,7 @@ const candidates = await prisma.game.findMany({
     event: true,
     gameWeather: true,
     participants: true,
+    mvps: { select: { id: true } },
     gameMembers: {
       include: {
         member: true,
@@ -440,6 +441,9 @@ if (game) {
   }
   if (parsed.summary && game.summary) {
     errors.push("戦評が入力済みです（上書きしません）");
+  }
+  if ((parsed.mvps?.length ?? 0) > 0 && game.mvps.length > 0) {
+    errors.push("MVP が入力済みです（上書きしません）");
   }
   if (game.event.date.getTime() !== startsAt.getTime()) {
     warnings.push(
@@ -576,6 +580,23 @@ const existingParticipantIds = new Set(
   game?.participants.map((p) => p.memberId) ?? [],
 );
 
+const mvpPlans = (parsed.mvps ?? []).map((m, i) => ({
+  memberId: m.memberId,
+  order: i + 1,
+  comment: m.comment,
+}));
+for (const m of mvpPlans) {
+  if (
+    !participantIds.includes(m.memberId) &&
+    !existingParticipantIds.has(m.memberId)
+  ) {
+    errors.push(`MVP の memberId ${m.memberId} が参加メンバーに居ません`);
+  }
+}
+if (new Set(mvpPlans.map((m) => m.memberId)).size !== mvpPlans.length) {
+  errors.push("MVP に同じ選手が重複しています");
+}
+
 console.log(
   "== 更新先 ==",
   game
@@ -647,6 +668,18 @@ console.log(
     : (weatherPlan ?? "（設定しない）"),
 );
 console.log("== 戦評 ==", parsed.summary ?? "（なし。書き込まない）");
+console.log("== MVP ==");
+if (mvpPlans.length === 0) {
+  console.log("（なし。書き込まない）");
+} else {
+  console.table(
+    mvpPlans.map((m) => ({
+      order: m.order,
+      name: allMembers.find((x) => x.id === m.memberId)?.name,
+      comment: m.comment,
+    })),
+  );
+}
 console.table(
   innings.team.map((t, i) => ({
     inning: i + 1,
@@ -827,6 +860,10 @@ const gameId = await prisma.$transaction(async (tx) => {
     })),
   });
   await syncPitchingTotals(tx, id);
+  // MVP は参加メンバーの登録後でないと作れない（外部キー）
+  await tx.gameMvp.createMany({
+    data: mvpPlans.map((m) => ({ gameId: id, ...m })),
+  });
   return id;
 });
 
