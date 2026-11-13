@@ -13,8 +13,9 @@ import { ALL_LEAGUES } from "@/app/_features/leagues/utils/league-filter";
 import { formatSeason } from "@/app/_utils/season";
 import type { LeagueModel } from "@/generated/prisma/models/League";
 import type { SeasonModel } from "@/generated/prisma/models/Season";
+import { cn } from "@/lib/utils";
 
-/** 打者・投手成績ページで共通利用する指標カテゴリの定義 */
+/** 打者・投手・貢献度ページで共通利用する指標カテゴリの定義 */
 export type StatsCategory = {
   key: string;
   label: string;
@@ -24,18 +25,19 @@ type Props = {
   seasons: SeasonModel[];
   season: string;
   onSeasonChange: (season: string) => void;
-  /** リーグで絞り込むための一覧。空のときはリーグのセレクトを出さない */
-  leagues: LeagueModel[];
+  /** リーグで絞り込むための一覧。空または未指定のときはリーグのセレクトを出さない */
+  leagues?: LeagueModel[];
   /** 選択中のリーグ。すべてのときは ALL_LEAGUES */
-  league: string;
-  onLeagueChange: (league: string) => void;
+  league?: string;
+  onLeagueChange?: (league: string) => void;
   categories: readonly StatsCategory[];
   categoryKey: string;
   onCategoryChange: (key: string) => void;
-  qualifiedOnly: boolean;
-  onQualifiedChange: (checked: boolean) => void;
+  /** 規定打席・規定投球回に絞るか。onQualifiedChange を渡したときだけチェックボックスを出す */
+  qualifiedOnly?: boolean;
+  onQualifiedChange?: (checked: boolean) => void;
   /** 規定打席・規定投球回チェックボックスのラベル */
-  qualifiedLabel: string;
+  qualifiedLabel?: string;
   /** 規定打席・規定投球回の説明文（指定するとヒントアイコンを表示する） */
   qualifiedHint?: string;
   /** 選択中の指標に規定条件が適用されない場合はチェックボックスを操作不可にする */
@@ -45,29 +47,36 @@ type Props = {
 };
 
 /**
- * 打者・投手成績ページ共通のフィルタバー。
+ * 打者・投手・貢献度ページ共通のフィルタバー。
  * 年度・リーグ・指標の Select と、規定打席（規定投球回）チェックボックスを並べる。
+ * リーグとチェックボックスは、必要なページだけ props を渡して出す。
  */
 export const StatsFilterBar = ({
   seasons,
   season,
   onSeasonChange,
-  leagues,
-  league,
+  leagues = [],
+  league = ALL_LEAGUES,
   onLeagueChange,
   categories,
   categoryKey,
   onCategoryChange,
-  qualifiedOnly,
+  qualifiedOnly = false,
   onQualifiedChange,
   qualifiedLabel,
   qualifiedHint,
   qualifiedDisabled = false,
   disabled = false,
 }: Props) => {
+  const hasLeagueSelect = leagues.length > 0 && onLeagueChange !== undefined;
+
   return (
     <div className="flex flex-col gap-y-3">
-      <div className="grid grid-cols-2 gap-2 md:grid-cols-3">
+      <div
+        className={cn("grid grid-cols-2 gap-2", {
+          "md:grid-cols-3": hasLeagueSelect,
+        })}
+      >
         <Select
           value={season}
           onValueChange={onSeasonChange}
@@ -85,7 +94,7 @@ export const StatsFilterBar = ({
           </SelectContent>
         </Select>
 
-        {leagues.length > 0 && (
+        {hasLeagueSelect && (
           <Select
             value={league}
             onValueChange={onLeagueChange}
@@ -123,23 +132,25 @@ export const StatsFilterBar = ({
         </Select>
       </div>
 
-      <div className="flex items-center gap-x-1.5">
-        <label
-          htmlFor="stats-filter-bar-qualified"
-          className={`flex items-center gap-x-2 text-sm${
-            qualifiedDisabled ? " text-gray-400" : ""
-          }`}
-        >
-          <Checkbox
-            id="stats-filter-bar-qualified"
-            checked={qualifiedOnly}
-            onCheckedChange={(checked) => onQualifiedChange(checked === true)}
-            disabled={disabled || qualifiedDisabled}
-          />
-          {qualifiedLabel}
-        </label>
-        {qualifiedHint && <HintTooltip text={qualifiedHint} />}
-      </div>
+      {onQualifiedChange && (
+        <div className="flex items-center gap-x-1.5">
+          <label
+            htmlFor="stats-filter-bar-qualified"
+            className={`flex items-center gap-x-2 text-sm${
+              qualifiedDisabled ? " text-gray-400" : ""
+            }`}
+          >
+            <Checkbox
+              id="stats-filter-bar-qualified"
+              checked={qualifiedOnly}
+              onCheckedChange={(checked) => onQualifiedChange(checked === true)}
+              disabled={disabled || qualifiedDisabled}
+            />
+            {qualifiedLabel}
+          </label>
+          {qualifiedHint && <HintTooltip text={qualifiedHint} />}
+        </div>
+      )}
     </div>
   );
 };

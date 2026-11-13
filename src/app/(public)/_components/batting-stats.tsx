@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   type BattingLeaders as BattingLeadersType,
@@ -96,6 +97,19 @@ export const BattingStats = async () => {
             )}
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/batting-stats"
+          className="group flex items-center gap-x-1 text-sm font-bold underline underline-offset-4 hover:opacity-70"
+        >
+          打者成績一覧を見る
+          <ChevronRight
+            aria-hidden
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+          />
+        </Link>
       </div>
     </section>
   );

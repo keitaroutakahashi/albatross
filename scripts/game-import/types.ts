@@ -97,4 +97,6 @@ export type ParsedGame = {
   } | null;
   /** 戦評。コメントを要約して手で入れる。パーサーは null で出力し、null のままなら戦評は書き込まない */
   summary: string | null;
+  /** MVP。談話の紹介から手で入れる（パーサーは出力しない）。配列の順が表示順。参加メンバーの中からしか選べない */
+  mvps?: { memberId: number; comment: string | null }[];
 };

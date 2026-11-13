@@ -1,4 +1,5 @@
 import { clsx } from "clsx";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import {
   getPitchingLeaders,
@@ -102,6 +103,19 @@ export const PitchingStats = async () => {
             )}
           </div>
         ))}
+      </div>
+
+      <div className="mt-8 flex justify-center">
+        <Link
+          href="/pitching-stats"
+          className="group flex items-center gap-x-1 text-sm font-bold underline underline-offset-4 hover:opacity-70"
+        >
+          投手成績一覧を見る
+          <ChevronRight
+            aria-hidden
+            className="size-4 transition-transform group-hover:translate-x-0.5"
+          />
+        </Link>
       </div>
     </section>
   );
