@@ -1,5 +1,5 @@
 /**
- * parse-ts-league.ts が作った JSON から、試合の成績を取り込む。
+ * parse-ts-league.ts・parse-vcuda.ts が作った JSON から、試合の成績を取り込む。
  * 試合日（JST）と対戦相手が一致するイベントがあれば更新し、無ければ新規作成する。
  * 取り込むのは、イベント（日時・会場・リーグ・対戦相手）・参加メンバー・オーダー・
  * イニングごとの得点・打席・投手成績・盗塁・戦評・状態（終了）。
@@ -16,8 +16,12 @@ import { parseArgs } from "node:util";
 import { config } from "dotenv";
 import type { Member } from "@/generated/prisma/client";
 import type { AtBatResult, GameType, Position } from "@/generated/prisma/enums";
-import type { ParsedGame } from "./ts-league/types";
-import { fetchGameWeather, parseCoordinates } from "./ts-league/weather";
+import {
+  normalizeGroundName,
+  suggestGrounds,
+} from "./game-import/ground-suggest";
+import type { ParsedGame } from "./game-import/types";
+import { fetchGameWeather, parseCoordinates } from "./game-import/weather";
 
 // lib/prisma.ts は読み込み時に DATABASE_URL を参照するため、先に環境変数を読み込む
 config({ path: ".env.local" });
@@ -61,10 +65,17 @@ const SUFFIX_RESULTS: Record<string, AtBatResult> = {
   直: "lineOut",
   安: "single",
   "2": "double",
+  // 以下は vcuda の表記（右二、右三、三内、左邪）
+  二: "double",
+  三: "triple",
+  内: "single",
+  邪: "flyOut",
   本: "homeRun",
   失: "error",
   犠飛: "sacrificeFly",
 };
+
+const OUTFIELD: readonly Position[] = ["left", "center", "right"];
 
 const HIT_RESULTS: readonly AtBatResult[] = [
   "single",
@@ -87,8 +98,16 @@ const toResult = (
   const [fielder, ...rest] = [...normalized];
   const suffix = rest.join("");
   const direction = fielder ? POSITIONS[fielder] : undefined;
+  if (!direction) return null;
+  // 「犠」だけの表記（vcuda）は、外野方向なら犠飛、内野方向なら犠打とする
+  if (suffix === "犠") {
+    return {
+      result: OUTFIELD.includes(direction) ? "sacrificeFly" : "sacrificeHit",
+      direction,
+    };
+  }
   const result = suffix ? SUFFIX_RESULTS[suffix] : undefined;
-  if (!direction || !result) return null;
+  if (!result) return null;
   return { result, direction };
 };
 
@@ -251,16 +270,25 @@ if (!gameType) {
 const venue = parsed.venueText.match(/^(.*?)([A-ZＡ-Ｚ])面/);
 const groundBase = venue ? (venue[1] as string) : parsed.venueText;
 const groundCourt = venue ? `${venue[2]}面` : null;
-const normalizeGround = (name: string) =>
-  name.replace(/\s+/g, "").replace(/(野球場|球場)$/, "");
 const grounds = await prisma.ground.findMany();
 const groundMatches = grounds.filter(
-  (g) => normalizeGround(g.name) === normalizeGround(groundBase),
+  (g) => normalizeGroundName(g.name) === normalizeGroundName(groundBase),
 );
-const ground = groundMatches.length === 1 ? groundMatches[0] : undefined;
+// groundId は、候補を見て人が決めたグラウンド。JSON に書くと名前の照合より優先する
+const ground =
+  parsed.groundId !== undefined
+    ? grounds.find((g) => g.id === parsed.groundId)
+    : groundMatches.length === 1
+      ? groundMatches[0]
+      : undefined;
 if (!ground) {
+  const candidates = suggestGrounds(groundBase, grounds)
+    .map((c) => `${c.name}(id=${c.id}, 類似度 ${c.score.toFixed(2)})`)
+    .join(" / ");
   errors.push(
-    `会場 "${parsed.venueText}" に対応するグラウンドが 1 件に決まりません（候補 ${groundMatches.length} 件）。グラウンドは自動作成しません`,
+    parsed.groundId !== undefined
+      ? `groundId ${parsed.groundId} のグラウンドがマスタにありません`
+      : `会場 "${parsed.venueText}" に対応するグラウンドが 1 件に決まりません（名前の一致 ${groundMatches.length} 件）。グラウンドは自動作成しません。似た名前の候補: ${candidates || "なし"}。使うものを決めて、JSON の groundId に id を書いてください`,
   );
 }
 
@@ -271,13 +299,32 @@ const existingOpponent = await prisma.opponent.findUnique({
 // --- メンバーの対応づけ（無い選手は自動作成しない） ---
 const allMembers = await prisma.member.findMany();
 const resolvedMembers = new Map<string, Member>();
-const resolveMember = (name: string, uniformNumber: string): Member | null => {
+const resolveMember = (
+  name: string,
+  uniformNumber: string,
+  memberId?: number,
+  sourcePlayerId?: string,
+): Member | null => {
   const cached = resolvedMembers.get(name);
   if (cached) return cached;
+  // memberId は、対応表を見て人が決めたもの。名前・背番号の照合より優先する
+  if (memberId !== undefined) {
+    const specified = allMembers.find((m) => m.id === memberId);
+    if (!specified) {
+      errors.push(
+        `${name}: memberId ${memberId} のメンバーがマスタにありません`,
+      );
+      return null;
+    }
+    resolvedMembers.set(name, specified);
+    return specified;
+  }
   const byName = allMembers.filter(
     (m) => normalizeName(m.name) === normalizeName(name),
   );
-  const byNumber = allMembers.filter((m) => m.uniformNumber === uniformNumber);
+  const byNumber = allMembers.filter(
+    (m) => uniformNumber !== "" && m.uniformNumber === uniformNumber,
+  );
   const found =
     byName.length === 1
       ? byName[0]
@@ -285,8 +332,11 @@ const resolveMember = (name: string, uniformNumber: string): Member | null => {
         ? byNumber[0]
         : null;
   if (!found) {
+    const source = sourcePlayerId
+      ? `元サイトの選手 ID ${sourcePlayerId}。対応表から memberId を決めて JSON に書いてください`
+      : `背番号 ${uniformNumber}`;
     errors.push(
-      `${name}(${uniformNumber}): メンバーのマスタに該当する選手がいません。メンバーは自動作成しません`,
+      `${name}: メンバーのマスタに該当する選手がいません（${source}）。メンバーは自動作成しません`,
     );
     return null;
   }
@@ -300,7 +350,12 @@ const resolveMember = (name: string, uniformNumber: string): Member | null => {
 };
 
 const batters = parsed.batting.flatMap((b) => {
-  const member = resolveMember(b.name, b.uniformNumber);
+  const member = resolveMember(
+    b.name,
+    b.uniformNumber,
+    b.memberId,
+    b.sourcePlayerId,
+  );
   const position = POSITIONS[b.position];
   if (!position) {
     errors.push(`${b.name}: 未対応の守備位置 "${b.position}"`);
@@ -308,7 +363,12 @@ const batters = parsed.batting.flatMap((b) => {
   return member && position ? [{ b, member, position }] : [];
 });
 const pitcherMembers = pitchers.flatMap(({ p, ip }) => {
-  const member = resolveMember(p.name, p.uniformNumber);
+  const member = resolveMember(
+    p.name,
+    p.uniformNumber,
+    p.memberId,
+    p.sourcePlayerId,
+  );
   return member && ip ? [{ p, ip, member }] : [];
 });
 

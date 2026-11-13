@@ -288,6 +288,8 @@ const output = {
         }
       : null,
     status: game.event.status,
+    // 外部サイト（ts-league など）の試合結果ページ。skill が試合後のコメントなどを読むのに使う
+    externalUrl: game.externalUrl,
     // 人が書いた戦評（試合の振り返り）。材料にするが、数字は成績を正とする
     summary: game.summary,
   },

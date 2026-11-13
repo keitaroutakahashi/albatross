@@ -1,4 +1,4 @@
-/** parse-ts-league.ts が出力し、import-ts-league.ts が読み込む JSON の形 */
+/** parse-ts-league.ts・parse-vcuda.ts が出力し、import-game.ts が読み込む JSON の形 */
 
 export type ParsedAtBat = {
   /** 何回の打席か（元ページの「1回〜9回」列の位置） */
@@ -11,7 +11,12 @@ export type ParsedAtBat = {
 export type ParsedBatter = {
   order: number;
   name: string;
+  /** 元ページに背番号が無いサイトは空文字 */
   uniformNumber: string;
+  /** 元サイト上の選手 ID（vcuda の pid）。メンバーとの対応表から memberId を決めるために出力する */
+  sourcePlayerId?: string;
+  /** 対応するメンバーの id。パーサは出力せず、JSON に手で書く。あれば名前・背番号の照合より優先する */
+  memberId?: number;
   /** 元ページの守備位置の表記（中、左、DH など） */
   position: string;
   /** 元ページの個人成績の列の値。元ページ自体の整合性の確認に使う */
@@ -25,6 +30,8 @@ export type ParsedPitcher = {
   order: number;
   name: string;
   uniformNumber: string;
+  sourcePlayerId?: string;
+  memberId?: number;
   /** 元ページの表記（例: 2回0/3） */
   inningsText: string;
   earnedRuns: number;
@@ -45,6 +52,8 @@ export type ParsedGame = {
   time: string | null;
   /** 会場の表記（例: 福栄スポーツ広場野球場B面(南行徳)野球場） */
   venueText: string;
+  /** 会場名がマスタと一致しないとき、候補から人が選んだグラウンドの id。パーサは出力せず、JSON に手で書く */
+  groundId?: number;
   /** 試合種別の表記（例: 公式戦） */
   gameTypeText: string;
   /** リーグ名の表記（例: 東京スカイツリーグ） */

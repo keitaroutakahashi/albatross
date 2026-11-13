@@ -62,6 +62,7 @@
       "!./src/**/generated",
       "!./prisma/**/generated",
       "!**/.next",
+      "!**/*.md",
       "!**/dist",
       "!**/cache",
       "!**/generated"

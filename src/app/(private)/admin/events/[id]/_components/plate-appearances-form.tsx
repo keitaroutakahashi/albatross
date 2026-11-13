@@ -4,8 +4,8 @@ import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/app/_components/shadcn/button";
 import { Input } from "@/app/_components/shadcn/input";
-import { nativeControlClass } from "@/app/(private)/admin/_components/form-fields";
 import { FormShell } from "@/app/(private)/admin/_components/form-shell";
+import { NativeSelect } from "@/app/(private)/admin/_components/native-select";
 import {
   AT_BAT_FIELDS,
   AT_BATS_ERROR_KEY,
@@ -126,14 +126,13 @@ const AtBatRow = ({ index, state, initial }: RowProps) => {
           />
         </Labeled>
         <Labeled label="結果">
-          <select
+          <NativeSelect
             // エラー差し戻し後も選択を保つため、送信値が変わったら作り直す
             key={result}
             name={AT_BAT_FIELDS.result}
             aria-label={`${index + 1}打席目 結果`}
             defaultValue={result}
             onChange={(e) => setSelectedResult(e.target.value)}
-            className={nativeControlClass}
           >
             <option value="">選択</option>
             {atBatResultGroups.map((group) => (
@@ -145,7 +144,7 @@ const AtBatRow = ({ index, state, initial }: RowProps) => {
                 ))}
               </optgroup>
             ))}
-          </select>
+          </NativeSelect>
         </Labeled>
       </div>
       {/* 入力欄を出さない項目も、送信値が打席の並びとずれないよう空の値を送る */}
@@ -158,12 +157,11 @@ const AtBatRow = ({ index, state, initial }: RowProps) => {
           {hasDirection && (
             <div className="w-28 shrink-0">
               <Labeled label="打球方向">
-                <select
+                <NativeSelect
                   key={direction}
                   name={AT_BAT_FIELDS.direction}
                   aria-label={`${index + 1}打席目 打球方向`}
                   defaultValue={direction}
-                  className={nativeControlClass}
                 >
                   <option value="">選択</option>
                   {positionShortOptions.map((o) => (
@@ -171,7 +169,7 @@ const AtBatRow = ({ index, state, initial }: RowProps) => {
                       {o.label}
                     </option>
                   ))}
-                </select>
+                </NativeSelect>
               </Labeled>
             </div>
           )}

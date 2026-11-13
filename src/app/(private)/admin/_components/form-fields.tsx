@@ -4,6 +4,7 @@ import { Input } from "@/app/_components/shadcn/input";
 import { Label } from "@/app/_components/shadcn/label";
 import { Textarea } from "@/app/_components/shadcn/textarea";
 import { HelpTip } from "@/app/(private)/admin/_components/help-tip";
+import { NativeSelect } from "@/app/(private)/admin/_components/native-select";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +19,6 @@ type BaseProps = {
   /** ラベルの右の「?」をタップすると開く説明 */
   help?: ReactNode;
 };
-
-export const nativeControlClass =
-  "border-input h-11 w-full rounded-md border bg-transparent px-3 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm";
 
 export const errorId = (name: string) => `${name}-error`;
 
@@ -191,7 +189,7 @@ export const SelectField = ({
       help={help}
       error={error}
     >
-      <select
+      <NativeSelect
         key={selectResetKey(state, name)}
         id={name}
         name={name}
@@ -200,7 +198,6 @@ export const SelectField = ({
         disabled={disabled}
         aria-invalid={!!error}
         aria-describedby={error ? errorId(name) : undefined}
-        className={nativeControlClass}
       >
         {placeholder !== undefined && <option value="">{placeholder}</option>}
         {options.map((o) => (
@@ -208,7 +205,7 @@ export const SelectField = ({
             {o.label}
           </option>
         ))}
-      </select>
+      </NativeSelect>
     </Field>
   );
 };
@@ -331,16 +328,19 @@ export const CheckboxGroupField = ({
   hint,
   defaultValue = [],
   options,
+  gridClassName,
 }: Omit<BaseProps, "required"> & {
   defaultValue?: string[];
   options: Option[];
+  /** 列数を変えたいときに指定する。未指定は 2 列 */
+  gridClassName?: string;
 }) => {
   const error = state.fieldErrors?.[name];
   const selected = state.values ? toArray(state.values[name]) : defaultValue;
   return (
     <fieldset className="flex flex-col gap-2">
       <legend className="mb-2 text-sm font-medium">{label}</legend>
-      <div className="grid grid-cols-2 gap-2">
+      <div className={cn("grid grid-cols-2 gap-2", gridClassName)}>
         {options.map((o) => (
           <label key={o.value} className={cn(checkItemClass)}>
             <input
