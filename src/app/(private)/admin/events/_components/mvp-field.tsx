@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Textarea } from "@/app/_components/shadcn/textarea";
 import { AddRemoveButtons } from "@/app/(private)/admin/_components/add-remove-buttons";
-import { nativeControlClass } from "@/app/(private)/admin/_components/form-fields";
+import { NativeSelect } from "@/app/(private)/admin/_components/native-select";
 import {
   MVP_COMMENT_MAX,
   MVP_FIELDS,
@@ -63,14 +63,13 @@ export const MvpField = ({ state, candidates, initial }: Props) => {
             // biome-ignore lint/suspicious/noArrayIndexKey: 枠の位置が表示順そのもの
             <li key={i} className="flex flex-col gap-2 rounded-md border p-3">
               <p className="text-sm font-bold">{i + 1}人目</p>
-              <select
+              <NativeSelect
                 // エラー差し戻し後も選択を保つため、送信値が変わったら作り直す
                 key={member}
                 name={MVP_FIELDS.member}
                 defaultValue={member}
                 aria-label={`MVP ${i + 1}人目の選手`}
                 aria-invalid={!!memberError}
-                className={nativeControlClass}
               >
                 <option value="">選手を選択</option>
                 {candidates.map((c) => (
@@ -78,7 +77,7 @@ export const MvpField = ({ state, candidates, initial }: Props) => {
                     {c.label}
                   </option>
                 ))}
-              </select>
+              </NativeSelect>
               {memberError && (
                 <p role="alert" className="text-xs text-destructive">
                   {memberError}

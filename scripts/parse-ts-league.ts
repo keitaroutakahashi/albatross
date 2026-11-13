@@ -12,7 +12,7 @@ import type {
   ParsedBatter,
   ParsedGame,
   ParsedPitcher,
-} from "./ts-league/types";
+} from "./game-import/types";
 
 // 自チームの ts-league 上の URL。チーム名の表記が変わっても、リンクで特定する
 const TEAM_PATH = "/team/alba-tross/";

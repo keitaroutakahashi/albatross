@@ -20,6 +20,7 @@ export const EventMembersForm = ({ action, options, selected }: Props) => {
           state={state}
           options={options}
           defaultValue={selected}
+          gridClassName="@2xl:grid-cols-3"
         />
       )}
     </FormShell>

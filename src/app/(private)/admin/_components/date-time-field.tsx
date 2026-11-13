@@ -6,8 +6,8 @@ import {
   currentValue,
   errorId,
   Field,
-  nativeControlClass,
 } from "@/app/(private)/admin/_components/form-fields";
+import { NativeSelect } from "@/app/(private)/admin/_components/native-select";
 import type { ActionState } from "@/app/(private)/admin/_utils/action-state";
 
 type Props = {
@@ -77,19 +77,18 @@ export const DateTimeField = ({
           aria-describedby={error ? errorId(name) : undefined}
           className="h-11"
         />
-        <select
+        <NativeSelect
           value={time}
           onChange={(e) => setTime(e.target.value)}
           aria-label={`${label}（時刻）`}
           aria-invalid={!!error}
-          className={nativeControlClass}
         >
           {options.map((o) => (
             <option key={o.value} value={o.value}>
               {o.label}
             </option>
           ))}
-        </select>
+        </NativeSelect>
       </div>
     </Field>
   );
