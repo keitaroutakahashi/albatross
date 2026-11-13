@@ -120,8 +120,8 @@ const StarterOverlay = ({
   const position = positionShortOptions.find((o) => o.value === row.position);
   const member = members.find((o) => o.value === row.memberId);
   return (
-    <div className="grid cursor-grabbing grid-cols-[2rem_1.5rem_4.5rem_1fr] items-center gap-2 rounded-lg border border-primary/30 bg-background p-2 shadow-xl ring-4 ring-primary/10">
-      <GripVertical className="mx-auto size-5 text-primary" />
+    <div className="grid cursor-grabbing grid-cols-[1.5rem_1.5rem_5.5rem_1fr] items-center gap-2 rounded-lg border border-primary/30 bg-background p-2 shadow-xl ring-4 ring-primary/10">
+      <GripVertical className="mx-auto size-4 text-primary" />
       <OrderBadge order={order} />
       <span className="truncate text-sm font-medium">
         {position?.label ?? "-"}
@@ -145,6 +145,8 @@ type StarterItemProps = {
   index: number;
   members: Option[];
   errors: string[];
+  /** 送信値が変わったら select を作り直すための key。RowSelect と同じ理由 */
+  resetKey: string;
   onChange: (patch: Partial<Pick<StarterRow, "memberId" | "position">>) => void;
 };
 
@@ -153,6 +155,7 @@ const StarterItem = ({
   index,
   members,
   errors,
+  resetKey,
   onChange,
 }: StarterItemProps) => {
   const {
@@ -183,7 +186,7 @@ const StarterItem = ({
     >
       <div
         className={cn(
-          "grid grid-cols-[2rem_1.5rem_4.5rem_1fr] items-center gap-2",
+          "grid grid-cols-[1.5rem_1.5rem_5.5rem_1fr] items-center gap-2",
           isDragging && "invisible",
         )}
       >
@@ -195,12 +198,15 @@ const StarterItem = ({
           aria-label={`${order} 番の打順を並べ替え`}
           className="flex h-10 touch-none cursor-grab items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:cursor-grabbing"
         >
-          <GripVertical className="size-5" />
+          <GripVertical className="size-4" />
         </button>
         <OrderBadge order={order} />
         <NativeSelect
+          // 送信後のフォームリセットは、制御中の value ではなくマウント時の defaultValue に
+          // 戻す。送信値が変わるたびに作り直し、defaultValue で入力を保つ
+          key={`position:${resetKey}`}
           name={LINEUP_FIELDS.starterPosition}
-          value={row.position}
+          defaultValue={row.position}
           onChange={(e) => onChange({ position: e.target.value })}
           aria-label={`${order} 守備位置`}
         >
@@ -212,8 +218,9 @@ const StarterItem = ({
           ))}
         </NativeSelect>
         <NativeSelect
+          key={`member:${resetKey}`}
           name={LINEUP_FIELDS.starterMember}
-          value={row.memberId}
+          defaultValue={row.memberId}
           onChange={(e) => onChange({ memberId: e.target.value })}
           aria-label={`${order} 選手`}
         >
@@ -229,7 +236,7 @@ const StarterItem = ({
         <p
           key={message}
           role="alert"
-          className="mt-1 pl-11 text-xs text-destructive"
+          className="mt-1 pl-16 text-xs text-destructive"
         >
           {message}
         </p>
@@ -334,6 +341,11 @@ export const LineupForm = ({
                           rowError("starterMember", i),
                           rowError("starterPosition", i),
                         ].filter((e): e is string => !!e)}
+                        resetKey={
+                          state.values
+                            ? `${rowValue(state, LINEUP_FIELDS.starterMember, i, "")}|${rowValue(state, LINEUP_FIELDS.starterPosition, i, "")}`
+                            : "initial"
+                        }
                         onChange={(patch) => updateStarter(row.key, patch)}
                       />
                     ))}
