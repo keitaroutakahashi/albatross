@@ -373,12 +373,20 @@ const pitcherMembers = pitchers.flatMap(({ p, ip }) => {
 });
 
 // --- オーダーの検証（管理画面の parseLineup と同じ条件） ---
-const lineupOrderOk = batters.every(({ b }, i) => b.order === i + 1);
+// 同じ打順の 2 行目以降は交代選手。ベンチとして登録し、打席・盗塁だけ付ける
+const seenOrders = new Set<number>();
+const starters = batters.filter(({ b }) => {
+  if (seenOrders.has(b.order)) return false;
+  seenOrders.add(b.order);
+  return true;
+});
+const substitutes = batters.filter((x) => !starters.includes(x));
+const lineupOrderOk = starters.every(({ b }, i) => b.order === i + 1);
 if (!lineupOrderOk) errors.push("打順が 1 番から連続していません");
-if (batters.length < 9)
-  errors.push(`スタメンが ${batters.length} 人しかいません`);
-if (batters.length > 20) errors.push("スタメンが 20 人を超えています");
-const usedPositions = batters.map((x) => x.position).filter((p) => p !== "dh");
+if (starters.length < 9)
+  errors.push(`スタメンが ${starters.length} 人しかいません`);
+if (starters.length > 20) errors.push("スタメンが 20 人を超えています");
+const usedPositions = starters.map((x) => x.position).filter((p) => p !== "dh");
 if (new Set(usedPositions).size !== usedPositions.length) {
   errors.push("DH 以外の守備位置が重複しています");
 }
@@ -464,8 +472,10 @@ if (game) {
 
   // 登録済みのオーダーは、元ページと一致していなければ止める（人が入力したものを書き換えない）
   if (game.gameMembers.length > 0) {
-    const starters = game.gameMembers.filter((gm) => gm.battingOrder !== null);
-    for (const { b, member, position } of batters) {
+    const registeredStarters = game.gameMembers.filter(
+      (gm) => gm.battingOrder !== null,
+    );
+    for (const { b, member, position } of starters) {
       const gm = gameMemberOf(member.id);
       if (!gm || gm.battingOrder !== b.order || gm.position !== position) {
         errors.push(
@@ -473,9 +483,9 @@ if (game) {
         );
       }
     }
-    if (starters.length !== batters.length) {
+    if (registeredStarters.length !== starters.length) {
       errors.push(
-        `登録済みのスタメンが ${starters.length} 人で、元ページの ${batters.length} 人と違います`,
+        `登録済みのスタメンが ${registeredStarters.length} 人で、元ページの ${starters.length} 人と違います`,
       );
     }
   }
@@ -580,11 +590,15 @@ const existingParticipantIds = new Set(
   game?.participants.map((p) => p.memberId) ?? [],
 );
 
-const mvpPlans = (parsed.mvps ?? []).map((m, i) => ({
-  memberId: m.memberId,
-  order: i + 1,
-  comment: m.comment,
-}));
+const mvpPlans = (parsed.mvps ?? []).flatMap((m, i) => {
+  if (m.memberId === undefined) {
+    errors.push(
+      `MVP ${m.name ?? ""}: memberId がありません（元サイトの選手 ID ${m.sourcePlayerId ?? "不明"}。対応表から決めて JSON に書いてください）`,
+    );
+    return [];
+  }
+  return [{ memberId: m.memberId, order: i + 1, comment: m.comment }];
+});
 for (const m of mvpPlans) {
   if (
     !participantIds.includes(m.memberId) &&
@@ -638,12 +652,17 @@ console.log(
   `== オーダー ${game && game.gameMembers.length > 0 ? "(登録済み。変更なし)" : "(新規登録)"} ==`,
 );
 console.table(
-  batters.map(({ b, member, position }) => ({
+  starters.map(({ b, member, position }) => ({
     order: b.order,
     name: member.name,
     position,
   })),
 );
+if (substitutes.length > 0) {
+  console.log(
+    `交代選手（ベンチとして登録。打席・盗塁のみ）: ${substitutes.map((x) => `${x.member.name}(${x.b.order}番の交代)`).join("、")}`,
+  );
+}
 if (benchPitchers.length > 0) {
   console.log(
     `ベンチに追加: ${benchPitchers.map((x) => x.member.name).join("、")}`,
@@ -666,6 +685,12 @@ console.log(
   game?.gameWeather
     ? `登録済み（${game.gameWeather.weather} ${game.gameWeather.temperature ?? "-"}℃）。変更しない`
     : (weatherPlan ?? "（設定しない）"),
+);
+console.log(
+  "== 外部リンク ==",
+  game?.externalUrl
+    ? `${game.externalUrl}（登録済み。変更なし）`
+    : (parsed.sourceUrl ?? "（なし。書き込まない）"),
 );
 console.log("== 戦評 ==", parsed.summary ?? "（なし。書き込まない）");
 console.log("== MVP ==");
@@ -746,6 +771,7 @@ const gameId = await prisma.$transaction(async (tx) => {
         teamErrors,
         isFirstBatting: parsed.isFirstBatting,
         ...(parsed.summary ? { summary: parsed.summary } : {}),
+        externalUrl: game.externalUrl ?? parsed.sourceUrl ?? undefined,
       },
     });
     await tx.event.update({
@@ -772,6 +798,7 @@ const gameId = await prisma.$transaction(async (tx) => {
             teamErrors,
             isFirstBatting: parsed.isFirstBatting,
             ...(parsed.summary ? { summary: parsed.summary } : {}),
+            externalUrl: parsed.sourceUrl,
           },
         },
       },
@@ -796,7 +823,7 @@ const gameId = await prisma.$transaction(async (tx) => {
     (game?.gameMembers ?? []).map((gm) => [gm.memberId, gm.id]),
   );
   if (!game || game.gameMembers.length === 0) {
-    for (const { b, member, position } of batters) {
+    for (const { b, member, position } of starters) {
       const created = await tx.gameMember.create({
         data: {
           gameId: id,
@@ -809,7 +836,8 @@ const gameId = await prisma.$transaction(async (tx) => {
       gameMemberIds.set(member.id, created.id);
     }
   }
-  for (const { member } of benchPitchers) {
+  for (const { member } of [...substitutes, ...benchPitchers]) {
+    if (gameMemberIds.has(member.id)) continue;
     const created = await tx.gameMember.create({
       data: { gameId: id, memberId: member.id, memberType: "bench" },
     });
