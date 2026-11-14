@@ -235,6 +235,26 @@ describe("終了した試合は、情報があるものだけ表示する", () =
       expect(screen.getByText("打者成績")).toBeInTheDocument();
       expect(screen.queryByText("投手成績")).not.toBeInTheDocument();
     });
+
+    it("打席があるベンチ選手は、打者成績に表示する", () => {
+      const starter = member({ plateAppearances: [{ result: "single" }] });
+      const substitute = member({
+        memberType: "bench",
+        plateAppearances: [{ result: "walk", inningNumber: 4 }],
+      });
+      const game = gameOf("completed", { gameMembers: [starter, substitute] });
+      render(<GameResults game={game} />);
+      expect(screen.getByText(starter.member.name)).toBeInTheDocument();
+      expect(screen.getByText(substitute.member.name)).toBeInTheDocument();
+    });
+
+    it("打席がないベンチ選手は、打者成績に表示しない", () => {
+      const starter = member({ plateAppearances: [{ result: "single" }] });
+      const bench = member({ memberType: "bench" });
+      const game = gameOf("completed", { gameMembers: [starter, bench] });
+      render(<GameResults game={game} />);
+      expect(screen.queryByText(bench.member.name)).not.toBeInTheDocument();
+    });
   });
 
   describe("得点圏の打席", () => {

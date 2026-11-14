@@ -23,6 +23,12 @@ export const GameResults = ({ game }: Props) => {
     return null;
   }
 
+  // 交代で出場した選手の打席も表示する（投手成績だけのベンチ選手は除く）
+  const substitutes = game.gameMembers.filter(
+    (gm) => gm.memberType === "bench" && gm.plateAppearances.length > 0,
+  );
+  const batters = [...starters, ...substitutes];
+
   // 終了した試合は、投手成績がなければ項目ごと表示しない
   const showPitchers =
     game.event.status !== "completed" ||
@@ -49,7 +55,7 @@ export const GameResults = ({ game }: Props) => {
             <table className="text-sm @content:text-base border-collapse w-full @content:table-fixed">
               <ResultsTableHeader inningCount={inningCount} />
               <tbody>
-                {starters.map((gm) => (
+                {batters.map((gm) => (
                   <ResultsTableRow
                     key={gm.id}
                     gameMember={gm}
