@@ -349,9 +349,26 @@ const countLabels = (pattern: RegExp) =>
 const opponentTotals = opponentTables?.batting
   ? totalsOf(opponentTables.batting)
   : null;
-if (!opponentLabels || !opponentTotals) {
-  throw new Error("相手の打撃成績が見つかりません");
-}
+
+// 相手チームが個人成績を入力していない試合（gid=21）は、突き合わせる元が無い。
+// 投手の行の合計で代用するため、取り込み側の突き合わせは常に一致し、投手成績の未入力（0）には気づけない
+const sumOf = (pick: (p: ParsedPitcher) => number) =>
+  pitching.reduce((total, p) => total + pick(p), 0);
+const pitchingTotals = opponentTotals
+  ? {
+      runs: opponentTotals.runs,
+      hitsAllowed: opponentTotals.hits,
+      strikeouts: countLabels(/^三振$/),
+      walks: countLabels(/^四球$/),
+      hitByPitches: countLabels(/^死球$/),
+    }
+  : {
+      runs: sumOf((p) => p.runs),
+      hitsAllowed: sumOf((p) => p.hitsAllowed),
+      strikeouts: sumOf((p) => p.strikeouts),
+      walks: sumOf((p) => p.walks),
+      hitByPitches: sumOf((p) => p.hitByPitches),
+    };
 
 const game: ParsedGame = {
   sourceUrl,
@@ -376,15 +393,11 @@ const game: ParsedGame = {
     rbi: teamTotals.rbi,
     stolenBases: teamTotals.stolenBases,
     errors: teamTotals.errors,
-    pitching: {
-      runs: opponentTotals.runs,
-      hitsAllowed: opponentTotals.hits,
-      strikeouts: countLabels(/^三振$/),
-      walks: countLabels(/^四球$/),
-      hitByPitches: countLabels(/^死球$/),
-    },
+    pitching: pitchingTotals,
   },
-  teamErrorsFromOpponentBatting: countLabels(/^[一二三遊左中右投捕]失$/),
+  teamErrorsFromOpponentBatting: opponentLabels
+    ? countLabels(/^[一二三遊左中右投捕]失$/)
+    : null,
   batting,
   pitching,
   comment: commentBody
