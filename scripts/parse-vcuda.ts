@@ -150,6 +150,50 @@ const commentBody = (infoCell("内容")?.innerHTML ?? "")
   .replace(/^\s*チーム談話/, "")
   .trim();
 
+/**
+ * 試合MVP。「【攻】」などの区分ごとに 1 人ずつ、<br> で区切られて並ぶ。
+ * 選手のロゴが自チームのもの（相手チームの選手は除く）だけを、出てきた順に取る
+ */
+const mvpCell = rowsOf(infoTable).find((r) => text(r.cells[0]) === "試合MVP")
+  ?.cells[1];
+const mvpSegments = [...(mvpCell?.childNodes ?? [])].reduce<ChildNode[][]>(
+  (segments, node) => {
+    if (node.nodeName === "BR") segments.push([]);
+    else (segments.at(-1) ?? segments[segments.push([]) - 1]).push(node);
+    return segments;
+  },
+  [],
+);
+const mvps = mvpSegments.flatMap((nodes) => {
+  const link = nodes.find(
+    (n): n is HTMLAnchorElement =>
+      n.nodeName === "A" &&
+      !!(n as Element).getAttribute("href")?.includes("pid="),
+  );
+  if (!link || logoTeamId(link as unknown as HTMLTableCellElement) !== teamId) {
+    return [];
+  }
+  const sourcePlayerId = link.getAttribute("href")?.match(/pid=(\d+)/)?.[1];
+  if (!sourcePlayerId) throw new Error("MVP の選手 ID を読めません");
+  // 選手名の前の「[46] 」は背番号
+  const name = (link.textContent ?? "").replace(/^\s*\[[^\]]*\]\s*/, "").trim();
+  // コメントはリンクの後ろの文字だけ（「(by ロゴ)」は span なので入らない）
+  const sourceComment = nodes
+    .slice(nodes.indexOf(link) + 1)
+    .filter((n) => n.nodeType === 3)
+    .map((n) => n.textContent ?? "")
+    .join("")
+    .trim();
+  return [
+    {
+      sourcePlayerId,
+      name,
+      sourceComment: sourceComment || null,
+      comment: null,
+    },
+  ];
+});
+
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳";
 const MARKS = /^([^①-⑳●s]+)([①-⑳])?(●)?(s{1,2})?$/;
 type ParsedCell = ParsedAtBat & { scored: boolean; steals: number };
@@ -350,6 +394,7 @@ const game: ParsedGame = {
       }
     : null,
   summary: null,
+  mvps,
 };
 
 writeFileSync(outPath, `${JSON.stringify(game, null, 2)}\n`);

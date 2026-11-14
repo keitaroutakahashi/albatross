@@ -97,6 +97,17 @@ export type ParsedGame = {
   } | null;
   /** 戦評。コメントを要約して手で入れる。パーサーは null で出力し、null のままなら戦評は書き込まない */
   summary: string | null;
-  /** MVP。談話の紹介から手で入れる（パーサーは出力しない）。配列の順が表示順。参加メンバーの中からしか選べない */
-  mvps?: { memberId: number; comment: string | null }[];
+  /**
+   * MVP。配列の順が表示順。参加メンバーの中からしか選べない。
+   * vcuda のパーサーは、ページの「試合MVP」にある自チームの選手を出力する（memberId と comment は手で入れる）。
+   * ts-league は談話の紹介から手で入れる
+   */
+  mvps?: {
+    memberId?: number;
+    comment: string | null;
+    /** 元サイトの選手 ID と名前、元ページのコメント（パーサーの出力。取り込みでは使わない） */
+    sourcePlayerId?: string;
+    name?: string;
+    sourceComment?: string | null;
+  }[];
 };
