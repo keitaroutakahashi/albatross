@@ -54,6 +54,8 @@ export type ParsedGame = {
   venueText: string;
   /** 会場名がマスタと一致しないとき、候補から人が選んだグラウンドの id。パーサは出力せず、JSON に手で書く */
   groundId?: number;
+  /** 会場の表記から面を読めないとき（例: 7面）、人が決めた面。パーサは出力せず、JSON に手で書く */
+  groundCourt?: string;
   /** 試合種別の表記（例: 公式戦） */
   gameTypeText: string;
   /** リーグ名の表記（例: 東京スカイツリーグ） */

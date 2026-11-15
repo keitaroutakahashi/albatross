@@ -3,10 +3,14 @@ import {
   nonAtBatResults,
 } from "@/app/_features/games/utils/at-bat-result";
 import {
+  calculateBabip,
   calculateBattingAverage,
+  calculateIso,
   calculateOnBasePercentage,
   calculateOps,
+  calculateRatePerPlateAppearance,
   calculateSluggingPercentage,
+  calculateWalkStrikeoutRatio,
 } from "@/app/_utils/stats/batting";
 import type { AtBatResult } from "@/generated/prisma/client";
 
@@ -50,6 +54,8 @@ export type BattingSummary = {
   sacrificeHits: number;
   /** 犠飛 */
   sacrificeFlies: number;
+  /** 併殺打 */
+  doublePlays: number;
   /** 打率（打数 0 のときは null） */
   average: number | null;
   /** 出塁率（分母 0 のときは null） */
@@ -58,12 +64,24 @@ export type BattingSummary = {
   sluggingPercentage: number | null;
   /** OPS = 出塁率 + 長打率（どちらかが null のときは null） */
   ops: number | null;
+  /** ISO（長打率 − 打率。どちらかが null のときは null） */
+  iso: number | null;
+  /** BABIP（分母 0 以下のときは null） */
+  babip: number | null;
+  /** 四死球率（打席に占める四死球の割合。打席 0 のときは null） */
+  walkRate: number | null;
+  /** 三振率（打席に占める三振の割合。打席 0 のときは null） */
+  strikeoutRate: number | null;
+  /** BB/K（四死球 ÷ 三振。三振 0 のときは null） */
+  walkStrikeoutRatio: number | null;
   /** 得点圏での打数 */
   scoringPositionAtBats: number;
   /** 得点圏での安打 */
   scoringPositionHits: number;
   /** 得点圏打率（得点圏での打数 0 のときは null） */
   scoringPositionAverage: number | null;
+  /** 得点圏での打点 */
+  scoringPositionRbi: number;
 };
 
 /**
@@ -77,6 +95,7 @@ export const summarizeBatting = (
   let totalBases = 0;
   let scoringPositionAtBats = 0;
   let scoringPositionHits = 0;
+  let scoringPositionRbi = 0;
   const counts = {
     hits: 0,
     singles: 0,
@@ -88,6 +107,7 @@ export const summarizeBatting = (
     strikeouts: 0,
     sacrificeHits: 0,
     sacrificeFlies: 0,
+    doublePlays: 0,
   };
 
   for (const { result, rbi, isScoringPosition } of plateAppearances) {
@@ -100,6 +120,7 @@ export const summarizeBatting = (
     if (isAtBat) atBats += 1;
     if (isScoringPosition && isAtBat) scoringPositionAtBats += 1;
     if (isScoringPosition && isHit) scoringPositionHits += 1;
+    if (isScoringPosition) scoringPositionRbi += rbi;
 
     if (isHit) {
       counts.hits += 1;
@@ -115,6 +136,7 @@ export const summarizeBatting = (
     if (result === "strikeout") counts.strikeouts += 1;
     if (result === "sacrificeHit") counts.sacrificeHits += 1;
     if (result === "sacrificeFly") counts.sacrificeFlies += 1;
+    if (result === "doublePlay") counts.doublePlays += 1;
   }
 
   const onBasePercentage = calculateOnBasePercentage({
@@ -128,19 +150,42 @@ export const summarizeBatting = (
     atBats,
   });
 
+  const average = calculateBattingAverage({ hits: counts.hits, atBats });
+
   return {
     plateAppearances: plateAppearances.length,
     atBats,
     ...counts,
-    average: calculateBattingAverage({ hits: counts.hits, atBats }),
+    average,
     onBasePercentage,
     sluggingPercentage,
     ops: calculateOps({ onBasePercentage, sluggingPercentage }),
+    iso: calculateIso({ sluggingPercentage, average }),
+    babip: calculateBabip({
+      hits: counts.hits,
+      homeRuns: counts.homeRuns,
+      atBats,
+      strikeouts: counts.strikeouts,
+      sacrificeFlies: counts.sacrificeFlies,
+    }),
+    walkRate: calculateRatePerPlateAppearance({
+      count: counts.walks,
+      plateAppearances: plateAppearances.length,
+    }),
+    strikeoutRate: calculateRatePerPlateAppearance({
+      count: counts.strikeouts,
+      plateAppearances: plateAppearances.length,
+    }),
+    walkStrikeoutRatio: calculateWalkStrikeoutRatio({
+      walks: counts.walks,
+      strikeouts: counts.strikeouts,
+    }),
     scoringPositionAtBats,
     scoringPositionHits,
     scoringPositionAverage: calculateBattingAverage({
       hits: scoringPositionHits,
       atBats: scoringPositionAtBats,
     }),
+    scoringPositionRbi,
   };
 };

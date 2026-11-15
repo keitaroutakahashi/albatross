@@ -1,6 +1,6 @@
 import { positionFullLabel } from "@/app/_constants/labels";
 import type { PositionBattingRow } from "@/app/_features/members/api/get-member-stats";
-import { BattingSplitTable } from "@/app/(public)/members/[id]/_components/batting-split-table";
+import { BattingSplitTable } from "@/app/_features/stats/components/batting-split-table";
 
 type Props = {
   rows: PositionBattingRow[];

@@ -254,10 +254,20 @@ const readCells = (row: HTMLTableRowElement) => {
   if (inningCount < 1) {
     throw new Error(`打撃成績の列数が想定と違います: ${cells.length}`);
   }
+  // 打者一巡のイニングは同じ数字の列が続く（例: 1, 2, 2, 3）ため、列の位置ではなく見出しの数字をイニングにする
+  const headerRow = row.closest("table")?.rows[0];
+  const headers = headerRow
+    ? cellsOf(headerRow).slice(LEADING_COLUMNS, LEADING_COLUMNS + inningCount)
+    : [];
+  if (headers.length !== inningCount) {
+    throw new Error("打撃表の見出しの列数が選手の行と合いません");
+  }
   return cells
     .slice(LEADING_COLUMNS, LEADING_COLUMNS + inningCount)
     .flatMap((cell, i) =>
-      text(cell) === "" ? [] : [parseAtBat(text(cell), i + 1)],
+      text(cell) === ""
+        ? []
+        : [parseAtBat(text(cell), toInt(text(headers[i]), "イニング"))],
     );
 };
 

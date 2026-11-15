@@ -12,3 +12,10 @@ export const formatRate = (value: number | null, fallback = "-"): string => {
 
   return value >= 1 ? value.toFixed(3) : value.toFixed(3).slice(1);
 };
+
+/**
+ * 割合（四死球率・三振率など）を "12.3%" 形式にフォーマットする。
+ * `value` が `null`（算出できない）の場合は `fallback`（既定 "-"）を返す。
+ */
+export const formatPercent = (value: number | null, fallback = "-"): string =>
+  value === null ? fallback : `${(value * 100).toFixed(1)}%`;

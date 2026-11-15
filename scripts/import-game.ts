@@ -65,7 +65,8 @@ const SUFFIX_RESULTS: Record<string, AtBatResult> = {
   直: "lineOut",
   安: "single",
   "2": "double",
-  // 以下は vcuda の表記（右二、右三、三内、左邪）
+  // 以下は vcuda の表記（右二、右三、三内、左邪、三併）
+  併: "doublePlay",
   二: "double",
   三: "triple",
   内: "single",
@@ -92,7 +93,11 @@ const toResult = (
   const normalized = label
     .replace("ニ", "二")
     .replace(/[０-９]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 0xfee0));
-  if (normalized === "三振") return { result: "strikeout", direction: null };
+  // 振り逃げ・方向なしの本塁打は vcuda の表記（振逃、本）
+  if (normalized === "三振" || normalized === "振逃") {
+    return { result: "strikeout", direction: null };
+  }
+  if (normalized === "本") return { result: "homeRun", direction: null };
   if (normalized === "四球") return { result: "walk", direction: null };
   if (normalized === "死球") return { result: "hitByPitch", direction: null };
   const [fielder, ...rest] = [...normalized];
@@ -269,7 +274,7 @@ if (!gameType) {
 // 会場の表記は「<グラウンド名><面>(<最寄り>)野球場」。面（A面・B面）を分けて、グラウンド名で探す
 const venue = parsed.venueText.match(/^(.*?)([A-ZＡ-Ｚ])面/);
 const groundBase = venue ? (venue[1] as string) : parsed.venueText;
-const groundCourt = venue ? `${venue[2]}面` : null;
+const groundCourt = parsed.groundCourt ?? (venue ? `${venue[2]}面` : null);
 const grounds = await prisma.ground.findMany();
 const groundMatches = grounds.filter(
   (g) => normalizeGroundName(g.name) === normalizeGroundName(groundBase),

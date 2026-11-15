@@ -1,5 +1,5 @@
-import type { AtBatNumberBattingRow } from "@/app/_features/members/api/get-member-stats";
-import { BattingSplitTable } from "@/app/(public)/members/[id]/_components/batting-split-table";
+import { BattingSplitTable } from "@/app/_features/stats/components/batting-split-table";
+import type { AtBatNumberBattingRow } from "@/app/_features/stats/utils/stats-splits";
 
 type Props = {
   rows: AtBatNumberBattingRow[];

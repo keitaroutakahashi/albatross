@@ -1,7 +1,7 @@
 import { type ColumnDef, DataTable } from "@/app/_components/ui/data-table";
 import { SubSectionGroup } from "@/app/_components/ui/sub-section-group";
-import type { MonthlyPitchingRow } from "@/app/_features/members/api/get-member-stats";
-import { pitchingColumns } from "@/app/(public)/members/[id]/_components/pitching-columns";
+import { pitchingColumns } from "@/app/_features/stats/components/pitching-columns";
+import type { MonthlyPitchingRow } from "@/app/_features/stats/utils/stats-splits";
 
 type Props = {
   rows: MonthlyPitchingRow[];
