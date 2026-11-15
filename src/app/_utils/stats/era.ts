@@ -13,7 +13,7 @@ type EraInput = {
 /** 1試合のイニング数（草野球は7イニング制） */
 const INNINGS_PER_GAME = 7;
 /** 1試合（7イニング）あたりのアウト数 */
-const OUTS_PER_GAME = INNINGS_PER_GAME * OUTS_PER_INNING;
+export const OUTS_PER_GAME = INNINGS_PER_GAME * OUTS_PER_INNING;
 
 /**
  * 防御率（ERA）を算出する。

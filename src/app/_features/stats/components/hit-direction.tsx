@@ -2,7 +2,7 @@ import { SubSectionGroup } from "@/app/_components/ui/sub-section-group";
 import type {
   HitDirectionRow,
   HitZone,
-} from "@/app/_features/members/api/get-member-stats";
+} from "@/app/_features/stats/utils/stats-splits";
 import { cn } from "@/lib/utils";
 
 type Props = {

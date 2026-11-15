@@ -3,6 +3,7 @@
 import {
   Calendar,
   type LucideIcon,
+  Shield,
   Sword,
   Trophy,
   Users,
@@ -44,6 +45,7 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "成績",
     items: [
+      { href: "/team-stats", label: "チーム成績", icon: Shield },
       { href: "/batting-stats", label: "打者成績", icon: Sword },
       { href: "/pitching-stats", label: "投手成績", icon: Volleyball },
       { href: "/contribution-stats", label: "貢献度", icon: Trophy },

@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@/app/_components/ui/data-table";
-import type { BattingSplitRow } from "@/app/_features/members/api/get-member-stats";
+import type { BattingSplitRow } from "@/app/_features/stats/utils/stats-splits";
 import { formatRate } from "@/app/_utils/stats/rate";
 
 /** グラウンド別・月別など、切り口ごとの打撃成績表で共通の列（切り口の列は含まない） */
@@ -17,4 +17,10 @@ export const battingSplitColumns = <
   { key: "rbi", header: "打点", cell: (r) => r.rbi },
   { key: "avg", header: "打率", cell: (r) => formatRate(r.average) },
   { key: "obp", header: "出塁率", cell: (r) => formatRate(r.onBasePercentage) },
+  { key: "ops", header: "OPS", cell: (r) => formatRate(r.ops) },
+  {
+    key: "risp",
+    header: "得点圏",
+    cell: (r) => formatRate(r.scoringPositionAverage),
+  },
 ];

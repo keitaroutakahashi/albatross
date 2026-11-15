@@ -76,4 +76,39 @@ describe("summarizePitching", () => {
     expect(summary.era).toBeNull();
     expect(summary.whip).toBeNull();
   });
+
+  it("非自責点と 7 イニングあたりの奪三振・与四球、K/BB を算出する", () => {
+    const summary = summarizePitching([
+      {
+        ...base,
+        inningsPitched: 7,
+        runs: 4,
+        earnedRuns: 3,
+        strikeouts: 6,
+        walks: 2,
+      },
+    ]);
+
+    expect(summary.unearnedRuns).toBe(1);
+    expect(summary.strikeoutsPerSeven).toBeCloseTo(6);
+    expect(summary.walksPerSeven).toBeCloseTo(2);
+    expect(summary.strikeoutWalkRatio).toBeCloseTo(3);
+  });
+
+  it("投球回が 0 のときは 7 イニングあたりの値が null になる", () => {
+    const summary = summarizePitching([{ ...base, strikeouts: 1, walks: 1 }]);
+
+    expect(summary.strikeoutsPerSeven).toBeNull();
+    expect(summary.walksPerSeven).toBeNull();
+  });
+
+  it("1 イニングあたりの球数は、球数が入力された登板だけで算出する", () => {
+    const summary = summarizePitching([
+      { ...base, inningsPitched: 3, pitchCount: 45 },
+      // 球数が未入力の登板は、球数もアウト数も算出から除く
+      { ...base, pitchingOrder: 2, inningsPitched: 4 },
+    ]);
+
+    expect(summary.pitchCountPerInning).toBeCloseTo(15);
+  });
 });

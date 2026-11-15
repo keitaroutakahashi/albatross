@@ -58,4 +58,41 @@ describe("summarizeBatting", () => {
     expect(summary.average).toBeNull();
     expect(summary.ops).toBeNull();
   });
+
+  it("ISO・BABIP・四死球率・三振率・BB/K を算出する", () => {
+    const summary = summarizeBatting([
+      { result: "single", rbi: 0, isScoringPosition: false },
+      { result: "homeRun", rbi: 1, isScoringPosition: false },
+      { result: "groundOut", rbi: 0, isScoringPosition: false },
+      { result: "strikeout", rbi: 0, isScoringPosition: false },
+      { result: "walk", rbi: 0, isScoringPosition: false },
+    ]);
+
+    // 打率 2/4、長打率 5/4
+    expect(summary.iso).toBeCloseTo(5 / 4 - 2 / 4);
+    // (2 - 1) ÷ (4 - 1 - 1 + 0)
+    expect(summary.babip).toBeCloseTo(1 / 2);
+    expect(summary.walkRate).toBeCloseTo(1 / 5);
+    expect(summary.strikeoutRate).toBeCloseTo(1 / 5);
+    expect(summary.walkStrikeoutRatio).toBeCloseTo(1);
+  });
+
+  it("三振がないときは BB/K が null になる", () => {
+    const summary = summarizeBatting([
+      { result: "walk", rbi: 0, isScoringPosition: false },
+    ]);
+
+    expect(summary.walkStrikeoutRatio).toBeNull();
+  });
+
+  it("併殺打と得点圏での打点を数える", () => {
+    const summary = summarizeBatting([
+      { result: "doublePlay", rbi: 0, isScoringPosition: false },
+      { result: "single", rbi: 2, isScoringPosition: true },
+      { result: "homeRun", rbi: 3, isScoringPosition: false },
+    ]);
+
+    expect(summary.doublePlays).toBe(1);
+    expect(summary.scoringPositionRbi).toBe(2);
+  });
 });

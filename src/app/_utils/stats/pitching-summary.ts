@@ -1,6 +1,11 @@
 import { calculateEra } from "@/app/_utils/stats/era";
 import { OUTS_PER_INNING } from "@/app/_utils/stats/innings";
+import { calculatePitchCountPerInning } from "@/app/_utils/stats/pitch-count";
 import type { PitchingDecision } from "@/app/_utils/stats/pitching-decision";
+import {
+  calculatePerSevenInnings,
+  calculateStrikeoutWalkRatio,
+} from "@/app/_utils/stats/pitching-rate";
 import { calculateWhip } from "@/app/_utils/stats/whip";
 
 export type PitchingGameResult = {
@@ -38,6 +43,8 @@ export type PitchingSummary = {
   earnedRuns: number;
   /** 失点 */
   runs: number;
+  /** 非自責点（失点 − 自責点。失策などが絡んだ失点） */
+  unearnedRuns: number;
   /** 与四球 */
   walks: number;
   /** 与死球 */
@@ -50,10 +57,18 @@ export type PitchingSummary = {
   pitchCount: number | null;
   /** 1 登板あたりの平均球数（球数が入力された登板のみで算出。入力がなければ null） */
   pitchCountAverage: number | null;
+  /** 1 イニングあたりの平均球数（球数が入力された登板のみで算出。入力がなければ null） */
+  pitchCountPerInning: number | null;
   /** 防御率（7 イニング基準。投球回 0 のときは null） */
   era: number | null;
   /** WHIP（投球回 0 のときは null） */
   whip: number | null;
+  /** 7 イニングあたりの奪三振（投球回 0 のときは null） */
+  strikeoutsPerSeven: number | null;
+  /** 7 イニングあたりの与四球（投球回 0 のときは null） */
+  walksPerSeven: number | null;
+  /** K/BB（与四球 0 のときは null） */
+  strikeoutWalkRatio: number | null;
 };
 
 /**
@@ -101,9 +116,11 @@ export const summarizePitching = (
     games: results.length,
     starts: results.filter((result) => result.pitchingOrder === 1).length,
     ...total,
+    unearnedRuns: total.runs - total.earnedRuns,
     pitchCount: pitchCounts.length > 0 ? pitchCountTotal : null,
     pitchCountAverage:
       pitchCounts.length > 0 ? pitchCountTotal / pitchCounts.length : null,
+    pitchCountPerInning: calculatePitchCountPerInning(results),
     era: calculateEra({
       earnedRuns: total.earnedRuns,
       inningsPitched: Math.floor(total.outs / OUTS_PER_INNING),
@@ -113,6 +130,18 @@ export const summarizePitching = (
       walks: total.walks,
       hitsAllowed: total.hitsAllowed,
       outs: total.outs,
+    }),
+    strikeoutsPerSeven: calculatePerSevenInnings({
+      count: total.strikeouts,
+      outs: total.outs,
+    }),
+    walksPerSeven: calculatePerSevenInnings({
+      count: total.walks,
+      outs: total.outs,
+    }),
+    strikeoutWalkRatio: calculateStrikeoutWalkRatio({
+      strikeouts: total.strikeouts,
+      walks: total.walks,
     }),
   };
 };
