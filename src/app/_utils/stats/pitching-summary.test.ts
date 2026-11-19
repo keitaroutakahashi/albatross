@@ -112,3 +112,20 @@ describe("summarizePitching", () => {
     expect(summary.pitchCountPerInning).toBeCloseTo(15);
   });
 });
+
+describe("summarizePitching の非自責割合", () => {
+  it("失点のうち自責点にならなかった割合を出す", () => {
+    const summary = summarizePitching([
+      { ...base, inningsPitched: 3, runs: 4, earnedRuns: 3 },
+    ]);
+
+    expect(summary.unearnedRuns).toBe(1);
+    expect(summary.unearnedRunRate).toBeCloseTo(0.25);
+  });
+
+  it("失点がないときは null になる", () => {
+    const summary = summarizePitching([{ ...base, inningsPitched: 3 }]);
+
+    expect(summary.unearnedRunRate).toBeNull();
+  });
+});

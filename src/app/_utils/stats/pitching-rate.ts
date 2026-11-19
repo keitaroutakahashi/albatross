@@ -21,3 +21,15 @@ export const calculateStrikeoutWalkRatio = ({
   strikeouts: number;
   walks: number;
 }): number | null => (walks > 0 ? strikeouts / walks : null);
+
+/**
+ * 非自責割合（非自責点 ÷ 失点）を算出する。守備の乱れなどで失った点の割合。
+ * 失点が 0 のときは `null` を返す。
+ */
+export const calculateUnearnedRunRate = ({
+  unearnedRuns,
+  runs,
+}: {
+  unearnedRuns: number;
+  runs: number;
+}): number | null => (runs > 0 ? unearnedRuns / runs : null);

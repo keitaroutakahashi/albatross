@@ -21,7 +21,6 @@ import { AtBatNumberBatting } from "@/app/_features/stats/components/at-bat-numb
 import { BatHandBatting } from "@/app/_features/stats/components/bat-hand-batting";
 import { GroundBatting } from "@/app/_features/stats/components/ground-batting";
 import { GroundPitching } from "@/app/_features/stats/components/ground-pitching";
-import { HitDirection } from "@/app/_features/stats/components/hit-direction";
 import { MonthlyBatting } from "@/app/_features/stats/components/monthly-batting";
 import { MonthlyPitching } from "@/app/_features/stats/components/monthly-pitching";
 import { OrderBatting } from "@/app/_features/stats/components/order-batting";
@@ -30,6 +29,8 @@ import { RolePitching } from "@/app/_features/stats/components/role-pitching";
 import type { TeamStatsResult } from "@/app/_features/team/api/get-team-stats";
 import { formatSeason } from "@/app/_utils/season";
 import { AtBatResults } from "@/app/(public)/team-stats/_components/at-bat-results";
+import { BattedBallDirection } from "@/app/(public)/team-stats/_components/batted-ball-direction";
+import { BattedBallTypes } from "@/app/(public)/team-stats/_components/batted-ball-types";
 import { BattingIndicators } from "@/app/(public)/team-stats/_components/batting-indicators";
 import { BattingTotal } from "@/app/(public)/team-stats/_components/batting-total";
 import { GameFlow } from "@/app/(public)/team-stats/_components/game-flow";
@@ -108,7 +109,7 @@ export const TeamStatsView = ({
 
           <TabsContent value="batting">
             <BattingTotal stats={stats} />
-            <BattingIndicators batting={stats.batting} />
+            <BattingIndicators stats={stats} />
             <AtBatResults
               title="打席結果の内訳"
               rows={stats.atBatResults}
@@ -121,6 +122,7 @@ export const TeamStatsView = ({
               rateHint="アウトになった打席に占める割合です。併殺打は 1 回として数えます。"
               emptyText="アウトの記録がありません"
             />
+            <BattedBallTypes summary={stats.battedBallTypes} />
             <AtBatResults
               title="得点圏の内訳"
               rows={stats.scoringPositionResults}
@@ -129,7 +131,7 @@ export const TeamStatsView = ({
             />
             <BatHandBatting rows={stats.batHandBatting} hideGames />
             <InningScoring rows={stats.inningScoring} mode="scored" />
-            <HitDirection rows={stats.hitDirections} />
+            <BattedBallDirection byBatter={stats.battedBallsByBatter} />
             <MonthlyBatting rows={stats.monthlyBatting} hideGames />
             <OrderBatting rows={stats.orderBatting} hideGames />
             <AtBatNumberBatting rows={stats.atBatNumberBatting} />
