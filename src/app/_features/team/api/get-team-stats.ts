@@ -8,14 +8,12 @@ import {
   buildBatHandBatting,
   buildGroundBatting,
   buildGroundPitching,
-  buildHitDirections,
   buildMonthlyBatting,
   buildMonthlyPitching,
   buildOrderBatting,
   buildRolePitching,
   type GroundBattingRow,
   type GroundPitchingRow,
-  type HitDirectionRow,
   type MonthlyBattingRow,
   type MonthlyPitchingRow,
   type OrderBattingRow,
@@ -28,6 +26,17 @@ import {
   summarizeAtBatResults,
   summarizeOutResults,
 } from "@/app/_utils/stats/at-bat-breakdown";
+import {
+  type BattedBallBatter,
+  type BattedBallByBatter,
+  type BattedBallTypeSummary,
+  summarizeBattedBallsByBatter,
+  summarizeBattedBallTypes,
+} from "@/app/_utils/stats/batted-ball";
+import {
+  calculatePerGame,
+  calculateScoringRate,
+} from "@/app/_utils/stats/batting";
 import {
   type BattingSummary,
   summarizeBatting,
@@ -83,6 +92,12 @@ export type TeamStatsResult = {
 
   /** 盗塁 */
   stolenBases: number;
+  /** 1 試合あたりの盗塁 */
+  stolenBasesPerGame: number | null;
+  /** 1 試合あたりの犠打 */
+  sacrificeHitsPerGame: number | null;
+  /** 生還率（試合結果の得点 ÷ (安打 + 四死球)） */
+  scoringRate: number | null;
   batting: BattingSummary;
   atBatResults: AtBatResultCount[];
   /** アウトになった打席の内訳 */
@@ -91,7 +106,10 @@ export type TeamStatsResult = {
   scoringPositionResults: AtBatResultCount[];
   batHandBatting: BatHandBattingRow[];
   inningScoring: InningScoringRow[];
-  hitDirections: HitDirectionRow[];
+  /** 全打者・右打者・左打者ごとの、打球方向別の打球数・安打・アウトと打球の向き */
+  battedBallsByBatter: Record<BattedBallBatter, BattedBallByBatter>;
+  /** アウトになった打球の種別 */
+  battedBallTypes: BattedBallTypeSummary;
   groundBatting: GroundBattingRow[];
   monthlyBatting: MonthlyBattingRow[];
   orderBatting: OrderBattingRow[];
@@ -261,19 +279,43 @@ export const getTeamStats = async (
     return result ? [result] : [];
   });
 
+  const record = summarizeTeamRecord(games);
+  const batting = summarizeBatting(plateAppearances);
+  const stolenBases = games
+    .flatMap((game) => game.gameMembers)
+    .reduce((sum, gm) => sum + gm.stolenBases, 0);
+  const battedBalls = gameMembers.flatMap((gm) =>
+    gm.plateAppearances.map((pa) => ({
+      result: pa.result,
+      direction: pa.direction,
+      batHand: gm.batHand,
+    })),
+  );
+
   return {
     season,
-    record: summarizeTeamRecord(games),
+    record,
     gameFlow: summarizeGameFlows(games),
     opponentSplits: buildOpponentSplits(games),
     battingSideSplits: buildBattingSideSplits(games),
     weatherSplits: buildWeatherSplits(games),
     monthSplits: buildMonthSplits(games),
 
-    stolenBases: games
-      .flatMap((game) => game.gameMembers)
-      .reduce((sum, gm) => sum + gm.stolenBases, 0),
-    batting: summarizeBatting(plateAppearances),
+    stolenBases,
+    stolenBasesPerGame: calculatePerGame({
+      count: stolenBases,
+      games: record.games,
+    }),
+    sacrificeHitsPerGame: calculatePerGame({
+      count: batting.sacrificeHits,
+      games: record.games,
+    }),
+    scoringRate: calculateScoringRate({
+      runs: record.runsScored,
+      hits: batting.hits,
+      walks: batting.walks,
+    }),
+    batting,
     atBatResults: summarizeAtBatResults(
       plateAppearances.map((pa) => pa.result),
     ),
@@ -285,7 +327,10 @@ export const getTeamStats = async (
     ),
     batHandBatting: buildBatHandBatting(gameMembers),
     inningScoring: summarizeInningScoring(games.map((g) => g.innings)),
-    hitDirections: buildHitDirections(plateAppearances),
+    battedBallsByBatter: summarizeBattedBallsByBatter(battedBalls),
+    battedBallTypes: summarizeBattedBallTypes(
+      plateAppearances.map((pa) => pa.result),
+    ),
     groundBatting: buildGroundBatting(gameMembers),
     monthlyBatting: buildMonthlyBatting(gameMembers),
     orderBatting: buildOrderBatting(gameMembers),

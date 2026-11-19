@@ -195,7 +195,8 @@ const mvps = mvpSegments.flatMap((nodes) => {
 });
 
 const CIRCLED = "①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳";
-const MARKS = /^([^①-⑳●s]+)([①-⑳])?(●)?(s{1,2})?$/;
+// 末尾の x は走塁死。アプリに項目が無いので取り込まない
+const MARKS = /^([^①-⑳●sx]+)([①-⑳])?(●)?(s{1,2})?x?$/;
 type ParsedCell = ParsedAtBat & { scored: boolean; steals: number };
 /** 打席のセル（例: 右三①●、二失●s）を、結果・打点（①）・得点（●）・盗塁（s）に分ける */
 const parseAtBat = (cell: string, inning: number): ParsedCell => {

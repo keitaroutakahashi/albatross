@@ -96,3 +96,24 @@ describe("summarizeBatting", () => {
     expect(summary.scoringPositionRbi).toBe(2);
   });
 });
+
+describe("summarizeBatting の長打割合", () => {
+  it("安打のうち二塁打・三塁打・本塁打が占める割合を出す", () => {
+    const summary = summarizeBatting([
+      { result: "single", rbi: 0, isScoringPosition: false },
+      { result: "double", rbi: 0, isScoringPosition: false },
+      { result: "homeRun", rbi: 0, isScoringPosition: false },
+      { result: "groundOut", rbi: 0, isScoringPosition: false },
+    ]);
+
+    expect(summary.extraBaseHitRate).toBeCloseTo(2 / 3);
+  });
+
+  it("安打がないときは null になる", () => {
+    const summary = summarizeBatting([
+      { result: "groundOut", rbi: 0, isScoringPosition: false },
+    ]);
+
+    expect(summary.extraBaseHitRate).toBeNull();
+  });
+});

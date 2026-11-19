@@ -5,6 +5,7 @@ import type { PitchingDecision } from "@/app/_utils/stats/pitching-decision";
 import {
   calculatePerSevenInnings,
   calculateStrikeoutWalkRatio,
+  calculateUnearnedRunRate,
 } from "@/app/_utils/stats/pitching-rate";
 import { calculateWhip } from "@/app/_utils/stats/whip";
 
@@ -45,6 +46,8 @@ export type PitchingSummary = {
   runs: number;
   /** 非自責点（失点 − 自責点。失策などが絡んだ失点） */
   unearnedRuns: number;
+  /** 非自責割合（非自責点 ÷ 失点。失点 0 のときは null） */
+  unearnedRunRate: number | null;
   /** 与四球 */
   walks: number;
   /** 与死球 */
@@ -117,6 +120,10 @@ export const summarizePitching = (
     starts: results.filter((result) => result.pitchingOrder === 1).length,
     ...total,
     unearnedRuns: total.runs - total.earnedRuns,
+    unearnedRunRate: calculateUnearnedRunRate({
+      unearnedRuns: total.runs - total.earnedRuns,
+      runs: total.runs,
+    }),
     pitchCount: pitchCounts.length > 0 ? pitchCountTotal : null,
     pitchCountAverage:
       pitchCounts.length > 0 ? pitchCountTotal / pitchCounts.length : null,

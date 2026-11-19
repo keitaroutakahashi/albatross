@@ -117,3 +117,38 @@ export const calculateWalkStrikeoutRatio = ({
   walks: number;
   strikeouts: number;
 }): number | null => (strikeouts > 0 ? walks / strikeouts : null);
+
+/**
+ * 長打割合（長打 ÷ 安打）を算出する。長打は二塁打・三塁打・本塁打。
+ * 安打が 0 のときは `null` を返す。
+ */
+export const calculateExtraBaseHitRate = ({
+  extraBaseHits,
+  hits,
+}: {
+  extraBaseHits: number;
+  hits: number;
+}): number | null => (hits > 0 ? extraBaseHits / hits : null);
+
+/**
+ * 生還率（得点 ÷ (安打 + 四死球)）を算出する。出塁した走者のうち、ホームに還った割合の目安。
+ * 失策や野選での出塁は含まれない。出塁が 0 のときは `null` を返す。
+ */
+export const calculateScoringRate = ({
+  runs,
+  hits,
+  walks,
+}: {
+  runs: number;
+  hits: number;
+  walks: number;
+}): number | null => (hits + walks > 0 ? runs / (hits + walks) : null);
+
+/** 1 試合あたりの回数を算出する。試合数が 0 のときは `null` を返す。 */
+export const calculatePerGame = ({
+  count,
+  games,
+}: {
+  count: number;
+  games: number;
+}): number | null => (games > 0 ? count / games : null);

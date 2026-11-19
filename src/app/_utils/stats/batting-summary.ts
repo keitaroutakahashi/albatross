@@ -5,6 +5,7 @@ import {
 import {
   calculateBabip,
   calculateBattingAverage,
+  calculateExtraBaseHitRate,
   calculateIso,
   calculateOnBasePercentage,
   calculateOps,
@@ -74,6 +75,8 @@ export type BattingSummary = {
   strikeoutRate: number | null;
   /** BB/K（四死球 ÷ 三振。三振 0 のときは null） */
   walkStrikeoutRatio: number | null;
+  /** 長打割合（長打 ÷ 安打。安打 0 のときは null） */
+  extraBaseHitRate: number | null;
   /** 得点圏での打数 */
   scoringPositionAtBats: number;
   /** 得点圏での安打 */
@@ -179,6 +182,10 @@ export const summarizeBatting = (
     walkStrikeoutRatio: calculateWalkStrikeoutRatio({
       walks: counts.walks,
       strikeouts: counts.strikeouts,
+    }),
+    extraBaseHitRate: calculateExtraBaseHitRate({
+      extraBaseHits: counts.doubles + counts.triples + counts.homeRuns,
+      hits: counts.hits,
     }),
     scoringPositionAtBats,
     scoringPositionHits,

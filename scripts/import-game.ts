@@ -31,6 +31,8 @@ const { values, positionals } = parseArgs({
   options: {
     apply: { type: "boolean", default: false },
     "accept-warnings": { type: "boolean", default: false },
+    // 登録済みのオーダーを元ページの内容で置き換える（ユーザーが明示したときだけ使う）
+    "overwrite-lineup": { type: "boolean", default: false },
   },
 });
 const jsonPath = positionals[0];
@@ -476,7 +478,11 @@ if (game) {
   }
 
   // 登録済みのオーダーは、元ページと一致していなければ止める（人が入力したものを書き換えない）
-  if (game.gameMembers.length > 0) {
+  if (game.gameMembers.length > 0 && values["overwrite-lineup"]) {
+    warnings.push(
+      `登録済みのオーダー（${game.gameMembers.length} 人）を、元ページの内容で置き換える（--overwrite-lineup）`,
+    );
+  } else if (game.gameMembers.length > 0) {
     const registeredStarters = game.gameMembers.filter(
       (gm) => gm.battingOrder !== null,
     );
@@ -496,10 +502,15 @@ if (game) {
   }
 }
 
+const keepsRegisteredLineup =
+  !!game && game.gameMembers.length > 0 && !values["overwrite-lineup"];
+
 // 打順に入っていない投手は、ベンチとして追加する（投手成績はオーダーの選手にしか付けられない）
 const lineupMemberIds = new Set([
   ...batters.map((x) => x.member.id),
-  ...(game?.gameMembers.map((gm) => gm.memberId) ?? []),
+  ...(keepsRegisteredLineup
+    ? (game?.gameMembers.map((gm) => gm.memberId) ?? [])
+    : []),
 ]);
 const benchPitchers = pitcherMembers.filter(
   ({ member }) => !lineupMemberIds.has(member.id),
@@ -654,7 +665,7 @@ console.log(
     : "",
 );
 console.log(
-  `== オーダー ${game && game.gameMembers.length > 0 ? "(登録済み。変更なし)" : "(新規登録)"} ==`,
+  `== オーダー ${keepsRegisteredLineup ? "(登録済み。変更なし)" : game && game.gameMembers.length > 0 ? "(登録済みを置き換え)" : "(新規登録)"} ==`,
 );
 console.table(
   starters.map(({ b, member, position }) => ({
@@ -824,10 +835,16 @@ const gameId = await prisma.$transaction(async (tx) => {
   });
 
   // オーダー。登録済みなら触らず、無ければ元ページの打順どおりに作る。投手のベンチ追加は常に行う
+  if (game && !keepsRegisteredLineup) {
+    // 打席・投手成績が入力済みならエラーで止まっているので、消えるのはオーダーだけ
+    await tx.gameMember.deleteMany({ where: { gameId: id } });
+  }
   const gameMemberIds = new Map(
-    (game?.gameMembers ?? []).map((gm) => [gm.memberId, gm.id]),
+    keepsRegisteredLineup
+      ? (game?.gameMembers ?? []).map((gm) => [gm.memberId, gm.id])
+      : [],
   );
-  if (!game || game.gameMembers.length === 0) {
+  if (!keepsRegisteredLineup) {
     for (const { b, member, position } of starters) {
       const created = await tx.gameMember.create({
         data: {
